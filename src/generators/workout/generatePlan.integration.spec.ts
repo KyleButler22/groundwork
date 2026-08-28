@@ -56,6 +56,21 @@ describe('loadRealSeed sanity', () => {
       ['core', 'hinge', 'horizontal_pull', 'horizontal_push', 'skill_handstand', 'squat', 'vertical_pull', 'vertical_push'].sort(),
     )
   })
+
+  it('parses real human-readable names, not the slug repeated (regression: parseMovementLibrarySeed once set name = slug for every content type)', () => {
+    const pushUp = seed.exercises.find((e) => e.slug === 'pushup_wall')!
+    expect(pushUp.name).toBe('Wall push-up')
+    expect(pushUp.name).not.toBe(pushUp.slug)
+
+    const pattern = seed.patterns.find((p) => p.slug === 'horizontal_push')!
+    expect(pattern.name).toBe('Horizontal Push')
+
+    const bar = seed.equipment.find((e) => e.slug === 'pull_up_bar')!
+    expect(bar.name).toBe('Pull-up bar')
+
+    const wrist = seed.bodyRegions.find((r) => r.slug === 'wrist')!
+    expect(wrist.name).toBe('Wrist')
+  })
 })
 
 describe('generatePlan — against the real seed content', () => {

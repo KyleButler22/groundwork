@@ -136,6 +136,11 @@ if (contraindicated(exercise, user_limitations))
 
 Skipping the tests is fine and shouldn't be punished — fall back to one experience question, place everything at level 2 (safe for almost everyone, self-corrects within two weeks).
 
+**This table predates the finalized 8-pattern seed and needed adapting during implementation** (`src/lib/intake/placement.ts`):
+- Only 5 of the 8 real patterns have a table above. `horizontal_pull`, `hinge`, and `skill_handstand` were never given one — they use the same level-2 fallback as a skipped test, rather than inventing untested tables under time pressure.
+- The vertical pull row above references "inverted row", which is a `horizontal_pull` exercise in the finalized seed, not a rung on the `vertical_pull` ladder. Re-mapped to stay entirely within vertical_pull's own 9 rungs using the same hang-duration/pull-up-count signal — see `verticalPullLevel()`.
+- The core and vertical-push rows are re-pointed at those ladders' actual rung names (`plank_knee`/`plank_full`/`hollow_hold_bent`/`hanging_knee_raise`; `pike_pushup_floor`/`pike_pushup_elevated`/`handstand_hold_wall`/`hspu_wall_negative`) rather than the generic descriptions above, to keep bucket→rung mapping internally consistent with each ladder's real difficulty ordering.
+
 **Framing matters.** "How many push-ups can you do?" reads as judgment and gets inflated answers. "So we can start you in the right place — how many push-ups can you do with good form before your hips sag?" gets honest ones and teaches a form cue on the way past.
 
 ## Goal → training shape

@@ -18,7 +18,13 @@ import type { Database } from '@/types/database'
  */
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-const isConfigured = Boolean(supabaseUrl && supabaseAnonKey)
+
+/** Whether a real project is configured. Exported so call sites (e.g.
+ *  src/lib/devContentSeed.ts) can choose a fallback instead of just
+ *  letting a network call fail — checking this is not itself a workaround
+ *  for the placeholder-client warning below, it's a legitimate way to
+ *  branch behaviour before ever making a call. */
+export const isConfigured = Boolean(supabaseUrl && supabaseAnonKey)
 
 if (!isConfigured) {
   // createClient() throws synchronously on an empty/invalid URL — which
