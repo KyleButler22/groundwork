@@ -152,6 +152,8 @@ The goal changes session assembly, not just calories:
 
 The `skill` row is non-negotiable, not just a preference: skill work has to come before fatigue, because a handstand practised tired teaches a worse handstand.
 
+**The `skill` row describes skill practice itself, not the whole session.** A first implementation applied its low rep count to every pattern in a skill-goal session — squats, pushes, core — and found via testing that almost nothing overlaps a normal exercise's 6-15+ rep range at 3-6 reps, so every non-skill slot failed to resolve. Supporting work under a `skill` goal uses `maintain`'s numbers instead; only the skill slot itself gets the low-rep, long-rest treatment. See `effectivePrescriptionGoal()` in `generatePlan.ts`.
+
 ## Safety gates
 
 Run before generation; can refuse to produce a plan. Belong in the generator, not the UI.

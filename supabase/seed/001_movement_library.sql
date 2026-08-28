@@ -85,7 +85,7 @@ values
   ('row_one_arm_progression',   'One-arm row progression',    (select id from movement_patterns where slug = 'horizontal_pull'), 6.0, 'reps', 4,  8, true,  'On rings, feet together for a harder anti-rotation demand.'),
 
   -- squat (7 rungs)
-  ('squat_box',             'Box squat',              (select id from movement_patterns where slug = 'squat'), 1.0, 'reps',  8, 15, false, 'Sit back to the box under control, don''t drop onto it. Stand tall each rep.'),
+  ('squat_box',             'Assisted squat',         (select id from movement_patterns where slug = 'squat'), 1.0, 'reps',  8, 15, false, 'Sit back toward any low, stable surface — a step, a low wall, a sturdy chair. Stand tall each rep.'),
   ('squat_bodyweight',      'Bodyweight squat',       (select id from movement_patterns where slug = 'squat'), 2.0, 'reps', 10, 20, false, 'Knees track over toes, thighs at least parallel to the floor.'),
   ('squat_split',           'Split squat',            (select id from movement_patterns where slug = 'squat'), 3.0, 'reps',  8, 15, true,  'Rear foot flat or on the ball, front shin roughly vertical at the bottom.'),
   ('squat_bulgarian',       'Bulgarian split squat',  (select id from movement_patterns where slug = 'squat'), 4.0, 'reps',  8, 15, true,  'Rear foot elevated on a bench. Most of the work is in the front leg.'),
@@ -197,6 +197,19 @@ insert into progression_edges (from_exercise_id, to_exercise_id, kind) values
 -- ── exercise equipment requirements ─────────────────────────────────────────
 -- Default alternative_group 0 means "all listed rows are required". A
 -- shared non-zero group means "any one of this group satisfies the slot".
+--
+-- Every ladder's FLOOR rung is deliberately equipment-free EXCEPT
+-- vertical_pull's (dead_hang needs a pull_up_bar). That's intentional, not
+-- an oversight caught late: squatting toward some low surface and rowing
+-- against some sturdy edge are both close enough to universal that they
+-- aren't modelled as equipment at all (see squat_box / row_incline_standing
+-- below — neither has an exercise_equipment row). Pulling against your own
+-- bodyweight genuinely has no equivalent "use anything" floor — it needs an
+-- elevated bar-like object to hang from. Recommending a cheap doorway
+-- pull-up bar during equipment onboarding is the accepted resolution, the
+-- same way real calisthenics programs are upfront about that one purchase
+-- — not a gap to silently work around with fabricated, unvetted exercise
+-- content. See docs/generator.md and the calisthenics-app memory.
 insert into exercise_equipment (exercise_id, equipment_id, alternative_group) values
   ((select id from exercises where slug = 'pushup_incline'), (select id from equipment where slug = 'bench_or_chair'), 0),
   ((select id from exercises where slug = 'pushup_decline'), (select id from equipment where slug = 'bench_or_chair'), 0),
@@ -216,7 +229,6 @@ insert into exercise_equipment (exercise_id, equipment_id, alternative_group) va
   ((select id from exercises where slug = 'pullup_one_arm_progression'), (select id from equipment where slug = 'pull_up_bar'), 0),
   ((select id from exercises where slug = 'pullup_one_arm_progression'), (select id from equipment where slug = 'resistance_band'), 0),
 
-  ((select id from exercises where slug = 'row_incline_standing'), (select id from equipment where slug = 'bench_or_chair'), 0),
   ((select id from exercises where slug = 'row_inverted_high'), (select id from equipment where slug = 'pull_up_bar'), 1),
   ((select id from exercises where slug = 'row_inverted_high'), (select id from equipment where slug = 'rings'), 1),
   ((select id from exercises where slug = 'row_inverted_high'), (select id from equipment where slug = 'bench_or_chair'), 1),
@@ -229,7 +241,6 @@ insert into exercise_equipment (exercise_id, equipment_id, alternative_group) va
   ((select id from exercises where slug = 'row_archer'), (select id from equipment where slug = 'rings'), 0),
   ((select id from exercises where slug = 'row_one_arm_progression'), (select id from equipment where slug = 'rings'), 0),
 
-  ((select id from exercises where slug = 'squat_box'), (select id from equipment where slug = 'box_or_step'), 0),
   ((select id from exercises where slug = 'squat_bulgarian'), (select id from equipment where slug = 'bench_or_chair'), 0),
 
   ((select id from exercises where slug = 'hip_thrust'), (select id from equipment where slug = 'bench_or_chair'), 0),

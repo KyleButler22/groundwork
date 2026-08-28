@@ -22,15 +22,14 @@ Pipeline: **Split → Slots → Fill → Budget → Validate.**
 
 Calisthenics-specific principle: **frequency beats per-session volume.** Bodyweight movements are skill-adjacent and improve with more frequent, fresher practice — every split below hits each pattern at least twice a week, none is a bodybuilder-style one-muscle-a-day arrangement.
 
-| Days | Split | Pattern frequency | Notes |
+| Days | Split | `split_type` | Notes |
 |---|---|---|---|
-| 2 | Full body A/B | 2× each | Everything is a priority slot |
-| 3 | Full body A/B/C | 3× each | The sweet spot for most beginners |
-| 4 | Upper/Lower/Upper/Lower | 2× each | Room for accessory and skill slots |
-| 5 | Upper/Lower/Push/Pull/Legs | 2–3× | Asymmetric by design; upper gets extra exposure |
-| 6 | PPL ×2 | 2× each | Only offer if `session_minutes` is low — six long days is a trap |
+| 1–3 | Full body, repeated | `full_body` | One template reused every day — see §6 on why identical sessions across the week are correct, not a bug |
+| 4 | Upper/Lower/Upper/Lower | `upper_lower` | 2× each pattern |
+| 5 | Upper/Lower/Upper/Lower/Upper | `upper_lower` | **Implemented as an extra Upper day, not a distinct 5-template hybrid.** `split_type` only has three values (`0004_training.sql`); a genuine Upper/Lower/Push/Pull/Legs hybrid doesn't fit any of them cleanly, so this was simplified during implementation (`splits.ts`) rather than left as a dangling fourth split type |
+| 6 | Push/Pull/Legs ×2 | `push_pull_legs` | Only offer if `session_minutes` is low — six long days is a trap |
 
-No 7-day option, ever. A rest day is part of the programme.
+No 7-day option, ever. A rest day is part of the programme. Enforced in `chooseSplit()` itself (clamped to 1-6), not just left to the UI to never offer 7.
 
 ## 2. Slot templates
 
@@ -53,6 +52,8 @@ A session is a fixed, ordered list of **slots** — each declaring a movement pa
 ```
 
 `core` sits last in performance order but 4th in priority — different axes. Conflating them is exactly how core work quietly disappears from short sessions (see §3).
+
+The `'skill'` and `'accessory'` names above are illustrative. The actual templates (`splits.ts`) reference real `movement_patterns` slugs from the seed data — `skill_handstand` for skill, and no `'accessory'` slot at all, since no such pattern exists to fill it from.
 
 ```
 selectExercise(slot, levels, equipment, limitations, rng):
@@ -217,7 +218,7 @@ With a stream, adding a slot to week 1 silently rewrites every exercise in weeks
 
 Assert before persisting — a generator that *can* emit a broken plan eventually will.
 
-- Every session fits its time budget, warm-up and buffer included.
+- Every session fits its time budget, warm-up and buffer included — except week 3 and a 'peak' week 4, which §6 already allows to exceed it by one set's worth without re-running allocation. `validate.ts` skips this check for exactly those weeks rather than flagging a trade-off made deliberately elsewhere in the generator.
 - Every required slot is filled in every session.
 - No exercise appears twice in one session.
 - No contraindicated exercise for any flagged region.
@@ -235,4 +236,4 @@ On failure: log the violation with the seed, fall back to the plainest full-body
 | Missed sessions | **Decided 2026-08-27: the block slides.** Ends when the sessions are done, not when the calendar says. See `docs/schema.md` → `plan_sessions.day_index`. |
 | Warm-up generation | Currently a fixed 360s allowance, not generated. A pattern-specific warm-up (fixed mapping from the day's patterns) would be better and cheap. |
 | Skill slot without a skill goal | Handstand work is the most-requested calisthenics skill — worth offering as opt-in even for a fat-loss goal? |
-| Regression floor | Undefined what happens failing at level 1. Probably: hold, reduce volume, gentle prompt rather than looping. |
+| Regression floor | **Resolved in `promotion.ts`**: three failures at level 1 emits a `regression_floor_reached` event and resets the counter, holding the exercise in place. Reduced volume or a form-check prompt in response to that event is still a UI concern, not yet built. |
