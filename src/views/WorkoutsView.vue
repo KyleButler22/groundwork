@@ -1,18 +1,45 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 import { usePlanStore } from '@/stores/plan'
+import { useSessionStore } from '@/stores/session'
+import type { PlanItem, PlanSession } from '@/types/domain'
 
 // Current plan's sessions. Generation itself lives in src/generators/workout —
 // this view only renders a WorkoutPlan and logs sets, it never computes one.
 const planStore = usePlanStore()
-onMounted(() => planStore.loadActivePlan())
+const session = useSessionStore()
+
+// No real auth yet (see TASKS.md) — same fallback IntakeView.vue/MealsView.vue use.
+const userId = computed(() => session.session?.user.id ?? 'local-dev-user')
 
 const openWeek = ref(1)
+onMounted(async () => {
+  await planStore.loadActivePlan()
+  // Land on whatever week is actually next, not always week 1 — the
+  // whole point of tracking completion is that "today" moves forward.
+  if (planStore.nextSession) openWeek.value = planStore.nextSession.weekNumber
+})
+
+const weekNumbers = computed(() => Array.from({ length: planStore.plan?.weeks ?? 0 }, (_, i) => i + 1))
+
+function weekPercent(week: number): number {
+  const p = planStore.weekProgress.get(week)
+  return p && p.total > 0 ? Math.round((p.done / p.total) * 100) : 0
+}
+
+function blockPercent(): number {
+  const p = planStore.blockProgress
+  return p.total > 0 ? Math.round((p.done / p.total) * 100) : 0
+}
+
+function onToggleItem(planSession: PlanSession, item: PlanItem): void {
+  planStore.toggleItemChecked(userId.value, planSession, item)
+}
 </script>
 
 <template>
-  <div class="p-4">
+  <div class="p-4 pb-8">
     <h1 class="text-2xl font-semibold text-ink">Training</h1>
 
     <p v-if="planStore.loading" class="mt-2 text-sm text-muted">Loading…</p>
@@ -23,9 +50,28 @@ const openWeek = ref(1)
         {{ planStore.plan?.name }} — {{ planStore.plan?.daysPerWeek }} days/week, {{ planStore.plan?.splitType.replace('_', ' ') }}
       </p>
 
+      <div class="mt-3">
+        <div class="flex items-center justify-between text-xs text-muted">
+          <span>Block progress</span>
+          <span class="font-mono tabular-nums">{{ planStore.blockProgress.done }}/{{ planStore.blockProgress.total }} sessions</span>
+        </div>
+        <div class="mt-1 h-2 w-full overflow-hidden rounded-full bg-rule">
+          <div class="h-full rounded-full bg-train" :style="{ width: blockPercent() + '%' }"></div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex items-end gap-2" aria-label="Weekly progress">
+        <div v-for="week in weekNumbers" :key="week" class="flex flex-1 flex-col items-center gap-1">
+          <div class="flex h-14 w-full items-end overflow-hidden rounded-md bg-rule">
+            <div class="w-full rounded-md bg-train" :style="{ height: weekPercent(week) + '%' }"></div>
+          </div>
+          <span class="font-mono text-[11px] tabular-nums text-muted">{{ planStore.weekProgress.get(week)?.done ?? 0 }}/{{ planStore.weekProgress.get(week)?.total ?? 0 }}</span>
+        </div>
+      </div>
+
       <div class="mt-4 flex gap-2">
         <button
-          v-for="week in planStore.plan?.weeks ?? 4"
+          v-for="week in weekNumbers"
           :key="week"
           type="button"
           class="min-h-11 flex-1 rounded-md border text-sm font-medium"
@@ -36,32 +82,47 @@ const openWeek = ref(1)
         </button>
       </div>
 
+      <div v-if="planStore.promotionMessages.length" class="mt-4 flex items-start justify-between gap-2 rounded-md border border-train bg-train-wash px-3 py-2 text-xs text-train">
+        <ul class="space-y-1">
+          <li v-for="(message, i) in planStore.promotionMessages" :key="i">{{ message }}</li>
+        </ul>
+        <button type="button" class="min-h-11 min-w-11 shrink-0 text-sm" aria-label="Dismiss" @click="planStore.dismissPromotionMessages()">✕</button>
+      </div>
+
       <div class="mt-4 space-y-4">
-        <section v-for="session in planStore.sessionsByWeek.get(openWeek) ?? []" :key="session.id">
-          <h2 class="flex items-center gap-2 text-sm font-semibold text-ink">
-            {{ session.name }}
-            <span
-              v-if="session.weekType !== 'build'"
-              class="rounded-full px-2 py-0.5 text-xs font-medium capitalize"
-              :class="session.weekType === 'deload' ? 'bg-nutri-wash text-nutri' : 'bg-train-wash text-train'"
-            >
-              {{ session.weekType }}
+        <section v-for="s in planStore.sessionsByWeek.get(openWeek) ?? []" :key="s.id">
+          <div class="flex items-center justify-between gap-2">
+            <h2 class="flex items-center gap-2 text-sm font-semibold text-ink">
+              {{ s.name }}
+              <span
+                v-if="s.weekType !== 'build'"
+                class="rounded-full px-2 py-0.5 text-xs font-medium capitalize"
+                :class="s.weekType === 'deload' ? 'bg-nutri-wash text-nutri' : 'bg-train-wash text-train'"
+              >
+                {{ s.weekType }}
+              </span>
+            </h2>
+            <span class="shrink-0 font-mono text-xs tabular-nums text-muted">
+              {{ planStore.sessionProgress(s.id).done }}/{{ planStore.sessionProgress(s.id).total }}
             </span>
-          </h2>
+          </div>
           <ul class="mt-2 space-y-2">
             <li
-              v-for="item in planStore.itemsForSession(session.id)"
+              v-for="item in planStore.itemsForSession(s.id)"
               :key="item.id"
-              class="flex items-center justify-between rounded-md border border-rule bg-surface px-4 py-3"
+              class="rounded-md border border-rule bg-surface px-4 py-3"
             >
-              <span class="text-sm font-medium text-ink">
-                {{ planStore.exerciseName(item.exerciseId) }}
-                <span v-if="item.supersetGroup !== null" class="text-xs font-normal text-muted"> · superset</span>
-              </span>
-              <span class="font-mono text-sm tabular-nums text-muted">
-                {{ item.sets }} ×
-                {{ item.targetSeconds !== null ? `${item.targetSeconds}s` : `${item.targetRepMin}-${item.targetRepMax}` }}
-              </span>
+              <label class="flex min-h-11 cursor-pointer items-center gap-3">
+                <input type="checkbox" class="h-5 w-5 shrink-0 accent-train" :checked="planStore.isItemChecked(item.id)" @change="onToggleItem(s, item)" />
+                <span class="min-w-0 flex-1 text-sm font-medium" :class="planStore.isItemChecked(item.id) ? 'text-muted line-through' : 'text-ink'">
+                  {{ planStore.exerciseName(item.exerciseId) }}
+                  <span v-if="item.supersetGroup !== null" class="text-xs font-normal text-muted"> · superset</span>
+                </span>
+                <span class="shrink-0 font-mono text-sm tabular-nums text-muted">
+                  {{ item.sets }} ×
+                  {{ item.targetSeconds !== null ? `${item.targetSeconds}s` : `${item.targetRepMin}-${item.targetRepMax}` }}
+                </span>
+              </label>
             </li>
           </ul>
         </section>

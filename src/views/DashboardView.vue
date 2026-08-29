@@ -3,16 +3,26 @@ import { computed, onMounted } from 'vue'
 
 import { useMealPlanStore } from '@/stores/mealPlan'
 import { usePlanStore } from '@/stores/plan'
-import type { MealSlot } from '@/types/domain'
+import { useSessionStore } from '@/stores/session'
+import type { MealSlot, PlanItem } from '@/types/domain'
 
 // Landing screen: today's prescribed session, today's meals, nothing else.
 // Deliberately not a settings-style list — this is scanned, not read.
 const planStore = usePlanStore()
 const mealStore = useMealPlanStore()
+const session = useSessionStore()
 onMounted(() => {
   planStore.loadActivePlan()
   mealStore.loadActivePlan()
 })
+
+// No real auth yet (see TASKS.md) — same fallback IntakeView.vue/MealsView.vue use.
+const userId = computed(() => session.session?.user.id ?? 'local-dev-user')
+
+function onToggleItem(item: PlanItem): void {
+  if (!planStore.nextSession) return
+  planStore.toggleItemChecked(userId.value, planStore.nextSession, item)
+}
 
 // No "advance to next week" yet (see TASKS.md) — once a plan's week is
 // more than a few days old, today may simply not be one of its 7 days.
@@ -41,26 +51,48 @@ const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'L
       </RouterLink>
     </template>
 
-    <template v-else-if="planStore.firstSession">
-      <p class="mt-1 text-sm text-muted">{{ planStore.plan?.name }} — {{ planStore.firstSession.name }}</p>
+    <template v-else-if="planStore.nextSession">
+      <div class="mt-1 flex items-center justify-between gap-3">
+        <p class="text-sm text-muted">{{ planStore.plan?.name }} — {{ planStore.nextSession.name }}</p>
+        <p class="shrink-0 font-mono text-xs tabular-nums text-muted">
+          {{ planStore.sessionProgress(planStore.nextSession.id).done }}/{{ planStore.sessionProgress(planStore.nextSession.id).total }} done
+        </p>
+      </div>
+
+      <div v-if="planStore.promotionMessages.length" class="mt-3 flex items-start justify-between gap-2 rounded-md border border-train bg-train-wash px-3 py-2 text-xs text-train">
+        <ul class="space-y-1">
+          <li v-for="(message, i) in planStore.promotionMessages" :key="i">{{ message }}</li>
+        </ul>
+        <button type="button" class="min-h-11 min-w-11 shrink-0 text-sm" aria-label="Dismiss" @click="planStore.dismissPromotionMessages()">✕</button>
+      </div>
 
       <ul class="mt-4 space-y-2">
         <li
-          v-for="item in planStore.itemsForSession(planStore.firstSession.id)"
+          v-for="item in planStore.itemsForSession(planStore.nextSession.id)"
           :key="item.id"
-          class="flex items-center justify-between rounded-md border border-rule bg-surface px-4 py-3"
+          class="rounded-md border border-rule bg-surface px-4 py-3"
         >
-          <span class="text-sm font-medium text-ink">{{ planStore.exerciseName(item.exerciseId) }}</span>
-          <span class="font-mono text-sm tabular-nums text-muted">
-            {{ item.sets }} ×
-            {{ item.targetSeconds !== null ? `${item.targetSeconds}s` : `${item.targetRepMin}-${item.targetRepMax}` }}
-          </span>
+          <label class="flex min-h-11 cursor-pointer items-center gap-3">
+            <input type="checkbox" class="h-5 w-5 shrink-0 accent-train" :checked="planStore.isItemChecked(item.id)" @change="onToggleItem(item)" />
+            <span class="min-w-0 flex-1 text-sm font-medium" :class="planStore.isItemChecked(item.id) ? 'text-muted line-through' : 'text-ink'">
+              {{ planStore.exerciseName(item.exerciseId) }}
+            </span>
+            <span class="shrink-0 font-mono text-sm tabular-nums text-muted">
+              {{ item.sets }} ×
+              {{ item.targetSeconds !== null ? `${item.targetSeconds}s` : `${item.targetRepMin}-${item.targetRepMax}` }}
+            </span>
+          </label>
         </li>
       </ul>
 
       <RouterLink to="/workouts" class="mt-4 inline-block text-sm font-medium text-train">
         See the full plan →
       </RouterLink>
+    </template>
+
+    <template v-else>
+      <p class="mt-2 text-sm text-muted">🎉 You've completed every session in this training block — {{ planStore.blockProgress.done }}/{{ planStore.blockProgress.total }} done.</p>
+      <RouterLink to="/workouts" class="mt-4 inline-block text-sm font-medium text-train"> Review the full plan → </RouterLink>
     </template>
 
     <template v-if="!mealStore.loading && todayMeals.length > 0">
