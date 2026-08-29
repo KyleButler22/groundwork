@@ -3,7 +3,7 @@ import type { MealPlan, MealPlanEntry, MealSlot, UserRecipeFeedback } from '@/ty
 import { hashSeed } from '../shared/rng'
 import { allocateSlotTargets, type DailyTargets } from './allocate'
 import { assembleWeek } from './assemble'
-import { DAYS_PER_WEEK, DEFAULT_LEFTOVER_RATIO, planActiveSlots, planDinnerLeftovers } from './grid'
+import { DAYS_PER_WEEK, DEFAULT_LEFTOVER_RATIO, planActiveSlots, planDinnerLeftovers, reconstructDinnerDayPlanFromEntries, type DinnerDayPlan } from './grid'
 import { filterWithRelaxation, type FilterConstraints } from './filter'
 import type { MealLibrary } from './library'
 import { repairWeek } from './repair'
@@ -55,6 +55,13 @@ export interface GenerateMealPlanInput {
   leftoverRatio?: number
   weights?: ScoringWeights
   onlyRepairDays?: ReadonlySet<string>
+  /** Use this exact dinner leftover topology instead of drawing a new one
+   *  from the seed — swapOneMeal's own fix for a real bug: with almost
+   *  every dinner day locked, a fresh random draw routinely reassigned
+   *  the ONE unlocked (target) day as a leftover of some unrelated
+   *  already-locked day. See reconstructDinnerDayPlanFromEntries (grid.ts)
+   *  and swapOneMeal's own comment below. */
+  dinnerDayPlanOverride?: readonly DinnerDayPlan[]
   now: string // ISO timestamp
 }
 
@@ -94,7 +101,7 @@ export function generateMealPlan(input: GenerateMealPlanInput): GenerateMealPlan
     )
   }
 
-  const dinnerDayPlan = planDinnerLeftovers(input.seed, input.leftoverRatio ?? DEFAULT_LEFTOVER_RATIO)
+  const dinnerDayPlan = input.dinnerDayPlanOverride ?? planDinnerLeftovers(input.seed, input.leftoverRatio ?? DEFAULT_LEFTOVER_RATIO)
   const slotTargets = allocateSlotTargets(input.dailyTargets, activeSlots)
 
   const { entries: assembled, warnings: assembleWarnings } = assembleWeek({
@@ -182,26 +189,39 @@ export function regenerateWeek(
 
 /**
  * docs/mealgen.md §9's "Swap one meal" row: re-scores just that slot
- * against everything else held fixed, then repairs only that day. Every
- * other entry from `previousEntries` — locked or not — is passed through
- * as a held-fixed entry for this call only; that's what makes the scope
- * "just this slot," not a statement that they've become permanently
- * locked in the plan itself.
+ * against everything else held fixed, then repairs only that day (or
+ * both affected days — see below). Every other entry from
+ * `previousEntries` — locked or not — is passed through as a held-fixed
+ * entry for this call only; that's what makes the scope "just this
+ * slot," not a statement that they've become permanently locked in the
+ * plan itself.
  *
  * "repairs only that day" means exactly that — DAY, not slot: repair.ts's
  * own steps 2/3 can swap the day's snack or lunch to absorb whatever
  * macro shift the new pick just introduced (§7), which is a real,
  * intended side effect, not a bug. Swapping the lunch can legitimately
- * change that same day's snack too; it will never touch a different day.
+ * change that same day's snack too; it will never touch a different day
+ * (or two days, for a dinner swap that has a leftover — see below).
  *
-
- * Known limitation, called out rather than silently mishandled: if the
- * swapped slot is a fresh dinner with a leftover elsewhere in the week,
- * that leftover entry still references the OLD recipe — propagating a
- * swap forward to its leftover isn't implemented yet (see TASKS.md).
- * Swapping a leftover entry itself is refused outright for the same
- * reason: there's nothing coherent to re-score it against once it's
- * decoupled from its parent.
+ * Swapping a leftover entry itself is refused outright: there's nothing
+ * coherent to re-score it against once it's decoupled from its parent —
+ * swap that entry's own day instead.
+ *
+ * If the target IS a fresh dinner with a leftover elsewhere in the week,
+ * the swap propagates to it for free: both the target's old (day, slot)
+ * AND its leftover's (day, 'dinner') are excluded from `lockedEntries`,
+ * and `dinnerDayPlanOverride` (reconstructDinnerDayPlanFromEntries)
+ * preserves the real "day X is a leftover of day Y" relationship instead
+ * of letting generateMealPlan draw a fresh random one from the new seed.
+ * assemble.ts's ordinary leftover-copy logic then picks up the newly
+ * chosen recipe on the leftover day exactly as it would during a normal
+ * generation — no special-casing needed here beyond feeding it the right
+ * topology. This ALSO fixes a real, independent bug that existed before
+ * this propagation was added: with nearly every dinner day locked during
+ * a swap, a fresh random topology routinely reassigned the one unlocked
+ * (target) day as a leftover of some unrelated already-locked day,
+ * silently replacing what should have been a freshly re-scored pick with
+ * a copy of an unrelated day's dinner.
  */
 export function swapOneMeal(
   input: GenerateMealPlanInput,
@@ -210,7 +230,6 @@ export function swapOneMeal(
   slot: MealSlot,
   swapCount = 1,
 ): GenerateMealPlanResult {
-  const warnings: string[] = []
   const target = previousEntries.find((e) => e.serveOn === serveOn && e.slot === slot)
 
   if (target?.leftoverOfId) {
@@ -235,23 +254,26 @@ export function swapOneMeal(
     }
   }
 
-  if (target && previousEntries.some((e) => e.leftoverOfId === target.id)) {
-    warnings.push(
-      `swapping ${serveOn} ${slot} does not update its leftover elsewhere in the week — that entry will still reference the old recipe (known limitation, see TASKS.md)`,
-    )
-  }
+  const leftoverOfTarget = target ? previousEntries.find((e) => e.leftoverOfId === target.id) : undefined
 
-  const keepEntries = previousEntries.filter((e) => !(e.serveOn === serveOn && e.slot === slot))
+  const keepEntries = previousEntries.filter((e) => {
+    if (e.serveOn === serveOn && e.slot === slot) return false // the target itself
+    if (leftoverOfTarget && e.id === leftoverOfTarget.id) return false // its leftover, if any — re-assembled so it picks up the new recipe
+    return true
+  })
   const newSeed = hashSeed(input.seed, 'swap', serveOn, slot, swapCount)
   const excludedRecipeIds = new Set([...(input.excludedRecipeIds ?? []), ...(target ? [target.recipeId] : [])])
+  const onlyRepairDays = new Set([serveOn])
+  if (leftoverOfTarget) onlyRepairDays.add(leftoverOfTarget.serveOn)
 
   const result = generateMealPlan({
     ...input,
     seed: newSeed,
     lockedEntries: keepEntries,
     excludedRecipeIds,
-    onlyRepairDays: new Set([serveOn]),
+    dinnerDayPlanOverride: reconstructDinnerDayPlanFromEntries(previousEntries, input.weekStartsOn),
+    onlyRepairDays,
   })
 
-  return { ...result, warnings: [...warnings, ...result.warnings] }
+  return result
 }

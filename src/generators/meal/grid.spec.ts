@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import { DAYS_PER_WEEK, planActiveSlots, planDinnerLeftovers } from './grid'
+import type { MealPlanEntry } from '@/types/domain'
+
+import { addDays } from './dateMath'
+import { DAYS_PER_WEEK, planActiveSlots, planDinnerLeftovers, reconstructDinnerDayPlanFromEntries } from './grid'
 
 describe('planActiveSlots', () => {
   it('includes all 4 canonical slots, highest-share order, when mealsPerDay is 4', () => {
@@ -69,5 +72,46 @@ describe('planDinnerLeftovers', () => {
   it('different seeds can produce different plans (not a fixed pattern)', () => {
     const plans = [1, 2, 3, 4, 5].map((seed) => JSON.stringify(planDinnerLeftovers(seed, 0.4)))
     expect(new Set(plans).size).toBeGreaterThan(1)
+  })
+})
+
+const WEEK_STARTS_ON = '2026-08-31'
+
+function dinnerEntry(overrides: Partial<MealPlanEntry> & Pick<MealPlanEntry, 'id' | 'serveOn'>): MealPlanEntry {
+  return { mealPlanId: 'plan-1', slot: 'dinner', recipeId: 'x', servings: 1, isLocked: false, leftoverOfId: null, ...overrides }
+}
+
+describe('reconstructDinnerDayPlanFromEntries', () => {
+  it('round-trips a plan produced by planDinnerLeftovers exactly, given matching entries', () => {
+    const original = planDinnerLeftovers(7, 0.4)
+    const entries = original.map((_day, i) => dinnerEntry({ id: `e${i}`, serveOn: addDays(WEEK_STARTS_ON, i) }))
+    // Rebuild leftoverOfId links using the SAME day-index topology, since
+    // the helper above only fabricates unique ids/dates, not the links.
+    const idByDayIndex = new Map(entries.map((e, i) => [i, e.id]))
+    const linked = entries.map((e, i) =>
+      original[i].isLeftover ? { ...e, leftoverOfId: idByDayIndex.get(original[i].leftoverOfDayIndex!)! } : e,
+    )
+
+    expect(reconstructDinnerDayPlanFromEntries(linked, WEEK_STARTS_ON)).toEqual(original)
+  })
+
+  it('derives day indices from serve_on relative to weekStartsOn', () => {
+    const parent = dinnerEntry({ id: 'parent', serveOn: '2026-08-31', recipeId: 'chili' })
+    const leftover = dinnerEntry({ id: 'child', serveOn: '2026-09-02', recipeId: 'chili', leftoverOfId: 'parent' })
+    const plan = reconstructDinnerDayPlanFromEntries([parent, leftover], WEEK_STARTS_ON)
+    expect(plan[0]).toEqual({ dayIndex: 0, isLeftover: false, leftoverOfDayIndex: null })
+    expect(plan[2]).toEqual({ dayIndex: 2, isLeftover: true, leftoverOfDayIndex: 0 })
+  })
+
+  it('treats a day with no dinner entry at all as fresh (not a crash)', () => {
+    const plan = reconstructDinnerDayPlanFromEntries([], WEEK_STARTS_ON)
+    expect(plan).toHaveLength(DAYS_PER_WEEK)
+    expect(plan.every((d) => !d.isLeftover)).toBe(true)
+  })
+
+  it('falls back to fresh if leftoverOfId points at an entry that is not in the list', () => {
+    const orphan = dinnerEntry({ id: 'child', serveOn: '2026-08-31', leftoverOfId: 'does-not-exist' })
+    const plan = reconstructDinnerDayPlanFromEntries([orphan], WEEK_STARTS_ON)
+    expect(plan[0]).toEqual({ dayIndex: 0, isLeftover: false, leftoverOfDayIndex: null })
   })
 })

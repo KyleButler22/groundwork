@@ -1,6 +1,7 @@
-import type { MealSlot } from '@/types/domain'
+import type { MealPlanEntry, MealSlot } from '@/types/domain'
 
 import { rngFor } from '../shared/rng'
+import { daysBetween } from './dateMath'
 
 /**
  * docs/mealgen.md §2 — decides the WEEK'S SHAPE before any recipe
@@ -101,4 +102,42 @@ export function planDinnerLeftovers(seed: number, leftoverRatio: number = DEFAUL
   }
 
   return days
+}
+
+/**
+ * The inverse of planDinnerLeftovers: derives the week's ACTUAL leftover
+ * topology from already-materialized entries, instead of drawing a new
+ * random one. swapOneMeal (generateMealPlan.ts) needs this — without it,
+ * a swap would fall back to generateMealPlan's normal
+ * `planDinnerLeftovers(input.seed, ...)` call, which draws a topology
+ * from the NEW derived seed with no relationship to the real one. Since
+ * a swap locks every dinner day except the target (and, if the target
+ * has a leftover, that leftover too), nearly every other dinner day is
+ * already pre-filled by the time assemble.ts's dinner loop runs — so a
+ * stray "isLeftover" assignment from that unrelated fresh draw routinely
+ * found a ready-made "parent" among them, silently turning what should
+ * have been a freshly re-scored pick into a copy of some unrelated day's
+ * dinner. Reconstructing the real topology instead means the target
+ * (confirmed fresh, never a leftover — swapOneMeal refuses to swap a
+ * leftover entry directly) is correctly represented as fresh here too,
+ * and its own leftover (if any) is correctly represented as still
+ * pointing at it — which is exactly what lets assemble.ts's ordinary
+ * leftover-copy logic propagate a swap's new recipe onto its leftover
+ * for free, with no special-casing in swapOneMeal itself.
+ */
+export function reconstructDinnerDayPlanFromEntries(entries: readonly MealPlanEntry[], weekStartsOn: string): DinnerDayPlan[] {
+  const dinnerEntryByDay = new Map<number, MealPlanEntry>()
+  for (const entry of entries) {
+    if (entry.slot !== 'dinner') continue
+    dinnerEntryByDay.set(daysBetween(weekStartsOn, entry.serveOn), entry)
+  }
+  const dayIndexById = new Map<string, number>()
+  for (const [dayIndex, entry] of dinnerEntryByDay) dayIndexById.set(entry.id, dayIndex)
+
+  return Array.from({ length: DAYS_PER_WEEK }, (_, dayIndex) => {
+    const entry = dinnerEntryByDay.get(dayIndex)
+    const parentDayIndex = entry?.leftoverOfId ? dayIndexById.get(entry.leftoverOfId) : undefined
+    if (parentDayIndex !== undefined) return { dayIndex, isLeftover: true, leftoverOfDayIndex: parentDayIndex }
+    return { dayIndex, isLeftover: false, leftoverOfDayIndex: null }
+  })
 }

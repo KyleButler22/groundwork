@@ -201,6 +201,48 @@ describe('generateMealPlan against the real corpus', () => {
     const otherDaysBefore = first.entries.filter((e) => e.serveOn !== targetDay).map((e) => ({ serveOn: e.serveOn, slot: e.slot, recipeId: e.recipeId }))
     expect(otherDaysAfter).toEqual(otherDaysBefore)
   })
+
+  it('swapping a fresh dinner with a real leftover propagates the new recipe to it, and to nowhere else', () => {
+    let first = generateMealPlan(baseInput({ seed: 9 }))
+    let parent = first.entries.find((e) => e.slot === 'dinner' && first.entries.some((x) => x.leftoverOfId === e.id))
+    // Try a few seeds if this particular one didn't happen to produce a
+    // leftover — real content + the default ~40% leftover ratio makes one
+    // likely most of the time, but nothing guarantees a specific seed does.
+    for (let seed = 10; !parent && seed < 20; seed++) {
+      first = generateMealPlan(baseInput({ seed }))
+      parent = first.entries.find((e) => e.slot === 'dinner' && first.entries.some((x) => x.leftoverOfId === e.id))
+    }
+    if (!parent) throw new Error('no seed in range produced a leftover — widen the range rather than skip this test')
+    const leftover = first.entries.find((e) => e.leftoverOfId === parent!.id)!
+
+    const swapped = swapOneMeal(baseInput({ seed: first.plan.seed }), first.entries, parent.serveOn, 'dinner')
+    const newParent = swapped.entries.find((e) => e.serveOn === parent!.serveOn && e.slot === 'dinner')!
+    const newLeftover = swapped.entries.find((e) => e.id === leftover.id)!
+
+    expect(newParent.recipeId).not.toBe(parent.recipeId)
+    expect(newLeftover.recipeId).toBe(newParent.recipeId)
+    expect(newLeftover.servings).toBe(newParent.servings)
+    expect(newLeftover.leftoverOfId).toBe(newParent.id)
+
+    // Every day OTHER than the target's and its leftover's is untouched —
+    // scoped by DAY, not by individual entry id, since repair (§7) can
+    // legitimately touch another slot on either of those two SAME days
+    // (see the plain swap test above for the same "day, not slot" scope).
+    const affectedDays = new Set([parent.serveOn, leftover.serveOn])
+    const untouchedBefore = first.entries.filter((e) => !affectedDays.has(e.serveOn))
+    const untouchedAfter = swapped.entries.filter((e) => !affectedDays.has(e.serveOn))
+    expect(untouchedAfter).toEqual(untouchedBefore)
+  })
+
+  it('never turns the swapped dinner itself into a leftover of some unrelated day (regression, real corpus)', () => {
+    const first = generateMealPlan(baseInput({ seed: 11 }))
+    const freshDinner = first.entries.find((e) => e.slot === 'dinner' && !e.leftoverOfId)!
+    for (let swapCount = 1; swapCount <= 5; swapCount++) {
+      const swapped = swapOneMeal(baseInput({ seed: 11 }), first.entries, freshDinner.serveOn, 'dinner', swapCount)
+      const after = swapped.entries.find((e) => e.serveOn === freshDinner.serveOn && e.slot === 'dinner')!
+      expect(after.leftoverOfId).toBeNull()
+    }
+  })
 })
 
 describe('buildGroceryList against the real corpus', () => {
