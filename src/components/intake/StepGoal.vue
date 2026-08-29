@@ -30,14 +30,14 @@ function selectGoal(goal: typeof store.answers.goal) {
       Missing an earlier answer — go back and fill in your details first.
     </p>
 
-    <div v-else class="space-y-2">
+    <div v-else class="space-y-2 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
       <button
         v-for="card in store.goalCards"
         :key="card.goal"
         type="button"
-        class="w-full rounded-md border p-4 text-left"
+        class="w-full rounded-xl border p-4 text-left shadow-card transition-colors lg:hover:shadow-none"
         :class="[
-          store.answers.goal === card.goal ? 'border-train bg-train-wash' : 'border-rule',
+          store.answers.goal === card.goal ? 'border-train bg-train-wash' : 'border-rule hover:border-ink-soft lg:hover:bg-ground/60',
           card.goal === 'fat_loss' && store.fatLossBlocked ? 'opacity-50' : '',
         ]"
         :disabled="card.goal === 'fat_loss' && store.fatLossBlocked"
@@ -56,15 +56,15 @@ function selectGoal(goal: typeof store.answers.goal) {
       </button>
     </div>
 
-    <div v-if="store.answers.goal === 'fat_loss' && !store.fatLossBlocked" class="rounded-md border border-rule p-4">
+    <div v-if="store.answers.goal === 'fat_loss' && !store.fatLossBlocked" class="rounded-xl border border-rule p-4 shadow-card">
       <p class="text-sm font-medium text-ink">Rate of loss</p>
       <div class="mt-2 flex gap-2">
         <button
           v-for="rate in visibleRateOptions"
           :key="rate"
           type="button"
-          class="min-h-11 flex-1 rounded-md border text-sm tabular-nums"
-          :class="store.answers.fatLossRateKgPerWeek === rate ? 'border-train bg-train text-white' : 'border-rule text-ink'"
+          class="min-h-11 flex-1 rounded-full border text-sm tabular-nums transition-colors"
+          :class="store.answers.fatLossRateKgPerWeek === rate ? 'border-train bg-train text-white' : 'border-rule text-ink hover:border-ink-soft'"
           @click="store.answers.fatLossRateKgPerWeek = rate"
         >
           {{ rate }} kg/wk
@@ -72,7 +72,7 @@ function selectGoal(goal: typeof store.answers.goal) {
       </div>
     </div>
 
-    <div v-if="store.macros && store.answers.goal" class="rounded-md border border-rule bg-surface p-4">
+    <div v-if="store.macros && store.answers.goal" class="rounded-xl border border-rule bg-surface p-4 shadow-card">
       <p class="text-sm font-medium text-ink">What that looks like</p>
       <dl class="mt-2 grid grid-cols-3 gap-3 text-center">
         <div>

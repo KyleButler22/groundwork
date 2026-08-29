@@ -48,8 +48,8 @@ const currentYear = new Date().getFullYear()
         v-for="u in (['metric', 'imperial'] as const)"
         :key="u"
         type="button"
-        class="min-h-11 flex-1 rounded-md border px-3 text-sm capitalize"
-        :class="store.answers.units === u ? 'border-train bg-train-wash text-train' : 'border-rule text-muted'"
+        class="min-h-11 flex-1 rounded-full border px-3 text-sm capitalize transition-colors"
+        :class="store.answers.units === u ? 'border-train bg-train-wash text-train' : 'border-rule text-muted hover:border-ink-soft hover:text-ink'"
         @click="store.answers.units = u"
       >
         {{ u }}
@@ -65,7 +65,7 @@ const currentYear = new Date().getFullYear()
         :placeholder="String(currentYear - 30)"
         :max="currentYear"
         :min="currentYear - 100"
-        class="mt-1 min-h-11 w-full rounded-md border border-rule px-3 text-ink"
+        class="mt-1 min-h-11 w-full rounded-xl border border-rule px-3 text-ink"
       />
     </label>
 
@@ -77,8 +77,8 @@ const currentYear = new Date().getFullYear()
           v-for="opt in (['female', 'male', 'unspecified'] as const)"
           :key="opt"
           type="button"
-          class="min-h-11 flex-1 rounded-md border px-3 text-sm capitalize"
-          :class="store.answers.sexAtBirth === opt ? 'border-train bg-train-wash text-train' : 'border-rule text-muted'"
+          class="min-h-11 flex-1 rounded-full border px-3 text-sm capitalize transition-colors"
+          :class="store.answers.sexAtBirth === opt ? 'border-train bg-train-wash text-train' : 'border-rule text-muted hover:border-ink-soft hover:text-ink'"
           @click="store.answers.sexAtBirth = opt"
         >
           {{ opt === 'unspecified' ? 'Prefer not to say' : opt }}
@@ -93,17 +93,17 @@ const currentYear = new Date().getFullYear()
         type="number"
         inputmode="numeric"
         placeholder="178"
-        class="mt-1 min-h-11 w-full rounded-md border border-rule px-3 text-ink"
+        class="mt-1 min-h-11 w-full rounded-xl border border-rule px-3 text-ink"
       />
     </label>
     <div v-else class="flex gap-3">
       <label class="block flex-1">
         <span class="text-sm font-medium text-ink">Height (ft)</span>
-        <input v-model.number="heightFeet" type="number" inputmode="numeric" placeholder="5" class="mt-1 min-h-11 w-full rounded-md border border-rule px-3 text-ink" />
+        <input v-model.number="heightFeet" type="number" inputmode="numeric" placeholder="5" class="mt-1 min-h-11 w-full rounded-xl border border-rule px-3 text-ink" />
       </label>
       <label class="block flex-1">
         <span class="text-sm font-medium text-ink">(in)</span>
-        <input v-model.number="heightInches" type="number" inputmode="numeric" placeholder="10" class="mt-1 min-h-11 w-full rounded-md border border-rule px-3 text-ink" />
+        <input v-model.number="heightInches" type="number" inputmode="numeric" placeholder="10" class="mt-1 min-h-11 w-full rounded-xl border border-rule px-3 text-ink" />
       </label>
     </div>
 
@@ -115,7 +115,7 @@ const currentYear = new Date().getFullYear()
         type="number"
         inputmode="decimal"
         placeholder="75"
-        class="mt-1 min-h-11 w-full rounded-md border border-rule px-3 text-ink"
+        class="mt-1 min-h-11 w-full rounded-xl border border-rule px-3 text-ink"
       />
       <input
         v-else
@@ -123,7 +123,7 @@ const currentYear = new Date().getFullYear()
         type="number"
         inputmode="numeric"
         placeholder="165"
-        class="mt-1 min-h-11 w-full rounded-md border border-rule px-3 text-ink"
+        class="mt-1 min-h-11 w-full rounded-xl border border-rule px-3 text-ink"
       />
     </label>
 

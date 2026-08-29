@@ -17,14 +17,19 @@ function itemLabel(item: GroceryItem): string {
 </script>
 
 <template>
-  <div class="p-4 pb-8">
-    <h1 class="text-2xl font-semibold text-ink">Grocery</h1>
+  <div class="p-4 pb-8 lg:p-0">
+    <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Grocery</h1>
 
     <p v-if="store.loading" class="mt-2 text-sm text-muted">Loading…</p>
 
     <template v-else-if="!store.hasPlan">
       <p class="mt-2 text-sm text-muted">Generate a meal plan first — your grocery list is built from it.</p>
-      <RouterLink to="/meals" class="mt-4 inline-flex min-h-11 items-center rounded-md bg-nutri px-4 text-sm font-medium text-white"> Go to Meals </RouterLink>
+      <RouterLink
+        to="/meals"
+        class="mt-4 inline-flex min-h-11 items-center rounded-full bg-nutri px-5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+      >
+        Go to Meals
+      </RouterLink>
     </template>
 
     <template v-else-if="store.sortedGroceryItems.length === 0">
@@ -34,12 +39,14 @@ function itemLabel(item: GroceryItem): string {
     <template v-else>
       <p class="mt-1 text-sm text-muted">{{ store.groceryList?.title }}</p>
 
-      <div class="mt-4 space-y-5">
+      <div class="mt-4 space-y-5 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-6 lg:space-y-0">
         <section v-for="group in store.groceryGroups" :key="group.aisleId ?? 'other'">
           <h2 class="text-xs font-semibold uppercase tracking-wide text-muted">{{ group.aisleName }}</h2>
           <ul class="mt-2 space-y-1">
             <li v-for="item in group.items" :key="item.id">
-              <label class="flex min-h-11 cursor-pointer items-center gap-3 rounded-md border border-rule bg-surface px-4 py-2">
+              <label
+                class="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-rule bg-surface px-4 py-2 shadow-card transition-shadow lg:hover:shadow-none lg:hover:bg-ground/60"
+              >
                 <input
                   type="checkbox"
                   class="h-5 w-5 shrink-0 accent-nutri"

@@ -48,37 +48,39 @@ async function handlePrimaryAction() {
   <div class="flex min-h-full flex-col">
     <IntakeProgress />
 
-    <div class="flex-1 p-4">
+    <div class="flex-1 p-4 lg:mx-auto lg:w-full lg:max-w-2xl lg:px-8 lg:py-10">
       <KeepAlive>
         <component :is="currentComponent" />
       </KeepAlive>
 
-      <p v-if="store.submitError" class="mt-4 rounded-md border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">
+      <p v-if="store.submitError" class="mt-4 rounded-xl border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">
         {{ store.submitError }}
       </p>
-      <ul v-if="store.submitWarnings.length" class="mt-4 space-y-1 rounded-md border border-rule bg-surface px-3 py-2 text-xs text-muted">
+      <ul v-if="store.submitWarnings.length" class="mt-4 space-y-1 rounded-xl border border-rule bg-surface px-3 py-2 text-xs text-muted">
         <li v-for="(warning, i) in store.submitWarnings" :key="i">{{ warning }}</li>
       </ul>
     </div>
 
-    <footer class="flex items-center justify-between gap-3 border-t border-rule bg-surface p-4 pb-safe">
-      <button
-        type="button"
-        class="min-h-11 min-w-11 rounded-md px-4 text-sm font-medium text-muted disabled:opacity-40"
-        :disabled="store.step === 1"
-        @click="store.goBack()"
-      >
-        Back
-      </button>
-      <span class="text-xs text-muted">Step {{ store.step }} of {{ TOTAL_STEPS }}</span>
-      <button
-        type="button"
-        class="min-h-11 min-w-11 rounded-md bg-train px-5 text-sm font-medium text-white disabled:opacity-40"
-        :disabled="!store.canProceed || store.submitting"
-        @click="handlePrimaryAction"
-      >
-        {{ store.submitting ? 'Generating…' : isLastStep ? 'Generate my plan' : 'Next' }}
-      </button>
+    <footer class="border-t border-rule bg-surface p-4 pb-safe">
+      <div class="mx-auto flex max-w-2xl items-center justify-between gap-3">
+        <button
+          type="button"
+          class="min-h-11 min-w-11 rounded-full px-4 text-sm font-medium text-muted transition-colors hover:text-ink disabled:opacity-40"
+          :disabled="store.step === 1"
+          @click="store.goBack()"
+        >
+          Back
+        </button>
+        <span class="text-xs text-muted">Step {{ store.step }} of {{ TOTAL_STEPS }}</span>
+        <button
+          type="button"
+          class="min-h-11 min-w-11 rounded-full bg-train px-5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+          :disabled="!store.canProceed || store.submitting"
+          @click="handlePrimaryAction"
+        >
+          {{ store.submitting ? 'Generating…' : isLastStep ? 'Generate my plan' : 'Next' }}
+        </button>
+      </div>
     </footer>
   </div>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ArrowLeft, Minus, Plus } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -96,14 +97,21 @@ function recipeStepKey(step: { recipeId: string; stepNumber: number }): string {
 </script>
 
 <template>
-  <div class="p-4 pb-8">
-    <button type="button" class="min-h-11 text-sm font-medium text-muted" @click="router.back()">← Back</button>
+  <div class="p-4 pb-8 lg:p-0">
+    <button
+      type="button"
+      class="flex min-h-11 items-center gap-1.5 text-sm font-medium text-muted transition-colors hover:text-ink"
+      @click="router.back()"
+    >
+      <ArrowLeft :size="18" :stroke-width="1.75" aria-hidden="true" />
+      Back
+    </button>
 
     <p v-if="store.loading" class="mt-4 text-sm text-muted">Loading…</p>
     <p v-else-if="!recipe" class="mt-4 text-sm text-muted">Recipe not found.</p>
 
     <template v-else>
-      <h1 class="mt-2 text-2xl font-semibold text-ink">{{ recipe.title }}</h1>
+      <h1 class="mt-3 text-2xl font-semibold tracking-tight text-ink lg:text-3xl">{{ recipe.title }}</h1>
       <p v-if="recipe.summary" class="mt-1 text-sm text-muted">{{ recipe.summary }}</p>
 
       <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs tabular-nums text-muted">
@@ -118,12 +126,12 @@ function recipeStepKey(step: { recipeId: string; stepNumber: number }): string {
           v-for="option in RATING_OPTIONS"
           :key="option.value"
           type="button"
-          class="min-h-11 rounded-md border px-3 text-sm"
+          class="min-h-11 rounded-full border px-4 text-sm font-medium transition-colors"
           :class="{
             'border-nutri bg-nutri-wash text-nutri': rating === option.value && option.value === 'loved',
             'border-ink bg-surface font-semibold text-ink': rating === option.value && option.value === 'ok',
             'border-warn bg-warn-wash text-warn': rating === option.value && option.value === 'never',
-            'border-rule text-muted': rating !== option.value,
+            'border-rule text-muted hover:border-ink-soft hover:text-ink': rating !== option.value,
           }"
           @click="setRating(option.value)"
         >
@@ -131,25 +139,25 @@ function recipeStepKey(step: { recipeId: string; stepNumber: number }): string {
         </button>
       </div>
 
-      <div class="mt-4 flex items-center justify-between rounded-md border border-rule bg-surface px-4 py-3">
+      <div class="mt-4 flex items-center justify-between rounded-2xl border border-rule bg-surface px-4 py-3 shadow-card">
         <span class="text-sm font-medium text-ink">Servings</span>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-4">
           <button
             type="button"
-            class="flex min-h-11 min-w-11 items-center justify-center rounded-md border border-rule text-lg text-ink"
+            class="flex min-h-11 min-w-11 items-center justify-center rounded-full border border-rule text-ink transition-colors hover:border-ink-soft hover:bg-ground"
             aria-label="Fewer servings"
             @click="adjustServings(-0.5)"
           >
-            −
+            <Minus :size="16" :stroke-width="2" aria-hidden="true" />
           </button>
           <span class="min-w-8 text-center font-mono text-sm tabular-nums text-ink">{{ displayServings }}</span>
           <button
             type="button"
-            class="flex min-h-11 min-w-11 items-center justify-center rounded-md border border-rule text-lg text-ink"
+            class="flex min-h-11 min-w-11 items-center justify-center rounded-full border border-rule text-ink transition-colors hover:border-ink-soft hover:bg-ground"
             aria-label="More servings"
             @click="adjustServings(0.5)"
           >
-            +
+            <Plus :size="16" :stroke-width="2" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -159,8 +167,8 @@ function recipeStepKey(step: { recipeId: string; stepNumber: number }): string {
       </p>
 
       <h2 class="mt-6 text-sm font-semibold uppercase tracking-wide text-muted">Ingredients</h2>
-      <ul v-if="ingredients.length" class="mt-2 space-y-1">
-        <li v-for="ri in ingredients" :key="ri.id" class="flex items-baseline justify-between gap-3 rounded-md border border-rule bg-surface px-4 py-2 text-sm">
+      <ul v-if="ingredients.length" class="mt-2 space-y-1.5">
+        <li v-for="ri in ingredients" :key="ri.id" class="flex items-baseline justify-between gap-3 rounded-xl border border-rule bg-surface px-4 py-2.5 text-sm shadow-card">
           <span class="text-ink">
             {{ store.ingredientName(ri.ingredientId) }}
             <span v-if="ri.isOptional" class="text-xs font-normal text-muted">(optional)</span>

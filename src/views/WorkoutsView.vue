@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ChevronRight, X } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 
 import SetLogEditor from '@/components/workout/SetLogEditor.vue'
@@ -47,8 +48,8 @@ function toggleExpanded(itemId: string): void {
 </script>
 
 <template>
-  <div class="p-4 pb-8">
-    <h1 class="text-2xl font-semibold text-ink">Training</h1>
+  <div class="p-4 pb-8 lg:p-0">
+    <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Training</h1>
 
     <p v-if="planStore.loading" class="mt-2 text-sm text-muted">Loading…</p>
     <p v-else-if="!planStore.hasPlan" class="mt-2 text-sm text-muted">Your plan will appear here once generated.</p>
@@ -58,22 +59,22 @@ function toggleExpanded(itemId: string): void {
         {{ planStore.plan?.name }} — {{ planStore.plan?.daysPerWeek }} days/week, {{ planStore.plan?.splitType.replace('_', ' ') }}
       </p>
 
-      <div class="mt-3">
+      <div class="mt-4 rounded-2xl border border-rule bg-surface p-4 shadow-card lg:mt-6">
         <div class="flex items-center justify-between text-xs text-muted">
           <span>Block progress</span>
           <span class="font-mono tabular-nums">{{ planStore.blockProgress.done }}/{{ planStore.blockProgress.total }} sessions</span>
         </div>
-        <div class="mt-1 h-2 w-full overflow-hidden rounded-full bg-rule">
-          <div class="h-full rounded-full bg-train" :style="{ width: blockPercent() + '%' }"></div>
+        <div class="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-rule">
+          <div class="h-full rounded-full bg-train transition-[width] duration-500" :style="{ width: blockPercent() + '%' }"></div>
         </div>
-      </div>
 
-      <div class="mt-4 flex items-end gap-2" aria-label="Weekly progress">
-        <div v-for="week in weekNumbers" :key="week" class="flex flex-1 flex-col items-center gap-1">
-          <div class="flex h-14 w-full items-end overflow-hidden rounded-md bg-rule">
-            <div class="w-full rounded-md bg-train" :style="{ height: weekPercent(week) + '%' }"></div>
+        <div class="mt-4 flex items-end gap-2" aria-label="Weekly progress">
+          <div v-for="week in weekNumbers" :key="week" class="flex flex-1 flex-col items-center gap-1">
+            <div class="flex h-14 w-full items-end overflow-hidden rounded-lg bg-rule">
+              <div class="w-full rounded-lg bg-train transition-[height] duration-500" :style="{ height: weekPercent(week) + '%' }"></div>
+            </div>
+            <span class="font-mono text-[11px] tabular-nums text-muted">{{ planStore.weekProgress.get(week)?.done ?? 0 }}/{{ planStore.weekProgress.get(week)?.total ?? 0 }}</span>
           </div>
-          <span class="font-mono text-[11px] tabular-nums text-muted">{{ planStore.weekProgress.get(week)?.done ?? 0 }}/{{ planStore.weekProgress.get(week)?.total ?? 0 }}</span>
         </div>
       </div>
 
@@ -82,22 +83,29 @@ function toggleExpanded(itemId: string): void {
           v-for="week in weekNumbers"
           :key="week"
           type="button"
-          class="min-h-11 flex-1 rounded-md border text-sm font-medium"
-          :class="openWeek === week ? 'border-train bg-train text-white' : 'border-rule text-ink'"
+          class="min-h-11 flex-1 rounded-full border text-sm font-medium transition-colors"
+          :class="openWeek === week ? 'border-train bg-train text-white' : 'border-rule text-ink hover:border-ink-soft'"
           @click="openWeek = week"
         >
           Week {{ week }}
         </button>
       </div>
 
-      <div v-if="planStore.promotionMessages.length" class="mt-4 flex items-start justify-between gap-2 rounded-md border border-train bg-train-wash px-3 py-2 text-xs text-train">
+      <div v-if="planStore.promotionMessages.length" class="mt-4 flex items-start justify-between gap-2 rounded-xl border border-train bg-train-wash px-3 py-2 text-xs text-train">
         <ul class="space-y-1">
           <li v-for="(message, i) in planStore.promotionMessages" :key="i">{{ message }}</li>
         </ul>
-        <button type="button" class="min-h-11 min-w-11 shrink-0 text-sm" aria-label="Dismiss" @click="planStore.dismissPromotionMessages()">✕</button>
+        <button
+          type="button"
+          class="flex min-h-11 min-w-11 shrink-0 items-center justify-center text-train/70 transition-colors hover:text-train"
+          aria-label="Dismiss"
+          @click="planStore.dismissPromotionMessages()"
+        >
+          <X :size="16" :stroke-width="2" aria-hidden="true" />
+        </button>
       </div>
 
-      <div class="mt-4 space-y-4">
+      <div class="mt-4 space-y-4 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
         <section v-for="s in planStore.sessionsByWeek.get(openWeek) ?? []" :key="s.id">
           <div class="flex items-center justify-between gap-2">
             <h2 class="flex items-center gap-2 text-sm font-semibold text-ink">
@@ -118,7 +126,7 @@ function toggleExpanded(itemId: string): void {
             <li
               v-for="item in planStore.itemsForSession(s.id)"
               :key="item.id"
-              class="rounded-md border border-rule bg-surface px-4 py-3"
+              class="rounded-xl border border-rule bg-surface px-4 py-3 shadow-card transition-shadow lg:hover:shadow-none lg:hover:bg-ground/60"
             >
               <div class="flex items-center gap-3">
                 <label class="flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center">
@@ -129,7 +137,7 @@ function toggleExpanded(itemId: string): void {
                     {{ planStore.exerciseName(item.exerciseId) }}
                     <span v-if="item.supersetGroup !== null" class="text-xs font-normal text-muted"> · superset</span>
                   </span>
-                  <span class="shrink-0 text-muted" aria-hidden="true">›</span>
+                  <ChevronRight :size="16" class="shrink-0 text-muted" aria-hidden="true" />
                 </RouterLink>
                 <button
                   v-if="planStore.isItemChecked(item.id)"

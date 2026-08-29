@@ -31,14 +31,16 @@ function toggle(slug: string) {
     </div>
 
     <p v-if="loading" class="text-sm text-muted">Loading…</p>
-    <div v-else class="grid grid-cols-2 gap-2">
+    <div v-else class="grid grid-cols-2 gap-2 lg:grid-cols-3">
       <button
         v-for="region in regions"
         :key="region.slug"
         type="button"
-        class="min-h-11 rounded-md border px-3 py-2 text-left text-sm capitalize"
+        class="min-h-11 rounded-xl border px-3 py-2 text-left text-sm capitalize transition-colors"
         :class="
-          store.answers.flaggedRegionSlugs.includes(region.slug) ? 'border-warn bg-warn-wash text-warn' : 'border-rule text-ink'
+          store.answers.flaggedRegionSlugs.includes(region.slug)
+            ? 'border-warn bg-warn-wash text-warn'
+            : 'border-rule text-ink hover:border-ink-soft'
         "
         @click="toggle(region.slug)"
       >
@@ -46,11 +48,11 @@ function toggle(slug: string) {
       </button>
     </div>
 
-    <label class="flex min-h-11 items-center gap-2 rounded-md border border-rule px-3 text-sm text-ink">
+    <label class="flex min-h-11 items-center gap-2 rounded-xl border border-rule px-3 text-sm text-ink">
       <input v-model="store.answers.isPregnantOrPostpartum" type="checkbox" />
       Pregnant, or fewer than 12 weeks postpartum
     </label>
-    <p v-if="store.answers.isPregnantOrPostpartum" class="rounded-md border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">
+    <p v-if="store.answers.isPregnantOrPostpartum" class="rounded-xl border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">
       This app's plans aren't built for pregnancy or early postpartum training — please talk to your doctor or a
       pelvic-floor specialist about what's appropriate right now.
     </p>
@@ -67,16 +69,16 @@ function toggle(slug: string) {
         <div class="mt-2 flex gap-2">
           <button
             type="button"
-            class="min-h-11 flex-1 rounded-md border text-sm"
-            :class="store.answers.clinicianRaisedConcern === true ? 'border-train bg-train-wash text-train' : 'border-rule text-ink'"
+            class="min-h-11 flex-1 rounded-full border text-sm transition-colors"
+            :class="store.answers.clinicianRaisedConcern === true ? 'border-train bg-train-wash text-train' : 'border-rule text-ink hover:border-ink-soft'"
             @click="store.answers.clinicianRaisedConcern = true"
           >
             Yes
           </button>
           <button
             type="button"
-            class="min-h-11 flex-1 rounded-md border text-sm"
-            :class="store.answers.clinicianRaisedConcern === false ? 'border-train bg-train-wash text-train' : 'border-rule text-ink'"
+            class="min-h-11 flex-1 rounded-full border text-sm transition-colors"
+            :class="store.answers.clinicianRaisedConcern === false ? 'border-train bg-train-wash text-train' : 'border-rule text-ink hover:border-ink-soft'"
             @click="store.answers.clinicianRaisedConcern = false"
           >
             No
@@ -89,16 +91,16 @@ function toggle(slug: string) {
         <div class="mt-2 flex gap-2">
           <button
             type="button"
-            class="min-h-11 flex-1 rounded-md border text-sm"
-            :class="store.answers.thoughtsFeelIntrusive === true ? 'border-train bg-train-wash text-train' : 'border-rule text-ink'"
+            class="min-h-11 flex-1 rounded-full border text-sm transition-colors"
+            :class="store.answers.thoughtsFeelIntrusive === true ? 'border-train bg-train-wash text-train' : 'border-rule text-ink hover:border-ink-soft'"
             @click="store.answers.thoughtsFeelIntrusive = true"
           >
             Yes
           </button>
           <button
             type="button"
-            class="min-h-11 flex-1 rounded-md border text-sm"
-            :class="store.answers.thoughtsFeelIntrusive === false ? 'border-train bg-train-wash text-train' : 'border-rule text-ink'"
+            class="min-h-11 flex-1 rounded-full border text-sm transition-colors"
+            :class="store.answers.thoughtsFeelIntrusive === false ? 'border-train bg-train-wash text-train' : 'border-rule text-ink hover:border-ink-soft'"
             @click="store.answers.thoughtsFeelIntrusive = false"
           >
             No

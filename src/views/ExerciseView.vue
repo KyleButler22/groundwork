@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import { ArrowLeft } from '@lucide/vue'
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import PatternIllustration from '@/components/workout/PatternIllustration.vue'
+import PatternIcon from '@/components/workout/PatternIcon.vue'
 import { usePlanStore } from '@/stores/plan'
 
-// How to do one exercise: pattern + a generic movement illustration, the
-// real per-exercise coaching cue authored with the movement library, its
+// How to do one exercise: pattern + a generic movement icon, the real
+// per-exercise coaching cue authored with the movement library, its
 // target reps/hold/distance, and any equipment it needs. Reached by
 // tapping an exercise in WorkoutsView or Dashboard's today's-session list
 // — mirrors RecipeView.vue's shape exactly (same "reads store, never
@@ -51,14 +52,21 @@ const equipmentGroups = computed(() => {
 </script>
 
 <template>
-  <div class="p-4 pb-8">
-    <button type="button" class="min-h-11 text-sm font-medium text-muted" @click="router.back()">← Back</button>
+  <div class="p-4 pb-8 lg:p-0">
+    <button
+      type="button"
+      class="flex min-h-11 items-center gap-1.5 text-sm font-medium text-muted transition-colors hover:text-ink"
+      @click="router.back()"
+    >
+      <ArrowLeft :size="18" :stroke-width="1.75" aria-hidden="true" />
+      Back
+    </button>
 
     <p v-if="store.loading" class="mt-4 text-sm text-muted">Loading…</p>
     <p v-else-if="!exercise" class="mt-4 text-sm text-muted">Exercise not found.</p>
 
     <template v-else>
-      <h1 class="mt-2 text-2xl font-semibold text-ink">{{ exercise.name }}</h1>
+      <h1 class="mt-3 text-2xl font-semibold tracking-tight text-ink lg:text-3xl">{{ exercise.name }}</h1>
       <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted">
         <span>{{ store.patternName(exercise.patternId) }}</span>
         <span>·</span>
@@ -66,25 +74,21 @@ const equipmentGroups = computed(() => {
         <span v-if="exercise.isUnilateral">· one side at a time</span>
       </div>
 
-      <div class="mt-4 flex h-40 items-center justify-center rounded-md border border-rule bg-surface text-train">
-        <div class="h-32 w-40">
-          <PatternIllustration :pattern-slug="store.patternSlug(exercise.patternId)" />
-        </div>
+      <div class="mt-4 flex h-36 items-center justify-center rounded-2xl border border-rule bg-train-wash text-train shadow-card">
+        <PatternIcon :pattern-slug="store.patternSlug(exercise.patternId)" />
       </div>
-      <p class="mt-1 text-center text-xs text-muted">
-        A generic {{ store.patternName(exercise.patternId).toLowerCase() }} illustration, not this specific exercise — see TASKS.md if that's worth doing per-exercise later.
-      </p>
+      <p class="mt-1.5 text-center text-xs text-muted">A generic {{ store.patternName(exercise.patternId).toLowerCase() }} icon, not this specific exercise.</p>
 
       <p v-if="targetLabel" class="mt-4 font-mono text-sm tabular-nums text-ink">{{ targetLabel }}</p>
 
       <h2 class="mt-6 text-sm font-semibold uppercase tracking-wide text-muted">How to do it</h2>
-      <p v-if="exercise.cues" class="mt-2 text-sm text-ink">{{ exercise.cues }}</p>
+      <p v-if="exercise.cues" class="mt-2 text-sm leading-relaxed text-ink">{{ exercise.cues }}</p>
       <p v-else class="mt-2 text-sm text-muted">No cues recorded for this exercise.</p>
 
       <template v-if="equipmentGroups.length">
         <h2 class="mt-6 text-sm font-semibold uppercase tracking-wide text-muted">Equipment needed</h2>
-        <ul class="mt-2 space-y-1">
-          <li v-for="(group, i) in equipmentGroups" :key="i" class="rounded-md border border-rule bg-surface px-4 py-2 text-sm text-ink">
+        <ul class="mt-2 space-y-1.5">
+          <li v-for="(group, i) in equipmentGroups" :key="i" class="rounded-xl border border-rule bg-surface px-4 py-2.5 text-sm text-ink shadow-card">
             {{ group }}
           </li>
         </ul>

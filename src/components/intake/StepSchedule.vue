@@ -22,8 +22,8 @@ const minuteOptions = [20, 30, 45, 60, 75, 90]
           v-for="d in dayOptions"
           :key="d"
           type="button"
-          class="min-h-11 rounded-md border text-sm font-medium"
-          :class="store.answers.daysPerWeek === d ? 'border-train bg-train text-white' : 'border-rule text-ink'"
+          class="min-h-11 rounded-full border text-sm font-medium transition-colors"
+          :class="store.answers.daysPerWeek === d ? 'border-train bg-train text-white' : 'border-rule text-ink hover:border-ink-soft'"
           @click="store.answers.daysPerWeek = d"
         >
           {{ d }}
@@ -38,8 +38,8 @@ const minuteOptions = [20, 30, 45, 60, 75, 90]
           v-for="m in minuteOptions"
           :key="m"
           type="button"
-          class="min-h-11 rounded-md border text-sm font-medium"
-          :class="store.answers.sessionMinutes === m ? 'border-train bg-train text-white' : 'border-rule text-ink'"
+          class="min-h-11 rounded-full border text-sm font-medium transition-colors"
+          :class="store.answers.sessionMinutes === m ? 'border-train bg-train text-white' : 'border-rule text-ink hover:border-ink-soft'"
           @click="store.answers.sessionMinutes = m"
         >
           {{ m }}

@@ -14,13 +14,13 @@ const store = useIntakeStore()
       </p>
     </div>
 
-    <div class="space-y-2">
+    <div class="space-y-2 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
       <button
         v-for="opt in store.NEAT_FACTORS"
         :key="opt.value"
         type="button"
-        class="flex min-h-11 w-full items-center justify-between rounded-md border px-4 py-3 text-left"
-        :class="store.answers.neatFactor === opt.value ? 'border-train bg-train-wash' : 'border-rule'"
+        class="flex min-h-11 w-full items-center justify-between rounded-xl border px-4 py-3 text-left shadow-card transition-colors lg:hover:shadow-none"
+        :class="store.answers.neatFactor === opt.value ? 'border-train bg-train-wash' : 'border-rule hover:border-ink-soft lg:hover:bg-ground/60'"
         @click="store.answers.neatFactor = opt.value"
       >
         <span>

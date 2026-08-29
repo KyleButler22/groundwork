@@ -32,14 +32,16 @@ function toggle(slug: string) {
     </div>
 
     <p v-if="loading" class="text-sm text-muted">Loading equipment list…</p>
-    <div v-else class="grid grid-cols-2 gap-2">
+    <div v-else class="grid grid-cols-2 gap-2 lg:grid-cols-3">
       <button
         v-for="item in equipment"
         :key="item.slug"
         type="button"
-        class="min-h-11 rounded-md border px-3 py-2 text-left text-sm"
+        class="min-h-11 rounded-xl border px-3 py-2 text-left text-sm transition-colors"
         :class="
-          store.answers.ownedEquipmentSlugs.includes(item.slug) ? 'border-train bg-train-wash text-train' : 'border-rule text-ink'
+          store.answers.ownedEquipmentSlugs.includes(item.slug)
+            ? 'border-train bg-train-wash text-train'
+            : 'border-rule text-ink hover:border-ink-soft'
         "
         @click="toggle(item.slug)"
       >

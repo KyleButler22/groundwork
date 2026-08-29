@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ChevronRight, Lock, LockOpen } from '@lucide/vue'
 import { computed, onMounted } from 'vue'
 
 import { useMealPlanStore } from '@/stores/mealPlan'
@@ -37,17 +38,17 @@ function recipeLink(entry: MealPlanEntry) {
 </script>
 
 <template>
-  <div class="p-4 pb-8">
-    <h1 class="text-2xl font-semibold text-ink">Meals</h1>
+  <div class="p-4 pb-8 lg:p-0">
+    <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Meals</h1>
 
     <p v-if="store.loading" class="mt-2 text-sm text-muted">Loading…</p>
 
     <template v-else-if="!store.hasPlan">
       <p class="mt-2 text-sm text-muted">Your weekly meal plan will appear here once generated.</p>
-      <p v-if="store.error" class="mt-3 rounded-md border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">{{ store.error }}</p>
+      <p v-if="store.error" class="mt-3 rounded-xl border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">{{ store.error }}</p>
       <button
         type="button"
-        class="mt-4 min-h-11 rounded-md bg-nutri px-5 text-sm font-medium text-white disabled:opacity-40"
+        class="mt-4 min-h-11 rounded-full bg-nutri px-5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40"
         :disabled="store.generating"
         @click="store.generateFreshPlan(userId)"
       >
@@ -56,13 +57,13 @@ function recipeLink(entry: MealPlanEntry) {
     </template>
 
     <template v-else>
-      <div class="mt-2 flex items-center justify-between gap-3">
+      <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
         <p class="text-sm text-muted">
           Week of {{ dayLabel(store.plan!.weekStartsOn) }} — {{ store.plan!.kcalTarget }} kcal / {{ store.plan!.proteinTargetG }}g protein target
         </p>
         <button
           type="button"
-          class="min-h-11 shrink-0 rounded-md border border-nutri px-4 text-sm font-medium text-nutri disabled:opacity-40"
+          class="min-h-11 shrink-0 rounded-full border border-nutri px-4 text-sm font-medium text-nutri transition-colors hover:bg-nutri-wash disabled:opacity-40"
           :disabled="store.generating"
           @click="store.regenerate(userId)"
         >
@@ -72,23 +73,27 @@ function recipeLink(entry: MealPlanEntry) {
 
       <button
         type="button"
-        class="mt-2 min-h-11 text-sm font-medium text-muted underline decoration-dotted disabled:opacity-40"
+        class="mt-2 min-h-11 text-sm font-medium text-muted underline decoration-dotted transition-colors hover:text-ink disabled:opacity-40"
         :disabled="store.generating"
         @click="store.advanceToNextWeek(userId)"
       >
         {{ store.generating ? 'Working…' : 'Done with this week — plan the next one' }}
       </button>
 
-      <p v-if="store.error" class="mt-3 rounded-md border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">{{ store.error }}</p>
-      <ul v-if="store.warnings.length" class="mt-3 space-y-1 rounded-md border border-rule bg-surface px-3 py-2 text-xs text-muted">
+      <p v-if="store.error" class="mt-3 rounded-xl border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">{{ store.error }}</p>
+      <ul v-if="store.warnings.length" class="mt-3 space-y-1 rounded-xl border border-rule bg-surface px-3 py-2 text-xs text-muted">
         <li v-for="(warning, i) in store.warnings" :key="i">{{ warning }}</li>
       </ul>
 
-      <div class="mt-4 space-y-5">
+      <div class="mt-4 space-y-5 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-6 lg:space-y-0">
         <section v-for="day in store.sortedDays" :key="day">
           <h2 class="text-sm font-semibold text-ink">{{ dayLabel(day) }}</h2>
           <ul class="mt-2 space-y-2">
-            <li v-for="entry in store.entriesByDay.get(day)" :key="entry.id" class="rounded-md border border-rule bg-surface px-4 py-3">
+            <li
+              v-for="entry in store.entriesByDay.get(day)"
+              :key="entry.id"
+              class="rounded-xl border border-rule bg-surface px-4 py-3 shadow-card transition-shadow lg:hover:shadow-none lg:hover:bg-ground/60"
+            >
               <div class="flex items-start justify-between gap-3">
                 <RouterLink :to="recipeLink(entry)" class="flex min-w-0 flex-1 items-start gap-1">
                   <span class="min-w-0 flex-1">
@@ -103,22 +108,23 @@ function recipeLink(entry: MealPlanEntry) {
                       <template v-if="store.entryMacros(entry)"> · {{ Math.round(store.entryMacros(entry)!.kcal) }} kcal · {{ Math.round(store.entryMacros(entry)!.proteinG) }}g protein </template>
                     </span>
                   </span>
-                  <span class="shrink-0 pt-4 text-muted" aria-hidden="true">›</span>
+                  <ChevronRight :size="16" class="mt-4 shrink-0 text-muted" aria-hidden="true" />
                 </RouterLink>
                 <div class="flex shrink-0 items-center gap-1">
                   <button
                     type="button"
-                    class="min-h-11 min-w-11 rounded-md text-lg disabled:opacity-30"
-                    :class="entry.isLocked ? 'text-nutri' : 'text-muted'"
+                    class="flex min-h-11 min-w-11 items-center justify-center rounded-full transition-colors disabled:opacity-30"
+                    :class="entry.isLocked ? 'text-nutri' : 'text-muted hover:text-ink'"
                     :aria-label="entry.isLocked ? 'Unlock this meal' : 'Lock this meal so regenerating leaves it alone'"
                     :disabled="store.generating"
                     @click="store.toggleLock(entry.id)"
                   >
-                    {{ entry.isLocked ? '🔒' : '🔓' }}
+                    <Lock v-if="entry.isLocked" :size="18" :stroke-width="1.75" aria-hidden="true" />
+                    <LockOpen v-else :size="18" :stroke-width="1.75" aria-hidden="true" />
                   </button>
                   <button
                     type="button"
-                    class="min-h-11 rounded-md border border-rule px-3 text-xs font-medium text-ink disabled:opacity-30"
+                    class="min-h-11 rounded-full border border-rule px-3 text-xs font-medium text-ink transition-colors hover:border-ink-soft disabled:opacity-30"
                     :disabled="!canSwap(entry) || entry.isLocked || store.generating"
                     :title="!canSwap(entry) ? 'Swap the day this was leftover from instead' : undefined"
                     @click="store.swapMeal(userId, entry.serveOn, entry.slot)"

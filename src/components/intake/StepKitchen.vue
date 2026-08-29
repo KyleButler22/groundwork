@@ -74,8 +74,8 @@ function toggleMealSlot(key: MealSlotAnswerKey) {
         <div class="mt-2 flex flex-wrap gap-2">
           <button
             type="button"
-            class="min-h-11 rounded-md border px-3 text-sm"
-            :class="store.answers.dietTagSlugs.length === 0 ? 'border-train bg-train-wash text-train' : 'border-rule text-ink'"
+            class="min-h-11 rounded-full border px-3 text-sm transition-colors"
+            :class="store.answers.dietTagSlugs.length === 0 ? 'border-train bg-train-wash text-train' : 'border-rule text-ink hover:border-ink-soft'"
             @click="clearDietTags"
           >
             No restrictions
@@ -84,8 +84,8 @@ function toggleMealSlot(key: MealSlotAnswerKey) {
             v-for="tag in dietTags"
             :key="tag.slug"
             type="button"
-            class="min-h-11 rounded-md border px-3 text-sm"
-            :class="store.answers.dietTagSlugs.includes(tag.slug) ? 'border-train bg-train-wash text-train' : 'border-rule text-ink'"
+            class="min-h-11 rounded-full border px-3 text-sm transition-colors"
+            :class="store.answers.dietTagSlugs.includes(tag.slug) ? 'border-train bg-train-wash text-train' : 'border-rule text-ink hover:border-ink-soft'"
             @click="toggleDiet(tag.slug)"
           >
             {{ tag.name }}
@@ -100,8 +100,8 @@ function toggleMealSlot(key: MealSlotAnswerKey) {
             v-for="allergen in allergens"
             :key="allergen.slug"
             type="button"
-            class="min-h-11 rounded-md border px-3 text-sm"
-            :class="store.answers.allergenSlugs.includes(allergen.slug) ? 'border-warn bg-warn-wash text-warn' : 'border-rule text-ink'"
+            class="min-h-11 rounded-full border px-3 text-sm transition-colors"
+            :class="store.answers.allergenSlugs.includes(allergen.slug) ? 'border-warn bg-warn-wash text-warn' : 'border-rule text-ink hover:border-ink-soft'"
             @click="toggleAllergen(allergen.slug)"
           >
             {{ allergen.name }}
@@ -117,8 +117,8 @@ function toggleMealSlot(key: MealSlotAnswerKey) {
             v-for="meal in MEAL_SLOT_TOGGLES"
             :key="meal.key"
             type="button"
-            class="min-h-11 rounded-md border px-3 text-sm"
-            :class="store.answers[meal.key] ? 'border-train bg-train-wash text-train' : 'border-rule text-ink'"
+            class="min-h-11 rounded-full border px-3 text-sm transition-colors"
+            :class="store.answers[meal.key] ? 'border-train bg-train-wash text-train' : 'border-rule text-ink hover:border-ink-soft'"
             @click="toggleMealSlot(meal.key)"
           >
             {{ meal.label }}
@@ -130,7 +130,7 @@ function toggleMealSlot(key: MealSlotAnswerKey) {
     <label class="block">
       <span class="text-sm font-medium text-ink">Weeknight cook-time ceiling</span>
       <span class="mt-0.5 block text-xs text-muted">A busier Sunday roast can still take longer — this is just for a normal Tuesday.</span>
-      <select v-model.number="store.answers.cookTimeCeilingMinutes" class="mt-1 min-h-11 w-full rounded-md border border-rule px-3 text-ink">
+      <select v-model.number="store.answers.cookTimeCeilingMinutes" class="mt-1 min-h-11 w-full rounded-xl border border-rule px-3 text-ink">
         <option :value="15">15 minutes</option>
         <option :value="25">25 minutes</option>
         <option :value="40">40 minutes</option>
@@ -140,7 +140,7 @@ function toggleMealSlot(key: MealSlotAnswerKey) {
 
     <label class="block">
       <span class="text-sm font-medium text-ink">Cooking for how many people?</span>
-      <input v-model.number="store.answers.householdSize" type="number" min="1" inputmode="numeric" class="mt-1 min-h-11 w-full rounded-md border border-rule px-3 text-ink" />
+      <input v-model.number="store.answers.householdSize" type="number" min="1" inputmode="numeric" class="mt-1 min-h-11 w-full rounded-xl border border-rule px-3 text-ink" />
     </label>
   </div>
 </template>

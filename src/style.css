@@ -23,6 +23,20 @@
 
   --color-warn: #a4472b;
   --color-warn-wash: #f7e7e1;
+
+  /* Sidebar surface (desktop only, App.vue/SidebarNav.vue) — one step
+   * off `surface` the same way `ground` is, so the sidebar reads as a
+   * distinct panel next to the content column rather than card-on-card. */
+  --color-panel: #eef2f0;
+}
+
+:root {
+  /* Card elevation — soft and diffuse (a 2025 "soft shadow" reads as
+   * lifted without the harsh, dated drop-shadows of a decade ago).
+   * Token, not a bare Tailwind shadow-*, because dark mode below doesn't
+   * just darken this value — it replaces it with a hairline border
+   * instead (see the comment there for why). */
+  --shadow-card: 0 1px 2px rgba(16, 24, 22, 0.04), 0 8px 24px -6px rgba(16, 24, 22, 0.1);
 }
 
 :root[data-theme='dark'] {
@@ -40,6 +54,15 @@
 
   --color-warn: #e08a6b;
   --color-warn-wash: #33201a;
+
+  --color-panel: #101815;
+
+  /* A dark shadow barely registers against an already-dark surface — it
+   * just looks muddy rather than lifted. A subtle light hairline border
+   * reads as "raised" just as clearly here, so the token becomes a
+   * (transparent, i.e. no-op) shadow and shadow-card below adds the
+   * border itself only in dark mode. */
+  --shadow-card: 0 0 0 transparent;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -58,6 +81,9 @@
 
     --color-warn: #e08a6b;
     --color-warn-wash: #33201a;
+
+    --color-panel: #101815;
+    --shadow-card: 0 0 0 transparent;
   }
 }
 
@@ -83,6 +109,16 @@ body {
 }
 .pt-safe {
   padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Card elevation utility — adds a soft box-shadow ON TOP of a card's
+   existing `border border-rule` (every card in this app already has
+   one), it doesn't replace it. A no-op in dark mode (--shadow-card is a
+   transparent shadow there — see its own comment): the existing
+   border-rule already defines a dark card's edge perfectly well, and a
+   dark drop-shadow would just look muddy next to it, not "lifted". */
+.shadow-card {
+  box-shadow: var(--shadow-card);
 }
 
 @media (prefers-reduced-motion: reduce) {

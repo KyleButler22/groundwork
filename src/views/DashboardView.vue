@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ChevronRight, X } from '@lucide/vue'
 import { computed, onMounted, ref, watch } from 'vue'
 
 import SetLogEditor from '@/components/workout/SetLogEditor.vue'
@@ -76,106 +77,113 @@ const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'L
 </script>
 
 <template>
-  <div class="p-4">
-    <h1 class="text-2xl font-semibold text-ink">Today</h1>
+  <div class="p-4 lg:p-0">
+    <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Today</h1>
 
     <p v-if="planStore.loading" class="mt-2 text-sm text-muted">Loading…</p>
 
     <template v-else-if="!planStore.hasPlan">
-      <p class="mt-2 text-sm text-muted">
-        No plan yet — complete the intake questionnaire to generate your first week.
-      </p>
-      <RouterLink
-        to="/intake"
-        class="mt-4 inline-flex min-h-11 items-center rounded-md bg-train px-4 text-sm font-medium text-white"
-      >
+      <p class="mt-2 text-sm text-muted">No plan yet — complete the intake questionnaire to generate your first week.</p>
+      <RouterLink to="/intake" class="mt-4 inline-flex min-h-11 items-center rounded-full bg-train px-5 text-sm font-medium text-white transition-opacity hover:opacity-90">
         Start intake
       </RouterLink>
     </template>
 
-    <template v-else-if="displayedSession">
-      <div class="mt-1 flex items-center justify-between gap-3">
-        <p class="text-sm text-muted">{{ planStore.plan?.name }} — {{ displayedSession.name }}</p>
-        <p class="shrink-0 font-mono text-xs tabular-nums text-muted">
-          {{ planStore.sessionProgress(displayedSession.id).done }}/{{ planStore.sessionProgress(displayedSession.id).total }} done
-        </p>
-      </div>
-
-      <div v-if="planStore.promotionMessages.length" class="mt-3 flex items-start justify-between gap-2 rounded-md border border-train bg-train-wash px-3 py-2 text-xs text-train">
-        <ul class="space-y-1">
-          <li v-for="(message, i) in planStore.promotionMessages" :key="i">{{ message }}</li>
-        </ul>
-        <button type="button" class="min-h-11 min-w-11 shrink-0 text-sm" aria-label="Dismiss" @click="planStore.dismissPromotionMessages()">✕</button>
-      </div>
-
-      <ul class="mt-4 space-y-2">
-        <li
-          v-for="item in planStore.itemsForSession(displayedSession.id)"
-          :key="item.id"
-          class="rounded-md border border-rule bg-surface px-4 py-3"
-        >
-          <div class="flex items-center gap-3">
-            <label class="flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center">
-              <input type="checkbox" class="h-5 w-5 accent-train" :checked="planStore.isItemChecked(item.id)" @change="onToggleItem(item)" />
-            </label>
-            <RouterLink :to="{ name: 'exercise', params: { exerciseId: item.exerciseId } }" class="flex min-w-0 flex-1 items-center gap-1">
-              <span class="min-w-0 flex-1 text-sm font-medium" :class="planStore.isItemChecked(item.id) ? 'text-muted line-through' : 'text-ink'">
-                {{ planStore.exerciseName(item.exerciseId) }}
-              </span>
-              <span class="shrink-0 text-muted" aria-hidden="true">›</span>
-            </RouterLink>
-            <button
-              v-if="planStore.isItemChecked(item.id)"
-              type="button"
-              class="shrink-0 font-mono text-sm tabular-nums text-muted underline decoration-dotted"
-              @click="toggleExpanded(item.id)"
-            >
-              {{ item.sets }} × {{ item.targetSeconds !== null ? `${item.targetSeconds}s` : `${item.targetRepMin}-${item.targetRepMax}` }}
-            </button>
-            <span v-else class="shrink-0 font-mono text-sm tabular-nums text-muted">
-              {{ item.sets }} ×
-              {{ item.targetSeconds !== null ? `${item.targetSeconds}s` : `${item.targetRepMin}-${item.targetRepMax}` }}
-            </span>
+    <div v-else class="mt-1 lg:mt-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-10">
+      <section>
+        <template v-if="displayedSession">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-sm text-muted">{{ planStore.plan?.name }} — {{ displayedSession.name }}</p>
+            <p class="shrink-0 font-mono text-xs tabular-nums text-muted">
+              {{ planStore.sessionProgress(displayedSession.id).done }}/{{ planStore.sessionProgress(displayedSession.id).total }} done
+            </p>
           </div>
-          <SetLogEditor v-if="expandedItemId === item.id" :item="item" />
-        </li>
-      </ul>
 
-      <RouterLink to="/workouts" class="mt-4 inline-block text-sm font-medium text-train">
-        See the full plan →
-      </RouterLink>
-    </template>
-
-    <template v-else>
-      <p class="mt-2 text-sm text-muted">🎉 You've completed every session in this training block — {{ planStore.blockProgress.done }}/{{ planStore.blockProgress.total }} done.</p>
-      <RouterLink to="/workouts" class="mt-4 inline-block text-sm font-medium text-train"> Review the full plan → </RouterLink>
-    </template>
-
-    <template v-if="!mealStore.loading && todayMeals.length > 0">
-      <h2 class="mt-8 text-lg font-semibold text-ink">Today's meals</h2>
-
-      <ul class="mt-2 space-y-2">
-        <li
-          v-for="entry in todayMeals"
-          :key="entry.id"
-          class="rounded-md border border-rule bg-surface px-4 py-3"
-        >
-          <RouterLink
-            :to="{ name: 'recipe', params: { recipeId: entry.recipeId }, query: { servings: String(entry.servings) } }"
-            class="flex items-center justify-between gap-3"
+          <div
+            v-if="planStore.promotionMessages.length"
+            class="mt-3 flex items-start justify-between gap-2 rounded-xl border border-train bg-train-wash px-3 py-2 text-xs text-train"
           >
-            <span class="min-w-0">
-              <span class="block text-xs font-medium uppercase tracking-wide text-muted">{{ SLOT_LABEL[entry.slot] }}</span>
-              <span class="truncate text-sm font-medium text-ink">{{ mealStore.recipeTitle(entry.recipeId) }}</span>
-            </span>
-            <span v-if="mealStore.entryMacros(entry)" class="shrink-0 font-mono text-sm tabular-nums text-muted">
-              {{ Math.round(mealStore.entryMacros(entry)!.kcal) }} kcal
-            </span>
-          </RouterLink>
-        </li>
-      </ul>
+            <ul class="space-y-1">
+              <li v-for="(message, i) in planStore.promotionMessages" :key="i">{{ message }}</li>
+            </ul>
+            <button
+              type="button"
+              class="flex min-h-11 min-w-11 shrink-0 items-center justify-center text-train/70 transition-colors hover:text-train"
+              aria-label="Dismiss"
+              @click="planStore.dismissPromotionMessages()"
+            >
+              <X :size="16" :stroke-width="2" aria-hidden="true" />
+            </button>
+          </div>
 
-      <RouterLink to="/meals" class="mt-4 inline-block text-sm font-medium text-nutri"> See the full week → </RouterLink>
-    </template>
+          <ul class="mt-4 space-y-2">
+            <li
+              v-for="item in planStore.itemsForSession(displayedSession.id)"
+              :key="item.id"
+              class="rounded-xl border border-rule bg-surface px-4 py-3 shadow-card transition-shadow lg:hover:shadow-none lg:hover:bg-ground/60"
+            >
+              <div class="flex items-center gap-3">
+                <label class="flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center">
+                  <input type="checkbox" class="h-5 w-5 accent-train" :checked="planStore.isItemChecked(item.id)" @change="onToggleItem(item)" />
+                </label>
+                <RouterLink :to="{ name: 'exercise', params: { exerciseId: item.exerciseId } }" class="flex min-w-0 flex-1 items-center gap-1">
+                  <span class="min-w-0 flex-1 text-sm font-medium" :class="planStore.isItemChecked(item.id) ? 'text-muted line-through' : 'text-ink'">
+                    {{ planStore.exerciseName(item.exerciseId) }}
+                  </span>
+                  <ChevronRight :size="16" class="shrink-0 text-muted" aria-hidden="true" />
+                </RouterLink>
+                <button
+                  v-if="planStore.isItemChecked(item.id)"
+                  type="button"
+                  class="shrink-0 font-mono text-sm tabular-nums text-muted underline decoration-dotted"
+                  @click="toggleExpanded(item.id)"
+                >
+                  {{ item.sets }} × {{ item.targetSeconds !== null ? `${item.targetSeconds}s` : `${item.targetRepMin}-${item.targetRepMax}` }}
+                </button>
+                <span v-else class="shrink-0 font-mono text-sm tabular-nums text-muted">
+                  {{ item.sets }} ×
+                  {{ item.targetSeconds !== null ? `${item.targetSeconds}s` : `${item.targetRepMin}-${item.targetRepMax}` }}
+                </span>
+              </div>
+              <SetLogEditor v-if="expandedItemId === item.id" :item="item" />
+            </li>
+          </ul>
+
+          <RouterLink to="/workouts" class="mt-4 inline-block text-sm font-medium text-train hover:underline"> See the full plan → </RouterLink>
+        </template>
+
+        <template v-else>
+          <p class="mt-2 text-sm text-muted">🎉 You've completed every session in this training block — {{ planStore.blockProgress.done }}/{{ planStore.blockProgress.total }} done.</p>
+          <RouterLink to="/workouts" class="mt-4 inline-block text-sm font-medium text-train hover:underline"> Review the full plan → </RouterLink>
+        </template>
+      </section>
+
+      <section v-if="!mealStore.loading && todayMeals.length > 0" class="mt-8 lg:mt-0">
+        <h2 class="text-lg font-semibold text-ink">Today's meals</h2>
+
+        <ul class="mt-2 space-y-2">
+          <li
+            v-for="entry in todayMeals"
+            :key="entry.id"
+            class="rounded-xl border border-rule bg-surface px-4 py-3 shadow-card transition-shadow lg:hover:shadow-none lg:hover:bg-ground/60"
+          >
+            <RouterLink
+              :to="{ name: 'recipe', params: { recipeId: entry.recipeId }, query: { servings: String(entry.servings) } }"
+              class="flex items-center justify-between gap-3"
+            >
+              <span class="min-w-0">
+                <span class="block text-xs font-medium uppercase tracking-wide text-muted">{{ SLOT_LABEL[entry.slot] }}</span>
+                <span class="truncate text-sm font-medium text-ink">{{ mealStore.recipeTitle(entry.recipeId) }}</span>
+              </span>
+              <span v-if="mealStore.entryMacros(entry)" class="shrink-0 font-mono text-sm tabular-nums text-muted">
+                {{ Math.round(mealStore.entryMacros(entry)!.kcal) }} kcal
+              </span>
+            </RouterLink>
+          </li>
+        </ul>
+
+        <RouterLink to="/meals" class="mt-4 inline-block text-sm font-medium text-nutri hover:underline"> See the full week → </RouterLink>
+      </section>
+    </div>
   </div>
 </template>
