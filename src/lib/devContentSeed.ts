@@ -4,43 +4,55 @@ import { isConfigured } from '@/lib/supabase'
 /**
  * Temporary bridge until the real Supabase → Dexie content sync exists
  * (see TASKS.md: "Wire IntakeView → generator → Supabase write → Dexie
- * cache"). Without it, the intake flow's ladder-placement step and the
- * workout generator have no movement library to read from on a machine
- * that hasn't set up a Supabase project yet — which, per README.md, is
- * every fresh checkout of this repo.
+ * cache"). Without it, the intake flow's ladder-placement step and both
+ * generators have no content to read from on a machine that hasn't set up
+ * a Supabase project yet — which, per README.md, is every fresh checkout
+ * of this repo.
  *
- * Dev-mode only, and never bundled into a production build: the seed SQL
- * is loaded via a DYNAMIC import gated behind `import.meta.env.DEV`, which
- * Vite inlines as a literal `false` in production and dead-code-eliminates
- * the whole branch — including the dynamic import — out of the bundle.
- * This is exactly the "content tables never ship in the app bundle" rule
- * from docs/schema.md; it doesn't get suspended just because the content
- * is arriving from a local file instead of Supabase during development.
+ * Dev-mode only, and never bundled into a production build: every seed SQL
+ * file is loaded via a DYNAMIC import gated behind `import.meta.env.DEV`,
+ * which Vite inlines as a literal `false` in production and dead-code-
+ * eliminates the whole branch — including the dynamic imports and the
+ * `import.meta.glob` below — out of the bundle. This is exactly the
+ * "content tables never ship in the app bundle" rule from docs/schema.md;
+ * it doesn't get suspended just because the content is arriving from a
+ * local file instead of Supabase during development.
  *
  * Replace this file's body with a real `supabase.from('exercises').select()`
  * sync (still writing into the same Dexie tables) once a project exists —
  * every caller here reads through db.ts either way, so nothing above this
  * module needs to change.
+ *
+ * The two content domains (movement library, food/recipes) are seeded
+ * independently, each gated on its OWN table being empty — not one shared
+ * gate on movementPatterns. An existing dev install that already seeded
+ * the movement library before the food/recipe tables existed would
+ * otherwise never pick up this seeding, since movementPatterns.count()
+ * would already be > 0 and short-circuit the whole function.
  */
 export async function ensureContentSeeded(): Promise<void> {
-  const existing = await db.movementPatterns.count()
-  if (existing > 0) return
-
   if (isConfigured) {
     // TODO(TASKS.md): real Supabase → Dexie sync goes here. Until it's
     // built, a configured project with an empty local cache just has no
     // content client-side yet — loud in the console, not a silent gap.
     console.warn(
       '[devContentSeed] Supabase is configured but nothing has synced content into Dexie yet — ' +
-        'that sync is not built (see TASKS.md). The movement library is empty.',
+        'that sync is not built (see TASKS.md). Movement and food content is empty.',
     )
     return
   }
 
   if (!import.meta.env.DEV) {
-    console.warn('[devContentSeed] No Supabase project and this is a production build — the movement library is empty.')
+    console.warn('[devContentSeed] No Supabase project and this is a production build — movement and food content is empty.')
     return
   }
+
+  await Promise.all([ensureMovementLibrarySeeded(), ensureFoodAndRecipesSeeded()])
+}
+
+async function ensureMovementLibrarySeeded(): Promise<void> {
+  const existing = await db.movementPatterns.count()
+  if (existing > 0) return
 
   console.info('[devContentSeed] No Supabase project configured — seeding the movement library from the local seed file (dev only).')
 
@@ -60,6 +72,69 @@ export async function ensureContentSeeded(): Promise<void> {
       await db.exerciseEquipment.bulkAdd(seed.exerciseEquipment)
       await db.bodyRegions.bulkAdd(seed.bodyRegions)
       await db.exerciseContraindications.bulkAdd(seed.contraindications)
+    },
+  )
+}
+
+async function ensureFoodAndRecipesSeeded(): Promise<void> {
+  const existing = await db.recipes.count()
+  if (existing > 0) return
+
+  console.info('[devContentSeed] No Supabase project configured — seeding food reference + recipes from the local seed files (dev only).')
+
+  const { parseFoodReferenceSeed } = await import('@/generators/__fixtures__/parseFoodReferenceSeed')
+  const { parseAllRecipeSeeds } = await import('@/generators/__fixtures__/parseRecipeSeed')
+
+  const foodReferenceSqlModule = await import('../../supabase/seed/002_food_reference.sql?raw')
+  const foodReference = parseFoodReferenceSeed(foodReferenceSqlModule.default)
+
+  // Non-eager glob: Vite generates a map of path -> dynamic import()
+  // closures, none of which are actually CALLED until here — same
+  // "?raw import behind import.meta.env.DEV" tree-shaking property as
+  // the single-file imports above, just for a directory of 14 files
+  // whose exact names shouldn't need to be hardcoded and kept in sync.
+  const recipeSeedLoaders = import.meta.glob('../../supabase/seed/*_recipes_*.sql', { query: '?raw', import: 'default' }) as Record<
+    string,
+    () => Promise<string>
+  >
+  const recipeSqlTexts = await Promise.all(Object.values(recipeSeedLoaders).map((load) => load()))
+
+  const knownIngredientSlugs = new Set(foodReference.ingredients.map((i) => i.slug))
+  const recipeSeed = parseAllRecipeSeeds(recipeSqlTexts, {
+    unitIdBySlug: foodReference.unitIdBySlug,
+    dietTagIdBySlug: foodReference.dietTagIdBySlug,
+    knownIngredientSlugs,
+  })
+
+  await db.transaction(
+    'rw',
+    [
+      db.aisles,
+      db.units,
+      db.allergens,
+      db.dietTags,
+      db.ingredients,
+      db.ingredientUnits,
+      db.ingredientAllergens,
+      db.recipes,
+      db.recipeIngredients,
+      db.recipeSteps,
+      db.recipeMealSlots,
+      db.recipeDietTags,
+    ],
+    async () => {
+      await db.aisles.bulkAdd(foodReference.aisles)
+      await db.units.bulkAdd(foodReference.units)
+      await db.allergens.bulkAdd(foodReference.allergens)
+      await db.dietTags.bulkAdd(foodReference.dietTags)
+      await db.ingredients.bulkAdd(foodReference.ingredients)
+      await db.ingredientUnits.bulkAdd(foodReference.ingredientUnits)
+      await db.ingredientAllergens.bulkAdd(foodReference.ingredientAllergens)
+      await db.recipes.bulkAdd(recipeSeed.recipes)
+      await db.recipeIngredients.bulkAdd(recipeSeed.recipeIngredients)
+      await db.recipeSteps.bulkAdd(recipeSeed.recipeSteps)
+      await db.recipeMealSlots.bulkAdd(recipeSeed.recipeMealSlots)
+      await db.recipeDietTags.bulkAdd(recipeSeed.recipeDietTags)
     },
   )
 }

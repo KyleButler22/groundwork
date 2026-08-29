@@ -1,8 +1,8 @@
 import type { Goal, PlanItem, PlanSession, UserExerciseLevel, WorkoutPlan } from '@/types/domain'
 
+import { rngFor } from '../shared/rng'
 import { canPerform, contraindicated, type MovementLibrary } from './library'
 import { resolvePrescription, type ResolvedPrescription } from './prescription'
-import { rngFor } from './rng'
 import { selectExercise } from './selectExercise'
 import { chooseSplit, plainestFallback, type SessionTemplate, type SlotTemplate, type SplitChoice } from './splits'
 import { pairForSuperset, type SupersetCandidate } from './supersets'

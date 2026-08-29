@@ -1,17 +1,18 @@
 /**
  * Hand-authored domain types for the movement/training side of the schema
- * (docs/schema.md sections 1-3, docs/generator.md). These are what the
- * workout generator and UI actually import — not the Supabase-generated
- * `Database` type (see database.ts), which is wider, snake_case, and
- * churns every time a migration changes.
+ * (docs/schema.md sections 1-3, docs/generator.md), plus the food/recipe/
+ * meal-plan side added for the meal generator (docs/schema.md sections
+ * 4-6, docs/mealgen.md). These are what the generators and UI actually
+ * import — not the Supabase-generated `Database` type (see database.ts),
+ * which is wider, snake_case, and churns every time a migration changes.
  *
  * Source of truth for the shape itself is supabase/migrations/*.sql. If
  * you change a column there, update the matching type here by hand; there
  * is no live Supabase project yet to run `supabase gen types` against.
  *
- * Food/recipe/meal-plan domain types are intentionally not modelled yet —
- * they land when the meal generator work starts (see calisthenics-recipe-corpus
- * memory). Adding them is additive and won't touch anything below.
+ * Grocery-list types (docs/schema.md section 7) are intentionally not
+ * modelled yet — the meal generator's output (MealPlan/MealPlanEntry) is
+ * enough to derive one later; that's its own follow-up (see TASKS.md).
  */
 
 // ── identity & intake ───────────────────────────────────────────────────
@@ -220,4 +221,215 @@ export interface UserExerciseLevel {
   consecutiveSuccess: number
   consecutiveFailure: number
   lastEvaluatedAt: string | null
+}
+
+// ── food reference (docs/schema.md §4) ──────────────────────────────────
+
+export interface Aisle {
+  id: number
+  slug: string
+  name: string
+  sortOrder: number
+}
+
+export type UnitDimension = 'mass' | 'volume' | 'count'
+
+export interface Unit {
+  id: number
+  slug: string
+  name: string
+  dimension: UnitDimension
+  /** Grams per unit (mass), millilitres per unit (volume), or 1 (count —
+   *  a count unit always needs an IngredientUnit override or
+   *  Ingredient.gramsPerEach, since "1 clove" has no universal weight the
+   *  way 1 kg always does). */
+  baseFactor: number
+}
+
+/**
+ * `id` is the ingredient's own slug for locally-seeded content (see
+ * src/lib/devContentSeed.ts) — the real migration gives it a
+ * `gen_random_uuid()` default with no way to predict it client-side, and
+ * nothing downstream needs it to look uuid-shaped, only to be stable and
+ * unique. Real Supabase-synced rows will carry the actual server uuid
+ * once that sync exists (TASKS.md); everything here keys by `id` either
+ * way, never by re-deriving the slug.
+ */
+export interface Ingredient {
+  id: string
+  slug: string
+  name: string
+  aisleId: number
+  densityGPerMl: number | null
+  gramsPerEach: number | null
+  kcalPer100g: number
+  proteinPer100g: number
+  carbPer100g: number
+  fatPer100g: number
+  fiberPer100g: number | null
+  fdcId: number | null
+  isPantryStaple: boolean
+  isActive: boolean
+}
+
+/** Exact volume/count -> mass override, beating density/gramsPerEach when
+ *  present (1 cup flour = 120g, 1 clove garlic = 3g). */
+export interface IngredientUnit {
+  ingredientId: string
+  unitId: number
+  grams: number
+}
+
+export interface Allergen {
+  id: number
+  slug: string
+  name: string
+}
+
+/** Allergens live on ingredients and are derived upward onto recipes —
+ *  never hand-tagged on a recipe (docs/schema.md §4). */
+export interface IngredientAllergen {
+  ingredientId: string
+  allergenId: number
+}
+
+export interface DietTag {
+  id: number
+  slug: string
+  name: string
+}
+
+// ── recipes (docs/schema.md §5) ──────────────────────────────────────────
+
+export type MealSlot = 'breakfast' | 'lunch' | 'dinner' | 'snack'
+export type RecipeDifficulty = 1 | 2 | 3
+
+/** `id` is the recipe's own slug for locally-seeded content — same
+ *  reasoning as Ingredient.id above. */
+export interface Recipe {
+  id: string
+  slug: string
+  title: string
+  summary: string | null
+  servings: number
+  prepMinutes: number
+  cookMinutes: number
+  cuisine: string | null
+  imageUrl: string | null
+  difficulty: RecipeDifficulty
+  /** Per-serving macro cache — computed from RecipeIngredient rows at
+   *  authoring time (scripts/generate-recipes.mjs), stored denormalised.
+   *  Treat as a single-writer cache: never hand-edit, recompute on save. */
+  kcalPerServing: number
+  proteinPerServing: number
+  carbPerServing: number
+  fatPerServing: number
+  isActive: boolean
+  updatedAt: string
+}
+
+export interface RecipeIngredient {
+  id: string
+  recipeId: string
+  ingredientId: string
+  quantity: number
+  unitId: number
+  prepNote: string | null
+  isOptional: boolean
+  orderIndex: number
+}
+
+export interface RecipeStep {
+  recipeId: string
+  stepNumber: number
+  instruction: string
+}
+
+export interface RecipeMealSlot {
+  recipeId: string
+  slot: MealSlot
+}
+
+export interface RecipeDietTag {
+  recipeId: string
+  dietTagId: number
+}
+
+// ── per-user food preferences (docs/schema.md §5) ────────────────────────
+
+export interface UserAllergenRow {
+  userId: string
+  allergenId: number
+}
+
+export interface UserDietTagRow {
+  userId: string
+  dietTagId: number
+}
+
+export interface UserDislikedIngredient {
+  userId: string
+  ingredientId: string
+}
+
+export interface UserPantryRow {
+  userId: string
+  ingredientId: string
+}
+
+// ── meal plans (docs/schema.md §6, docs/mealgen.md) ──────────────────────
+
+export type MealPlanStatus = 'active' | 'archived'
+
+export interface MealPlan {
+  id: string
+  userId: string
+  weekStartsOn: string // date, ISO yyyy-mm-dd
+  kcalTarget: number
+  proteinTargetG: number
+  carbTargetG: number
+  fatTargetG: number
+  generatorVersion: string
+  seed: number
+  regenCount: number
+  status: MealPlanStatus
+  createdAt: string
+  updatedAt: string
+}
+
+/**
+ * `servings` is what's EATEN in this entry, always — including a fresh
+ * dinner that also spawns a leftover: that entry's `servings` is one
+ * night's portion, same as any other entry, not the doubled batch. This
+ * keeps every entry's macro contribution readable on its own (sum
+ * `servings * recipe.kcalPerServing` across a day with no special-casing
+ * — see ../generators/meal/repair.ts), at the cost of the total batch
+ * actually cooked being a small derived sum rather than a stored field:
+ * `entry.servings + Σ(servings of entries where leftoverOfId === entry.id)`.
+ * docs/mealgen.md §8's grocery derivation (not yet built — TASKS.md) does
+ * that sum once, at the point it actually needs "how much to buy."
+ */
+export interface MealPlanEntry {
+  id: string
+  mealPlanId: string
+  serveOn: string // date, ISO yyyy-mm-dd
+  slot: MealSlot
+  recipeId: string
+  servings: number
+  isLocked: boolean
+  leftoverOfId: string | null
+}
+
+export type RecipeRating = 'loved' | 'ok' | 'never'
+
+/** One table doing three jobs at once (docs/schema.md §6): exclusion
+ *  ('never'), personalisation ('loved'), and the recency cooldown
+ *  (`lastServedOn`, docs/mealgen.md §4's `recency()` term). */
+export interface UserRecipeFeedback {
+  userId: string
+  recipeId: string
+  rating: RecipeRating | null
+  lastServedOn: string | null // date, ISO yyyy-mm-dd
+  serveCount: number
+  updatedAt: string
 }

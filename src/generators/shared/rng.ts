@@ -1,13 +1,19 @@
 /**
- * Deterministic randomness — docs/generator.md §8.
+ * Deterministic randomness, shared by both generators (docs/generator.md
+ * §8, docs/mealgen.md's "same determinism rule as the workout generator").
+ * Originally lived at src/generators/workout/rng.ts; moved here once the
+ * meal generator needed the exact same primitive — nothing below is
+ * workout-specific, and importing across generator directories would have
+ * been a stranger dependency than both depending on a shared module.
  *
  * The rule that matters: seed PER DECISION from coordinates, never from a
  * shared stream. A stream (`rng(); rng(); rng();`) means changing what
  * happens at decision N silently reshuffles every decision after it —
  * adding a slot to week 1 would rewrite every exercise choice in weeks
- * 2-4. Coordinates make each decision independent and stable: the same
- * (seed, week, day, slot) always produces the same draw, regardless of
- * what any other slot does.
+ * 2-4, or adding a recipe to Monday would rewrite every meal choice for
+ * the rest of the week. Coordinates make each decision independent and
+ * stable: the same (seed, ...coordinates) always produces the same draw,
+ * regardless of what any other decision does.
  */
 
 /** mulberry32 — small, fast, good-enough (not cryptographic) PRNG. */

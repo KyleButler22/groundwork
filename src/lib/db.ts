@@ -1,20 +1,40 @@
 import Dexie, { type EntityTable, type Table } from 'dexie'
 
 import type {
+  Aisle,
+  Allergen,
   BodyRegion,
+  DietTag,
   Equipment,
   Exercise,
   ExerciseContraindication,
   ExerciseEquipment,
+  Ingredient,
+  IngredientAllergen,
+  IngredientUnit,
+  MealPlan,
+  MealPlanEntry,
+  MealSlot,
   MovementPattern,
   PlanItem,
   PlanSession,
   ProgressionEdge,
   ProgressionEdgeKind,
+  Recipe,
+  RecipeDietTag,
+  RecipeIngredient,
+  RecipeMealSlot,
+  RecipeStep,
   SetLog,
+  Unit,
+  UserAllergenRow,
+  UserDietTagRow,
+  UserDislikedIngredient,
   UserEquipmentRow,
   UserExerciseLevel,
   UserLimitation,
+  UserPantryRow,
+  UserRecipeFeedback,
   WorkoutLog,
   WorkoutPlan,
 } from '@/types/domain'
@@ -27,11 +47,11 @@ import type {
  * — nothing to swap when that port happens (see calisthenics-app-stack
  * memory: this is *why* the client cache is IndexedDB and not SQLite).
  *
- * Scope for this version: movement/training only — the tables the workout
- * generator needs. Food/recipe/meal-plan/grocery tables get added as a v2
- * schema bump (`db.version(2).stores({...})`) when the meal generator work
- * starts; Dexie migrates existing installs forward automatically, so there
- * is no cost to not pre-declaring them now.
+ * v1 scope was movement/training only; v2 (below) adds food/recipe/
+ * meal-plan tables for the meal generator. Grocery tables (docs/schema.md
+ * §7) are still deferred to a v3 bump — that feature isn't built yet
+ * (TASKS.md). Dexie only needs the CHANGED/NEW stores listed on a given
+ * version; v1's tables carry forward untouched automatically.
  *
  * Primary keys mostly mirror the Postgres primary key so a synced row can
  * be `.put()` without translation. Pure join/content tables use a Postgres-
@@ -60,6 +80,30 @@ export class GroundworkDB extends Dexie {
   planItems!: EntityTable<PlanItem, 'id'>
   workoutLogs!: EntityTable<WorkoutLog, 'id'>
   setLogs!: EntityTable<SetLog, 'id'>
+
+  // ── v2: food reference / recipes / meal plans ─────────────────────────
+  aisles!: EntityTable<Aisle, 'id'>
+  units!: EntityTable<Unit, 'id'>
+  ingredients!: EntityTable<Ingredient, 'id'>
+  ingredientUnits!: Table<IngredientUnit, [string, number]>
+  allergens!: EntityTable<Allergen, 'id'>
+  ingredientAllergens!: Table<IngredientAllergen, [string, number]>
+  dietTags!: EntityTable<DietTag, 'id'>
+
+  recipes!: EntityTable<Recipe, 'id'>
+  recipeIngredients!: EntityTable<RecipeIngredient, 'id'>
+  recipeSteps!: Table<RecipeStep, [string, number]>
+  recipeMealSlots!: Table<RecipeMealSlot, [string, MealSlot]>
+  recipeDietTags!: Table<RecipeDietTag, [string, number]>
+
+  userAllergens!: Table<UserAllergenRow, [string, number]>
+  userDietTags!: Table<UserDietTagRow, [string, number]>
+  userDislikedIngredients!: Table<UserDislikedIngredient, [string, string]>
+  userPantry!: Table<UserPantryRow, [string, string]>
+
+  mealPlans!: EntityTable<MealPlan, 'id'>
+  mealPlanEntries!: EntityTable<MealPlanEntry, 'id'>
+  userRecipeFeedback!: Table<UserRecipeFeedback, [string, string]>
 
   /** table name -> ISO timestamp of the last successful pull from Supabase. */
   syncMeta!: EntityTable<{ table: string; lastSyncedAt: string }, 'table'>
@@ -92,6 +136,33 @@ export class GroundworkDB extends Dexie {
       setLogs: '&id, workoutLogId, exerciseId',
 
       syncMeta: '&table',
+    })
+
+    this.version(2).stores({
+      // ── content: synced down, read-only from the client ──────────────
+      aisles: '&id, slug',
+      units: '&id, slug',
+      ingredients: '&id, slug, aisleId',
+      ingredientUnits: '[ingredientId+unitId], ingredientId',
+      allergens: '&id, slug',
+      ingredientAllergens: '[ingredientId+allergenId], ingredientId, allergenId',
+      dietTags: '&id, slug',
+
+      recipes: '&id, slug, [kcalPerServing+proteinPerServing]',
+      recipeIngredients: '&id, recipeId, ingredientId',
+      recipeSteps: '[recipeId+stepNumber], recipeId',
+      recipeMealSlots: '[recipeId+slot], recipeId, slot',
+      recipeDietTags: '[recipeId+dietTagId], recipeId, dietTagId',
+
+      // ── per-user state: written offline, synced up when connected ────
+      userAllergens: '[userId+allergenId], userId',
+      userDietTags: '[userId+dietTagId], userId',
+      userDislikedIngredients: '[userId+ingredientId], userId',
+      userPantry: '[userId+ingredientId], userId',
+
+      mealPlans: '&id, userId, status, [userId+weekStartsOn]',
+      mealPlanEntries: '&id, mealPlanId, [mealPlanId+serveOn], leftoverOfId',
+      userRecipeFeedback: '[userId+recipeId], userId, recipeId',
     })
   }
 }

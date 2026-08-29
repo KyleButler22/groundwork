@@ -1,8 +1,23 @@
 # Meal Plan Generator
 
-Selecting a week of meals from the recipe corpus that hits macro targets, respects every hard constraint, stays varied enough to enjoy, and still fits on one page of shopping. No code implements this yet, and neither does the recipe corpus (see the `calisthenics-recipe-corpus` memory) — this is the spec for `src/generators/meal/`, to build once ~200 recipes exist.
+Selecting a week of meals from the recipe corpus that hits macro targets, respects every hard constraint, stays varied enough to enjoy, and still fits on one page of shopping.
 
 Full design version: https://claude.ai/code/artifact/a8d9c20e-4edb-406b-a2f7-9f2316728c70 (private link — this file is the source of truth if it's unreachable).
+
+**Implemented (2026-08-28)** in `src/generators/meal/` — pure TS, mirroring `src/generators/workout/`'s shape: one file per pipeline stage (`filter.ts`, `grid.ts`, `allocate.ts`, `scoring.ts`, `assemble.ts`, `repair.ts`, `validate.ts`), a `MealLibrary` index (`library.ts`) mirroring the workout generator's `MovementLibrary`, and `generateMealPlan.ts` as the orchestrator plus the `regenerateWeek`/`swapOneMeal` entry points from §9. 102 tests (unit fixtures in `__fixtures__/testMealLibrary.ts`, integration tests against the real 200-recipe corpus in `generateMealPlan.integration.spec.ts`), ~96% statement coverage. Grocery-list generation (§8 below) is NOT built yet — see TASKS.md.
+
+**Where this doc left real numbers unspecified, the code had to choose some — recorded here so they read as decisions, not omissions:**
+
+- **Scoring weights** (§4's formula names five terms but gives no magnitudes — only the §5 variety floor was ever a tuned, measured number). `scoring.ts`'s `DEFAULT_WEIGHTS`: macro 1.0 (dominant), overlap 0.3, preference 0.2, recency 0.5, repeat 1.0. A documented judgment call, same status as the workout generator's own timing constants — not derived from a simulation the way the variety floor was.
+- **Serving-scale scoring**: a candidate's macroFit is scored against its BEST ACHIEVABLE macros after applying the same 0.75–1.5x clamp assembly would actually use (`scoring.ts`'s `bestAchievableScale`), not its raw per-serving numbers — otherwise scoring would rank a recipe worse than what actually gets served.
+- **`servings` means "eaten in this entry," always** — including a fresh dinner that also spawns a leftover, whose own `servings` is one night's portion, not the doubled batch. The total batch actually cooked (needed for §8's grocery derivation) is a small derived sum (`entry.servings + Σ leftover children's servings`) computed once, when that feature is built — not a field this generator stores directly. Chosen over doubling the fresh entry's own field because it keeps every entry's macro contribution independently readable (a repair pass summing a day's entries needs no special-casing for which one has a leftover).
+- **Cook-time ceiling scope**: applied to dinner and lunch only (the two "cooked" meals), never to breakfast/snack; weekends are always exempt, using the single ceiling value intake actually collects (see `assemble.ts`'s `withinCookTimeCeiling`) — the "two ceilings" open question below is still open, this just uses what exists today per the doc's own Sunday-roast example.
+- **`mealsPerDay` beyond 4 is clamped, with a warning** — `meal_plan_entries`'s `unique (meal_plan_id, serve_on, slot)` only has 4 slot values to work with, so a second snack has nowhere to go without a schema change. Below 4, the highest-share slots survive first (dinner, then lunch, then breakfast) — a rule derived from §3's own share ranking, not a hand-picked case per count.
+- **Breakfast rotation size is fixed at 3** (the top of the doc's "2-3" range) — chosen since more rotation variety is free once repeats are exempt from the within-week penalty anyway.
+- **Leftover placement** picks a valid parent day 1-3 days back via a seeded shuffle, since nothing in the schema/intake has a "day marked busy" concept yet for the doc's stated preference.
+- **Household scaling**: resolves the "leaning toward" open question below — targets are computed for the primary user, and every slot's chosen servings are `scale × household_size`.
+
+Below, §1-§7 describe the implemented pipeline as designed; §8 (grocery list) and §9 (regenerate/swap) describe what the code targets — §9 is implemented, §8 is not yet.
 
 ## The shape of the problem
 
@@ -186,10 +201,11 @@ Both cost nothing — no network, no model call, no server — which is the enti
 
 ## Open questions
 
-| Question | Why it matters |
+| Question | Status |
 |---|---|
-| Slot shares | Fixed 25/30/35/10, or shifted toward the training window? Affects whether `user_targets` needs a per-slot allocation column. |
-| Household portions | Does everyone eat the same macro target? Almost certainly not, but per-person targets multiply the problem. Leaning toward: plan for the primary user, scale quantities by `household_size`. |
-| Weekend cook time | Two ceilings (weeknight/weekend) or a per-day array? Two is simpler and probably enough. |
-| Leftover ratio | 60/40 is a guess — worth making it a user preference; tolerance for repeats varies a lot. |
-| Snack as recipe | Still open from `docs/intake.md`. If snacks are a flexible allowance rather than planned recipes, repair loses its cheapest lever (step 2 above). |
+| Slot shares | Still fixed 25/30/35/10 (rescaled proportionally when fewer than 4 slots are active — `allocate.ts`). Shifting toward the training window is still open; nothing in intake captures a training time-of-day to shift toward yet. |
+| Household portions | **Resolved, implemented**: plan for the primary user, scale quantities by `household_size` — every slot's servings are `scale × household_size` (`assemble.ts`). |
+| Weekend cook time | **Partially resolved**: weekends are fully exempt from the single ceiling intake collects (`assemble.ts`'s `withinCookTimeCeiling`), which honours the doc's own Sunday-roast example without needing a new field. A genuinely separate, user-set weekend ceiling is still open. |
+| Leftover ratio | Still a fixed 40% default (`grid.ts`'s `DEFAULT_LEFTOVER_RATIO`), overridable per call but not yet exposed as a user preference in intake. |
+| Snack as recipe | Resolved by construction: snacks ARE planned recipes (recipe_meal_slots includes 'snack'), so repair's snack-swap lever (step 2) is available as designed. |
+| Swap propagating to a leftover | **New, found during implementation**: `swapOneMeal` on a fresh dinner that has a leftover elsewhere in the week does not update that leftover — it still serves the old recipe. Called out with an explicit warning rather than silently wrong; not yet fixed (see TASKS.md). |
