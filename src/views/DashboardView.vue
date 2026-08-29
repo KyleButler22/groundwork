@@ -1,12 +1,26 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 
+import { useMealPlanStore } from '@/stores/mealPlan'
 import { usePlanStore } from '@/stores/plan'
+import type { MealSlot } from '@/types/domain'
 
 // Landing screen: today's prescribed session, today's meals, nothing else.
 // Deliberately not a settings-style list — this is scanned, not read.
 const planStore = usePlanStore()
-onMounted(() => planStore.loadActivePlan())
+const mealStore = useMealPlanStore()
+onMounted(() => {
+  planStore.loadActivePlan()
+  mealStore.loadActivePlan()
+})
+
+// No "advance to next week" yet (see TASKS.md) — once a plan's week is
+// more than a few days old, today may simply not be one of its 7 days.
+// todayMeals is empty in that case, same as "no plan yet"; this section
+// just doesn't render rather than showing a stale or empty-looking card.
+const todayIso = new Date().toISOString().slice(0, 10)
+const todayMeals = computed(() => mealStore.entriesByDay.get(todayIso) ?? [])
+const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' }
 </script>
 
 <template>
@@ -47,6 +61,28 @@ onMounted(() => planStore.loadActivePlan())
       <RouterLink to="/workouts" class="mt-4 inline-block text-sm font-medium text-train">
         See the full plan →
       </RouterLink>
+    </template>
+
+    <template v-if="!mealStore.loading && todayMeals.length > 0">
+      <h2 class="mt-8 text-lg font-semibold text-ink">Today's meals</h2>
+
+      <ul class="mt-2 space-y-2">
+        <li
+          v-for="entry in todayMeals"
+          :key="entry.id"
+          class="flex items-center justify-between rounded-md border border-rule bg-surface px-4 py-3"
+        >
+          <span class="min-w-0">
+            <span class="block text-xs font-medium uppercase tracking-wide text-muted">{{ SLOT_LABEL[entry.slot] }}</span>
+            <span class="truncate text-sm font-medium text-ink">{{ mealStore.recipeTitle(entry.recipeId) }}</span>
+          </span>
+          <span v-if="mealStore.entryMacros(entry)" class="shrink-0 font-mono text-sm tabular-nums text-muted">
+            {{ Math.round(mealStore.entryMacros(entry)!.kcal) }} kcal
+          </span>
+        </li>
+      </ul>
+
+      <RouterLink to="/meals" class="mt-4 inline-block text-sm font-medium text-nutri"> See the full week → </RouterLink>
     </template>
   </div>
 </template>
