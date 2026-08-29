@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 import { db } from '@/lib/db'
 import { buildSetLogsForItem, selectNextSession, sessionStatusFor } from '@/lib/workoutLogging'
 import { applyWorkoutLog, buildLibrary, type MovementLibrary, type PromotionEvent } from '@/generators/workout'
-import type { Exercise, PlanItem, PlanSession, SetLog, UserExerciseLevel, WorkoutLog, WorkoutPlan } from '@/types/domain'
+import type { Equipment, ExerciseEquipment, Exercise, PlanItem, PlanSession, SetLog, UserExerciseLevel, WorkoutLog, WorkoutPlan } from '@/types/domain'
 
 /**
  * Reads the locally-cached active plan (written by the intake flow's
@@ -22,6 +22,7 @@ export const usePlanStore = defineStore('plan', () => {
   const sessions = ref<PlanSession[]>([])
   const items = ref<PlanItem[]>([])
   const exercisesById = ref<Map<number, Exercise>>(new Map())
+  const equipmentById = ref<Map<number, Equipment>>(new Map())
   const workoutLogs = ref<WorkoutLog[]>([])
   const setLogs = ref<SetLog[]>([])
   const levels = ref<UserExerciseLevel[]>([])
@@ -54,9 +55,29 @@ export const usePlanStore = defineStore('plan', () => {
   function exerciseName(exerciseId: number): string {
     return exercisesById.value.get(exerciseId)?.name ?? `Exercise ${exerciseId}`
   }
+  function exercise(exerciseId: number): Exercise | undefined {
+    return exercisesById.value.get(exerciseId)
+  }
 
   function patternName(patternId: number): string {
     return library.value?.patternById.get(patternId)?.name ?? `Pattern ${patternId}`
+  }
+  function patternSlug(patternId: number): string | undefined {
+    return library.value?.patternById.get(patternId)?.slug
+  }
+
+  /** Raw exercise_equipment join rows for one exercise — a same
+   *  (non-zero) alternativeGroup means "any one satisfies this"; group 0
+   *  (or a different group) means every row is independently required.
+   *  See ExerciseEquipment's own doc comment. Left as raw rows rather
+   *  than pre-formatted text so the view decides how to render the OR/AND
+   *  grouping, same "store hands back data, view formats it" split as
+   *  everywhere else in this file. */
+  function equipmentForExercise(exerciseId: number): ExerciseEquipment[] {
+    return library.value?.equipmentByExercise.get(exerciseId) ?? []
+  }
+  function equipmentName(equipmentId: number): string {
+    return equipmentById.value.get(equipmentId)?.name ?? `Equipment ${equipmentId}`
   }
 
   /** Plain-English readouts of the last toggleItemChecked call's
@@ -157,6 +178,7 @@ export const usePlanStore = defineStore('plan', () => {
         db.userExerciseLevels.toArray(),
       ])
       exercisesById.value = new Map(allExercises.map((e) => [e.id, e]))
+      equipmentById.value = new Map(equipment.map((e) => [e.id, e]))
       library.value = buildLibrary({ patterns, exercises: allExercises, edges, equipment, exerciseEquipment, contraindications })
 
       const sessionLogIds = new Set(
@@ -176,26 +198,23 @@ export const usePlanStore = defineStore('plan', () => {
     loading.value = false
   }
 
-  // toggleItemChecked does read-then-write on setLogs.value/workoutLogs.value
-  // (read the current array, compute the next one, assign it back) — safe
-  // for one call at a time, but nothing stopped two overlapping calls
-  // (checking off several exercises in quick succession) from each
-  // reading setLogs.value before either had written its result back and
-  // clobbering each other in memory. Each individual Dexie write would
-  // still land safely (bulkAdd/bulkPut don't race), but the reactive
-  // array applyWorkoutLog is built from could end up missing an
-  // exercise's rows anyway, and the queue below is the fix for that
-  // class of bug. This is a defensive fix from reading the code, not a
-  // reproduced-and-confirmed one: real-device testing hit exactly this
-  // symptom (a session's promotion evaluation covering only 1 of 4
-  // logged exercises) after checking off several boxes in a row, but
-  // that specific run turned out to be explained by the browser
-  // automation tool re-resolving a stale element reference on a page
-  // with several structurally-identical sections, not a live race —
-  // rebuilding the same sequence with direct, individually-verified
-  // clicks came back correct every time. The underlying risk is still
-  // real on inspection alone (nothing serialized these calls before this
-  // queue existed), so the fix stays; the anecdote just isn't proof.
+  // Shared by every function below that does read-then-write on
+  // setLogs.value/workoutLogs.value (read the current array, compute the
+  // next one, assign it back) — safe for one call at a time, but nothing
+  // stops two overlapping calls from each reading the array before
+  // either had written its result back and clobbering each other in
+  // memory, even though each individual Dexie write still lands safely
+  // (bulkAdd/put don't race — the race is purely in which call's stale
+  // in-memory snapshot gets written last). toggleItemChecked's own risk
+  // here was originally a defensive, uncomfirmed one (see git history —
+  // the live symptom that first prompted this queue turned out to be a
+  // browser-automation artifact, not a real race). updateSetLog's is
+  // not: editing a set's reps and then its weight in quick succession —
+  // an entirely ordinary thing to do, tabbing between two fields on the
+  // same row — reliably reproduced exactly this class of bug, the second
+  // write silently reverting the first. One shared queue, not one per
+  // function, because both touch the same underlying refs and could race
+  // against EACH OTHER just as easily as against themselves.
   let mutationQueue: Promise<void> = Promise.resolve()
 
   function toggleItemChecked(userId: string, session: PlanSession, item: PlanItem): Promise<void> {
@@ -321,6 +340,55 @@ export const usePlanStore = defineStore('plan', () => {
     promotionEvents.value = []
   }
 
+  /** A checked item's logged sets, in set-number order — buildSetLogsForItem
+   *  (src/lib/workoutLogging.ts) creates exactly item.sets of these,
+   *  defaulted to the target, the moment the checkbox is first ticked; an
+   *  unchecked item simply has none yet. */
+  function setLogsForItem(itemId: string): SetLog[] {
+    return setLogs.value.filter((l) => l.planItemId === itemId).sort((a, b) => a.setNumber - b.setNumber)
+  }
+
+  /**
+   * Edits one already-logged set's actual reps/seconds/weight away from
+   * the target-hit default buildSetLogsForItem wrote. SetLog has no
+   * array/object fields, so unlike toggleItemChecked's writes there's no
+   * toRaw() concern here — every field is a plain primitive.
+   *
+   * Deliberately does NOT re-run applyWorkoutLog even if this edit would
+   * change whether the session's promotion evaluation should have gone
+   * differently — same "a completed session's evaluation happened once,
+   * at that moment, on whatever was logged then" philosophy
+   * toggleItemChecked's own doc comment already states for the
+   * uncheck/recheck case. Retroactively re-grading a decision the
+   * promotion engine already made would need history this schema doesn't
+   * keep; recording what actually happened, for its own sake, is the
+   * whole point of this action, not a way to relitigate a promotion.
+   *
+   * Routed through the same mutationQueue as toggleItemChecked (both
+   * read-modify-write setLogs.value) — found by literally reproducing it:
+   * editing a set's reps and its weight in quick succession fired two
+   * overlapping calls, the second of which read setLogs.value BEFORE the
+   * first had written its result back, so its own put() carried the
+   * stale pre-edit reps value forward and silently overwrote the first
+   * edit the moment it resolved. Real, reproduced, not the accessibility-
+   * ref red herring from the workout-completion session — tabbing
+   * quickly between two fields on the same set is an entirely ordinary
+   * way to trigger this.
+   */
+  function updateSetLog(setLogId: string, changes: Partial<Pick<SetLog, 'reps' | 'seconds' | 'addedWeightKg' | 'rpe'>>): Promise<void> {
+    const run = mutationQueue.then(() => updateSetLogNow(setLogId, changes))
+    mutationQueue = run.catch(() => {})
+    return run
+  }
+
+  async function updateSetLogNow(setLogId: string, changes: Partial<Pick<SetLog, 'reps' | 'seconds' | 'addedWeightKg' | 'rpe'>>): Promise<void> {
+    const existing = setLogs.value.find((l) => l.id === setLogId)
+    if (!existing) return
+    const updated: SetLog = { ...existing, ...changes }
+    await db.setLogs.put(updated)
+    setLogs.value = setLogs.value.map((l) => (l.id === setLogId ? updated : l))
+  }
+
   function partition<T>(arr: readonly T[], predicate: (item: T) => boolean): [T[], T[]] {
     const keep: T[] = []
     const drop: T[] = []
@@ -341,10 +409,17 @@ export const usePlanStore = defineStore('plan', () => {
     promotionMessages,
     itemsForSession,
     exerciseName,
+    exercise,
+    patternName,
+    patternSlug,
+    equipmentForExercise,
+    equipmentName,
     isItemChecked,
     sessionProgress,
+    setLogsForItem,
     loadActivePlan,
     toggleItemChecked,
+    updateSetLog,
     dismissPromotionMessages,
   }
 })

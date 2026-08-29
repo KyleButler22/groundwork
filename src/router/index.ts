@@ -40,6 +40,11 @@ export const router = createRouter({
       component: () => import('@/views/RecipeView.vue'),
     },
     {
+      path: '/exercises/:exerciseId',
+      name: 'exercise',
+      component: () => import('@/views/ExerciseView.vue'),
+    },
+    {
       path: '/profile',
       name: 'profile',
       component: () => import('@/views/ProfileView.vue'),

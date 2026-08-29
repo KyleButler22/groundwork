@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 
+import SetLogEditor from '@/components/workout/SetLogEditor.vue'
 import { usePlanStore } from '@/stores/plan'
 import { useSessionStore } from '@/stores/session'
 import type { PlanItem, PlanSession } from '@/types/domain'
@@ -35,6 +36,13 @@ function blockPercent(): number {
 
 function onToggleItem(planSession: PlanSession, item: PlanItem): void {
   planStore.toggleItemChecked(userId.value, planSession, item)
+}
+
+// Collapsed by default, one at a time, across the whole page — same
+// convention as DashboardView.vue's own expandedItemId.
+const expandedItemId = ref<string | null>(null)
+function toggleExpanded(itemId: string): void {
+  expandedItemId.value = expandedItemId.value === itemId ? null : itemId
 }
 </script>
 
@@ -112,17 +120,31 @@ function onToggleItem(planSession: PlanSession, item: PlanItem): void {
               :key="item.id"
               class="rounded-md border border-rule bg-surface px-4 py-3"
             >
-              <label class="flex min-h-11 cursor-pointer items-center gap-3">
-                <input type="checkbox" class="h-5 w-5 shrink-0 accent-train" :checked="planStore.isItemChecked(item.id)" @change="onToggleItem(s, item)" />
-                <span class="min-w-0 flex-1 text-sm font-medium" :class="planStore.isItemChecked(item.id) ? 'text-muted line-through' : 'text-ink'">
-                  {{ planStore.exerciseName(item.exerciseId) }}
-                  <span v-if="item.supersetGroup !== null" class="text-xs font-normal text-muted"> · superset</span>
-                </span>
-                <span class="shrink-0 font-mono text-sm tabular-nums text-muted">
+              <div class="flex items-center gap-3">
+                <label class="flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center">
+                  <input type="checkbox" class="h-5 w-5 accent-train" :checked="planStore.isItemChecked(item.id)" @change="onToggleItem(s, item)" />
+                </label>
+                <RouterLink :to="{ name: 'exercise', params: { exerciseId: item.exerciseId } }" class="flex min-w-0 flex-1 items-center gap-1">
+                  <span class="min-w-0 flex-1 text-sm font-medium" :class="planStore.isItemChecked(item.id) ? 'text-muted line-through' : 'text-ink'">
+                    {{ planStore.exerciseName(item.exerciseId) }}
+                    <span v-if="item.supersetGroup !== null" class="text-xs font-normal text-muted"> · superset</span>
+                  </span>
+                  <span class="shrink-0 text-muted" aria-hidden="true">›</span>
+                </RouterLink>
+                <button
+                  v-if="planStore.isItemChecked(item.id)"
+                  type="button"
+                  class="shrink-0 font-mono text-sm tabular-nums text-muted underline decoration-dotted"
+                  @click="toggleExpanded(item.id)"
+                >
+                  {{ item.sets }} × {{ item.targetSeconds !== null ? `${item.targetSeconds}s` : `${item.targetRepMin}-${item.targetRepMax}` }}
+                </button>
+                <span v-else class="shrink-0 font-mono text-sm tabular-nums text-muted">
                   {{ item.sets }} ×
                   {{ item.targetSeconds !== null ? `${item.targetSeconds}s` : `${item.targetRepMin}-${item.targetRepMax}` }}
                 </span>
-              </label>
+              </div>
+              <SetLogEditor v-if="expandedItemId === item.id" :item="item" />
             </li>
           </ul>
         </section>
