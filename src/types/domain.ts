@@ -42,7 +42,14 @@ export interface UserTargets {
   carbG: number
   daysPerWeek: number
   sessionMinutes: number
-  mealsPerDay: number
+  /** Which of the 4 schema slots to plan at all — not a count. Stored in
+   *  Postgres as 4 booleans (`user_targets.wants_breakfast` etc., see
+   *  0002_identity.sql) since it's a fixed, never-growing vocabulary, not
+   *  a many-to-many join table the way diet tags/allergens are; this is
+   *  the client-side array projection every generator call actually wants.
+   *  Always non-empty — intake requires at least one, and the generator
+   *  falls back to `['dinner']` defensively if it ever somehow isn't. */
+  activeMealSlots: MealSlot[]
   cookTimeCeiling: number | null
 }
 

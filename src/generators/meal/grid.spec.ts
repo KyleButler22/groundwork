@@ -6,25 +6,31 @@ import { addDays } from './dateMath'
 import { DAYS_PER_WEEK, planActiveSlots, planDinnerLeftovers, reconstructDinnerDayPlanFromEntries } from './grid'
 
 describe('planActiveSlots', () => {
-  it('includes all 4 canonical slots, highest-share order, when mealsPerDay is 4', () => {
-    expect(planActiveSlots(4)).toEqual({ slots: ['dinner', 'lunch', 'breakfast', 'snack'], warnings: [] })
+  it('returns all 4 requested slots in canonical (highest-share-first) order, regardless of input order', () => {
+    expect(planActiveSlots(['snack', 'breakfast', 'dinner', 'lunch'])).toEqual({
+      slots: ['dinner', 'lunch', 'breakfast', 'snack'],
+      warnings: [],
+    })
   })
 
-  it('keeps the highest-share slots first as the count drops', () => {
-    expect(planActiveSlots(1).slots).toEqual(['dinner'])
-    expect(planActiveSlots(2).slots).toEqual(['dinner', 'lunch'])
-    expect(planActiveSlots(3).slots).toEqual(['dinner', 'lunch', 'breakfast'])
+  it('returns exactly the requested subset — any combination, not just a top-N by priority', () => {
+    expect(planActiveSlots(['dinner']).slots).toEqual(['dinner'])
+    expect(planActiveSlots(['breakfast']).slots).toEqual(['breakfast'])
+    // The combination the old count-based API could never produce: skip
+    // dinner (the highest share) while keeping two lower-share slots.
+    expect(planActiveSlots(['breakfast', 'lunch']).slots).toEqual(['lunch', 'breakfast'])
+    expect(planActiveSlots(['snack', 'breakfast']).slots).toEqual(['breakfast', 'snack'])
   })
 
-  it('clamps above 4 with a warning, rather than crashing or silently dropping', () => {
-    const result = planActiveSlots(6)
-    expect(result.slots).toEqual(['dinner', 'lunch', 'breakfast', 'snack'])
+  it('dedupes a repeated slot rather than producing a duplicate', () => {
+    expect(planActiveSlots(['dinner', 'dinner', 'lunch']).slots).toEqual(['dinner', 'lunch'])
+  })
+
+  it('falls back to dinner alone with a warning for an empty selection (defensive — intake already requires at least one)', () => {
+    const result = planActiveSlots([])
+    expect(result.slots).toEqual(['dinner'])
     expect(result.warnings).toHaveLength(1)
-    expect(result.warnings[0]).toMatch(/clamped/i)
-  })
-
-  it('clamps below 1 up to 1 (defensive — the UI already enforces min=1)', () => {
-    expect(planActiveSlots(0).slots).toEqual(['dinner'])
+    expect(result.warnings[0]).toMatch(/no meal slots/i)
   })
 })
 

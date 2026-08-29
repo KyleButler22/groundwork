@@ -22,9 +22,13 @@ export const BREAKFAST_ROTATION_SIZE = 3
  *  preference (see docs/mealgen.md's open questions). */
 export const DEFAULT_LEFTOVER_RATIO = 0.4
 
-// Ranked by docs/mealgen.md §3's table, highest share first. Used both for
-// the slot-share split (allocate.ts) and here, to decide which slots
-// survive when mealsPerDay is below the full 4.
+// Ranked by docs/mealgen.md §3's table, highest share first — purely a
+// canonical ORDER now (see planActiveSlots below), not a priority list for
+// dropping slots: which slots are active is the caller's explicit choice
+// (intake's per-slot toggles, see StepKitchen.vue), not derived from a
+// count. Still used to give ActiveSlotsResult.slots a stable, predictable
+// order regardless of what order the caller's selection happened to list
+// them in.
 const SLOT_RANK: MealSlot[] = ['dinner', 'lunch', 'breakfast', 'snack']
 
 export interface ActiveSlotsResult {
@@ -35,28 +39,30 @@ export interface ActiveSlotsResult {
 }
 
 /**
- * `meal_plan_entries` has `unique (meal_plan_id, serve_on, slot)` over
- * only 4 possible slot values — there is no way to represent a second
- * snack on the same day without a schema change. The intake UI
- * (StepKitchen.vue) currently allows mealsPerDay up to 6; anything above 4
- * is clamped here with a warning rather than silently dropped or crashed
- * on, mirroring how ../workout/generatePlan.ts surfaces a dropped slot
- * instead of hiding it. Below 4, the highest-share slots survive first —
- * a principled rule (not a hand-picked case per count), since keeping
- * dinner before lunch before breakfast before snack is exactly what the
- * doc's own share ranking already says matters most.
+ * Normalizes the caller's requested slot selection (breakfast/lunch/
+ * dinner/snack, any non-empty subset — see UserTargets.activeMealSlots)
+ * into SLOT_RANK order, deduped. `meal_plan_entries` has
+ * `unique (meal_plan_id, serve_on, slot)` over exactly these 4 values, so
+ * a duplicate or unrecognised slot has nowhere meaningful to go — this
+ * silently drops either rather than erroring, since TypeScript already
+ * makes both cases unreachable from a real caller (only a hand-built or
+ * corrupted input could trigger them).
+ *
+ * An EMPTY selection has nowhere to put a single meal, so it falls back
+ * to dinner alone (the doc's own highest-share slot) with a warning
+ * rather than generating a genuinely empty week — intake itself requires
+ * at least one slot before letting the user submit, so this is a
+ * defensive backstop, not the primary way "at least one" gets enforced.
  */
-export function planActiveSlots(mealsPerDay: number): ActiveSlotsResult {
+export function planActiveSlots(requestedSlots: readonly MealSlot[]): ActiveSlotsResult {
   const warnings: string[] = []
-  let count = mealsPerDay
-  if (count > SLOT_RANK.length) {
-    warnings.push(
-      `mealsPerDay (${mealsPerDay}) exceeds the 4 slots the schema supports per day (breakfast/lunch/dinner/snack — meal_plan_entries allows only one row per day per slot). Clamped to 4.`,
-    )
-    count = SLOT_RANK.length
+  const requested = new Set(requestedSlots)
+  let slots = SLOT_RANK.filter((slot) => requested.has(slot))
+  if (slots.length === 0) {
+    warnings.push('No meal slots were selected to plan — defaulting to dinner only.')
+    slots = ['dinner']
   }
-  if (count < 1) count = 1
-  return { slots: SLOT_RANK.slice(0, count), warnings }
+  return { slots, warnings }
 }
 
 export interface DinnerDayPlan {

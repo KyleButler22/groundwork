@@ -22,7 +22,7 @@ import { supabase } from '@/lib/supabase'
 import { buildGroceryList, buildMealLibrary, generateMealPlan } from '@/generators/meal'
 import { buildLibrary } from '@/generators/workout/library'
 import { generatePlan } from '@/generators/workout'
-import type { Goal, Profile, SexAtBirth, UnitPreference, UserAllergenRow, UserDietTagRow, UserTargets } from '@/types/domain'
+import type { Goal, MealSlot, Profile, SexAtBirth, UnitPreference, UserAllergenRow, UserDietTagRow, UserTargets } from '@/types/domain'
 
 export const TOTAL_STEPS = 8
 
@@ -50,7 +50,17 @@ interface IntakeAnswers {
   allergenSlugs: string[]
   cookTimeCeilingMinutes: number | null
   householdSize: number
-  mealsPerDay: number
+  /** Which meals to plan at all — an explicit per-slot choice, not a
+   *  count (see UserTargets.activeMealSlots for why: a count + a fixed
+   *  priority order can never express "breakfast and lunch, no dinner",
+   *  only "the N highest-share slots"). Four flat booleans rather than a
+   *  MealSlot[] here purely so each one binds to its own checkbox with no
+   *  array-splice handler — toActiveMealSlots() below is the one place
+   *  that converts to the array shape every generator call actually wants. */
+  wantsBreakfast: boolean
+  wantsLunch: boolean
+  wantsDinner: boolean
+  wantsSnack: boolean
   // Step 8 — what you want
   goal: Goal | null
   fatLossRateKgPerWeek: number
@@ -76,12 +86,31 @@ function freshAnswers(): IntakeAnswers {
     allergenSlugs: [],
     cookTimeCeilingMinutes: null,
     householdSize: 1,
-    mealsPerDay: 3,
+    // Matches the old mealsPerDay=3 default's actual effect under the
+    // former count+priority scheme (dinner, lunch, breakfast survived;
+    // snack didn't) — same starting point, now arrived at explicitly.
+    wantsBreakfast: true,
+    wantsLunch: true,
+    wantsDinner: true,
+    wantsSnack: false,
     goal: null,
     fatLossRateKgPerWeek: DEFAULT_FAT_LOSS_RATE_KG_PER_WEEK,
     clinicianRaisedConcern: null,
     thoughtsFeelIntrusive: null,
   }
+}
+
+/** breakfast/lunch/dinner/snack checkboxes → the array every meal-
+ *  generator call and UserTargets.activeMealSlots actually want. Order
+ *  here doesn't matter — planActiveSlots (src/generators/meal/grid.ts)
+ *  re-sorts into its own canonical order regardless. */
+function toActiveMealSlots(a: Pick<IntakeAnswers, 'wantsBreakfast' | 'wantsLunch' | 'wantsDinner' | 'wantsSnack'>): MealSlot[] {
+  const slots: MealSlot[] = []
+  if (a.wantsBreakfast) slots.push('breakfast')
+  if (a.wantsLunch) slots.push('lunch')
+  if (a.wantsDinner) slots.push('dinner')
+  if (a.wantsSnack) slots.push('snack')
+  return slots
 }
 
 export const useIntakeStore = defineStore('intake', () => {
@@ -177,7 +206,7 @@ export const useIntakeStore = defineStore('intake', () => {
     4: true, // equipment can legitimately be "none" — no requirement to check
     5: true, // skippable by design
     6: answers.clinicianRaisedConcern !== null && answers.thoughtsFeelIntrusive !== null,
-    7: Boolean(answers.householdSize >= 1 && answers.mealsPerDay >= 1),
+    7: Boolean(answers.householdSize >= 1 && (answers.wantsBreakfast || answers.wantsLunch || answers.wantsDinner || answers.wantsSnack)),
     8: Boolean(answers.goal && !(answers.goal === 'fat_loss' && fatLossBlocked.value)),
   }))
 
@@ -290,7 +319,7 @@ export const useIntakeStore = defineStore('intake', () => {
         carbG: Math.round(macros.value!.carbG),
         daysPerWeek: answers.daysPerWeek!,
         sessionMinutes: answers.sessionMinutes!,
-        mealsPerDay: answers.mealsPerDay,
+        activeMealSlots: toActiveMealSlots(answers),
         cookTimeCeiling: answers.cookTimeCeilingMinutes,
       }
 
@@ -372,7 +401,7 @@ export const useIntakeStore = defineStore('intake', () => {
             userId,
             weekStartsOn,
             dailyTargets: { kcalTarget: targets.kcalTarget, proteinG: targets.proteinG, carbG: targets.carbG, fatG: targets.fatG },
-            mealsPerDay: targets.mealsPerDay,
+            activeMealSlots: targets.activeMealSlots,
             householdSize: profile.householdSize,
             cookTimeCeilingMinutes: targets.cookTimeCeiling,
             userAllergenIds: new Set(userAllergens.map((a) => a.allergenId)),
@@ -443,7 +472,10 @@ export const useIntakeStore = defineStore('intake', () => {
           carb_g: Math.round(macros.value.carbG),
           days_per_week: answers.daysPerWeek,
           session_minutes: answers.sessionMinutes,
-          meals_per_day: answers.mealsPerDay,
+          wants_breakfast: answers.wantsBreakfast,
+          wants_lunch: answers.wantsLunch,
+          wants_dinner: answers.wantsDinner,
+          wants_snack: answers.wantsSnack,
           cook_time_ceiling: answers.cookTimeCeilingMinutes,
         })
       } catch (err) {

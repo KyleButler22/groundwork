@@ -56,7 +56,7 @@ These aren't columns you'll find called out elsewhere, so they're listed here ex
 |---|---|
 | Missed sessions | **Decided 2026-08-27: the block slides.** See `plan_sessions.day_index` note above. |
 | Recipe corpus size | ~200 recipes is the floor for a year of non-repeating dinners; below ~80 the variety cooldown fights the macro constraints. See the `calisthenics-recipe-corpus` memory. |
-| Snacks in the plan | Real recipes vs. a flexible calorie allowance — affects whether `meals_per_day` is a hard slot count. Still open. |
+| Snacks in the plan | Real recipes vs. a flexible calorie allowance — affects whether a snack slot always needs its own recipe once selected. Still open. |
 | Multiple grocery lists per plan | Schema already allows it (`grocery_lists.meal_plan_id`); UI hasn't decided whether to expose it. |
 
 **Deliberately absent from v1:** food logging, barcode scanning, wearable/HealthKit sync, social features, user-submitted recipes, self-hosted exercise video. None of these constrain the schema above.

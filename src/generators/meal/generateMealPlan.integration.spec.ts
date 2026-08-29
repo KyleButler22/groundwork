@@ -95,7 +95,7 @@ function baseInput(overrides: Partial<GenerateMealPlanInput> = {}): GenerateMeal
     weekStartsOn: '2026-08-31', // a Monday
     // docs/intake.md's own worked example.
     dailyTargets: { kcalTarget: 1930, proteinG: 180, carbG: 190, fatG: 60 },
-    mealsPerDay: 4,
+    activeMealSlots: ['breakfast', 'lunch', 'dinner', 'snack'],
     householdSize: 2,
     cookTimeCeilingMinutes: 25,
     userAllergenIds: new Set(),
@@ -117,6 +117,21 @@ describe('generateMealPlan against the real corpus', () => {
     expect(entries.filter((e) => e.slot === 'lunch')).toHaveLength(7)
     expect(entries.filter((e) => e.slot === 'breakfast')).toHaveLength(7)
     expect(entries.filter((e) => e.slot === 'snack')).toHaveLength(7)
+    expect(warnings.filter((w) => w.startsWith('validation:'))).toEqual([])
+  })
+
+  it('plans dinner only against the real corpus, with no violations — the "just give me dinner ideas" case', () => {
+    const { entries, warnings } = generateMealPlan(baseInput({ activeMealSlots: ['dinner'] }))
+    expect(entries).toHaveLength(7)
+    expect(entries.every((e) => e.slot === 'dinner')).toBe(true)
+    expect(warnings.filter((w) => w.startsWith('validation:'))).toEqual([])
+  })
+
+  it('plans breakfast + dinner (no lunch, no snack) against the real corpus, with no violations', () => {
+    const { entries, warnings } = generateMealPlan(baseInput({ activeMealSlots: ['breakfast', 'dinner'] }))
+    expect(entries.filter((e) => e.slot === 'breakfast')).toHaveLength(7)
+    expect(entries.filter((e) => e.slot === 'dinner')).toHaveLength(7)
+    expect(entries.some((e) => e.slot === 'lunch' || e.slot === 'snack')).toBe(false)
     expect(warnings.filter((w) => w.startsWith('validation:'))).toEqual([])
   })
 

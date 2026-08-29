@@ -28,7 +28,10 @@ export interface GenerateMealPlanInput {
   userId: string
   weekStartsOn: string // date, ISO yyyy-mm-dd — the week's first day
   dailyTargets: DailyTargets
-  mealsPerDay: number
+  /** Which meal slots to plan at all this week — any non-empty subset of
+   *  breakfast/lunch/dinner/snack, the user's explicit choice (see
+   *  UserTargets.activeMealSlots), not a count. */
+  activeMealSlots: readonly MealSlot[]
   householdSize: number
   cookTimeCeilingMinutes: number | null
   userAllergenIds: ReadonlySet<number>
@@ -76,7 +79,7 @@ export function generateMealPlan(input: GenerateMealPlanInput): GenerateMealPlan
   const warnings: string[] = []
   const allRecipes = [...input.library.recipeById.values()]
 
-  const { slots: activeSlots, warnings: slotWarnings } = planActiveSlots(input.mealsPerDay)
+  const { slots: activeSlots, warnings: slotWarnings } = planActiveSlots(input.activeMealSlots)
   warnings.push(...slotWarnings)
 
   const neverServeAgainRecipeIds = new Set(

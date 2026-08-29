@@ -7,9 +7,10 @@ import type { MealSlot } from '@/types/domain'
  */
 
 /** breakfast 25 / lunch 30 / dinner 35 / snack 10 — the doc's worked-
- *  example table. When fewer than 4 slots are active (grid.ts's
- *  planActiveSlots, e.g. mealsPerDay < 4), these are rescaled to still sum
- *  to 100% across whichever slots remain — see allocateSlotTargets. */
+ *  example table. When the user hasn't asked for all 4 slots (grid.ts's
+ *  planActiveSlots — an explicit per-slot choice, not a count), these are
+ *  rescaled to still sum to 100% across whichever slots remain, in
+ *  whatever combination — see allocateSlotTargets. */
 const BASE_SHARE: Record<MealSlot, number> = { breakfast: 25, lunch: 30, dinner: 35, snack: 10 }
 
 export interface DailyTargets {

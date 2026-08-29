@@ -22,7 +22,7 @@ Each step writes to `intake_responses.answers` (raw JSONB). The "derives" column
 | 4 | What you have | Equipment multi-select with pictures (people don't know what a parallette is called) | `user_equipment` |
 | 5 | Where you're starting | 5 branching rep tests, one per movement pattern. Skippable, conservative fallback | `user_exercise_levels` (one row per pattern) |
 | 6 | Anything hurting | Injury/pain by region, plus pregnancy and doctor-flagged conditions | `user_limitations`, gates exercise selection |
-| 7 | Your kitchen | Diet pattern, allergies, hard dislikes, weeknight cook-time ceiling, household size, meals/day | `user_diet_tags`, `user_allergens`, `user_disliked_ingredients`, `profiles.household_size` |
+| 7 | Your kitchen | Diet pattern, allergies, hard dislikes, weeknight cook-time ceiling, household size, which meals to plan (any combination of breakfast/lunch/dinner/snack — not everyone wants all 3+, see `docs/mealgen.md`) | `user_diet_tags`, `user_allergens`, `user_disliked_ingredients`, `profiles.household_size`, `user_targets.wants_breakfast`/`wants_lunch`/`wants_dinner`/`wants_snack` |
 | 8 | **What you want** | Goals shown as outcomes with real numbers, computed from steps 1–7. Fat loss reveals a live rate control | `user_targets.goal`, `kcal_target`, `protein_g`/`fat_g`/`carb_g` |
 
 If the questionnaire needs to be shorter: steps 2 and 3 merge cleanly; step 5 can drop to 3 tests at some cost in placement accuracy. Eight steps is already near the edge of what people will finish.

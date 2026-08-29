@@ -51,9 +51,22 @@ create table user_targets (
   carb_g             int not null,
   days_per_week      smallint not null check (days_per_week between 1 and 7),
   session_minutes    smallint not null,
-  meals_per_day      smallint not null default 3,
+  -- Which of the 4 meal_plan_entries slots to plan at all — an explicit
+  -- per-slot choice, not a count (see docs/mealgen.md's "mealsPerDay"
+  -- entry): a count plus a fixed highest-share-first priority order can
+  -- express "just dinner" but never "breakfast and lunch, no dinner".
+  -- Four booleans directly on this row, not a join table the way
+  -- user_diet_tags/user_allergens are — the vocabulary here is a fixed
+  -- 4-value enum that will never grow, unlike diet tags or allergens.
+  wants_breakfast    boolean not null default true,
+  wants_lunch        boolean not null default true,
+  wants_dinner       boolean not null default true,
+  wants_snack        boolean not null default false,
   cook_time_ceiling  smallint,
-  computed_at        timestamptz not null default now()
+  computed_at        timestamptz not null default now(),
+  constraint at_least_one_meal_slot check (
+    wants_breakfast or wants_lunch or wants_dinner or wants_snack
+  )
 );
 
 create index on body_metrics (user_id, recorded_on desc);

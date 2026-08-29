@@ -12,7 +12,7 @@ function baseInput(overrides: Partial<GenerateMealPlanInput> = {}): GenerateMeal
     userId: 'u1',
     weekStartsOn: WEEK_STARTS_ON,
     dailyTargets: { kcalTarget: 1930, proteinG: 180, carbG: 200, fatG: 60 },
-    mealsPerDay: 4,
+    activeMealSlots: ['breakfast', 'lunch', 'dinner', 'snack'],
     householdSize: 1,
     cookTimeCeilingMinutes: null,
     userAllergenIds: new Set(),
@@ -62,9 +62,15 @@ describe('generateMealPlan', () => {
     expect(warnings.some((w) => w.includes('matching recipe(s) found even after every relaxation'))).toBe(true)
   })
 
-  it('mealsPerDay=1 plans dinner only', () => {
-    const { entries } = generateMealPlan(baseInput({ mealsPerDay: 1 }))
+  it('activeMealSlots: [dinner] plans dinner only', () => {
+    const { entries } = generateMealPlan(baseInput({ activeMealSlots: ['dinner'] }))
     expect(new Set(entries.map((e) => e.slot))).toEqual(new Set(['dinner']))
+  })
+
+  it('plans breakfast + lunch with no dinner at all — the combination a count-based mealsPerDay could never express', () => {
+    const { entries } = generateMealPlan(baseInput({ activeMealSlots: ['breakfast', 'lunch'] }))
+    expect(new Set(entries.map((e) => e.slot))).toEqual(new Set(['breakfast', 'lunch']))
+    expect(entries.some((e) => e.slot === 'dinner')).toBe(false)
   })
 })
 

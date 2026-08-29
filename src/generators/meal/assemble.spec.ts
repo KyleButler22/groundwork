@@ -11,7 +11,7 @@ import { meetsVarietyFloor } from './scoring'
 const WEEK_STARTS_ON = '2026-08-31' // a Monday — days 5,6 (Sat,Sun) are the weekend
 
 function baseInput(overrides: Partial<AssembleInput> = {}): AssembleInput {
-  const { slots } = planActiveSlots(4)
+  const { slots } = planActiveSlots(['breakfast', 'lunch', 'dinner', 'snack'])
   return {
     pool: testRecipes,
     library: testMealLibrary,

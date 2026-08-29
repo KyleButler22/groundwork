@@ -39,6 +39,24 @@ function toggleAllergen(slug: string) {
 function clearDietTags() {
   store.answers.dietTagSlugs = []
 }
+
+// Which meals the generator should plan at all — any combination, not a
+// count (see UserTargets.activeMealSlots / docs/mealgen.md's "mealsPerDay"
+// entry for why a count + fixed priority order could never express e.g.
+// "breakfast and lunch, no dinner"). Four independent toggles rather than
+// a multi-select array, same reasoning as the diet-tag/allergen buttons
+// above but simpler here since the vocabulary is fixed at exactly 4, not
+// a dynamic Dexie-backed list.
+type MealSlotAnswerKey = 'wantsBreakfast' | 'wantsLunch' | 'wantsDinner' | 'wantsSnack'
+const MEAL_SLOT_TOGGLES: { key: MealSlotAnswerKey; label: string }[] = [
+  { key: 'wantsBreakfast', label: 'Breakfast' },
+  { key: 'wantsLunch', label: 'Lunch' },
+  { key: 'wantsDinner', label: 'Dinner' },
+  { key: 'wantsSnack', label: 'Snack' },
+]
+function toggleMealSlot(key: MealSlotAnswerKey) {
+  store.answers[key] = !store.answers[key]
+}
 </script>
 
 <template>
@@ -90,6 +108,23 @@ function clearDietTags() {
           </button>
         </div>
       </fieldset>
+
+      <fieldset>
+        <legend class="text-sm font-medium text-ink">Which meals should we plan?</legend>
+        <p class="mt-0.5 text-xs text-muted">Any combination — dinner only is completely fine if that's the only one you want ideas for.</p>
+        <div class="mt-2 flex flex-wrap gap-2">
+          <button
+            v-for="meal in MEAL_SLOT_TOGGLES"
+            :key="meal.key"
+            type="button"
+            class="min-h-11 rounded-md border px-3 text-sm"
+            :class="store.answers[meal.key] ? 'border-train bg-train-wash text-train' : 'border-rule text-ink'"
+            @click="toggleMealSlot(meal.key)"
+          >
+            {{ meal.label }}
+          </button>
+        </div>
+      </fieldset>
     </template>
 
     <label class="block">
@@ -103,15 +138,9 @@ function clearDietTags() {
       </select>
     </label>
 
-    <div class="flex gap-3">
-      <label class="block flex-1">
-        <span class="text-sm font-medium text-ink">Cooking for how many people?</span>
-        <input v-model.number="store.answers.householdSize" type="number" min="1" inputmode="numeric" class="mt-1 min-h-11 w-full rounded-md border border-rule px-3 text-ink" />
-      </label>
-      <label class="block flex-1">
-        <span class="text-sm font-medium text-ink">Meals per day</span>
-        <input v-model.number="store.answers.mealsPerDay" type="number" min="1" max="6" inputmode="numeric" class="mt-1 min-h-11 w-full rounded-md border border-rule px-3 text-ink" />
-      </label>
-    </div>
+    <label class="block">
+      <span class="text-sm font-medium text-ink">Cooking for how many people?</span>
+      <input v-model.number="store.answers.householdSize" type="number" min="1" inputmode="numeric" class="mt-1 min-h-11 w-full rounded-md border border-rule px-3 text-ink" />
+    </label>
   </div>
 </template>

@@ -194,7 +194,7 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     return {
       userId,
       dailyTargets: { kcalTarget: ctx.targets.kcalTarget, proteinG: ctx.targets.proteinG, carbG: ctx.targets.carbG, fatG: ctx.targets.fatG },
-      mealsPerDay: ctx.targets.mealsPerDay,
+      activeMealSlots: ctx.targets.activeMealSlots,
       householdSize: ctx.profile?.householdSize ?? 1,
       cookTimeCeilingMinutes: ctx.targets.cookTimeCeiling,
       userAllergenIds: ctx.userAllergenIds,
