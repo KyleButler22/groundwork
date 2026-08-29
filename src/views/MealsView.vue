@@ -62,6 +62,15 @@ function canSwap(entry: MealPlanEntry): boolean {
         </button>
       </div>
 
+      <button
+        type="button"
+        class="mt-2 min-h-11 text-sm font-medium text-muted underline decoration-dotted disabled:opacity-40"
+        :disabled="store.generating"
+        @click="store.advanceToNextWeek(userId)"
+      >
+        {{ store.generating ? 'Working…' : 'Done with this week — plan the next one' }}
+      </button>
+
       <p v-if="store.error" class="mt-3 rounded-md border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">{{ store.error }}</p>
       <ul v-if="store.warnings.length" class="mt-3 space-y-1 rounded-md border border-rule bg-surface px-3 py-2 text-xs text-muted">
         <li v-for="(warning, i) in store.warnings" :key="i">{{ warning }}</li>

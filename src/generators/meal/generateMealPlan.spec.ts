@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
 import { testMealLibrary } from '@/generators/__fixtures__/testMealLibrary'
-import type { UserRecipeFeedback } from '@/types/domain'
+import type { MealPlanEntry, UserRecipeFeedback } from '@/types/domain'
 
-import { generateMealPlan, regenerateWeek, swapOneMeal, type GenerateMealPlanInput } from './generateMealPlan'
+import { aggregateServedRecipes, generateMealPlan, regenerateWeek, swapOneMeal, type GenerateMealPlanInput } from './generateMealPlan'
 
 const WEEK_STARTS_ON = '2026-08-31'
 
@@ -174,5 +174,41 @@ describe('swapOneMeal', () => {
         expect(after.leftoverOfId).toBeNull()
       }
     }
+  })
+})
+
+describe('aggregateServedRecipes', () => {
+  function dinnerEntry(overrides: Partial<MealPlanEntry> & Pick<MealPlanEntry, 'id' | 'recipeId' | 'serveOn'>): MealPlanEntry {
+    return { mealPlanId: 'plan-1', slot: 'dinner', servings: 1, isLocked: false, leftoverOfId: null, ...overrides }
+  }
+
+  it('counts one serving per entry, including leftovers — a leftover meal is still really eaten', () => {
+    const summary = aggregateServedRecipes([
+      dinnerEntry({ id: 'e1', recipeId: 'chicken-stir-fry', serveOn: '2026-08-31' }),
+      dinnerEntry({ id: 'e2', recipeId: 'chicken-stir-fry', serveOn: '2026-09-02', leftoverOfId: 'e1' }),
+    ])
+    expect(summary.get('chicken-stir-fry')).toEqual({ lastServedOn: '2026-09-02', serveCount: 2 })
+  })
+
+  it('takes the LATEST date across every entry for a recipe, not the first one found', () => {
+    const summary = aggregateServedRecipes([
+      dinnerEntry({ id: 'e1', recipeId: 'chicken-stir-fry', serveOn: '2026-09-02' }),
+      dinnerEntry({ id: 'e2', recipeId: 'chicken-stir-fry', serveOn: '2026-08-31' }), // out of order on purpose
+    ])
+    expect(summary.get('chicken-stir-fry')!.lastServedOn).toBe('2026-09-02')
+  })
+
+  it('tracks each recipe independently', () => {
+    const summary = aggregateServedRecipes([
+      dinnerEntry({ id: 'e1', recipeId: 'chicken-stir-fry', serveOn: '2026-08-31' }),
+      dinnerEntry({ id: 'e2', recipeId: 'beef-and-rice', serveOn: '2026-09-01' }),
+    ])
+    expect(summary.size).toBe(2)
+    expect(summary.get('chicken-stir-fry')).toEqual({ lastServedOn: '2026-08-31', serveCount: 1 })
+    expect(summary.get('beef-and-rice')).toEqual({ lastServedOn: '2026-09-01', serveCount: 1 })
+  })
+
+  it('is empty for an empty week', () => {
+    expect(aggregateServedRecipes([]).size).toBe(0)
   })
 })

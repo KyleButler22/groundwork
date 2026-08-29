@@ -3,8 +3,8 @@
 // from here, not reach into individual files — see ../workout/index.ts
 // for the same convention.
 
-export { generateMealPlan, regenerateWeek, swapOneMeal } from './generateMealPlan'
-export type { GenerateMealPlanInput, GenerateMealPlanResult } from './generateMealPlan'
+export { aggregateServedRecipes, generateMealPlan, regenerateWeek, swapOneMeal } from './generateMealPlan'
+export type { GenerateMealPlanInput, GenerateMealPlanResult, ServedRecipeSummary } from './generateMealPlan'
 
 export { buildMealLibrary, hasAllergen, hasDislikedIngredient, satisfiesDiet } from './library'
 export type { MealLibrary } from './library'

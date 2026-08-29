@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { loadMealGenerationContext, type MealGenerationContext } from '@/lib/mealGenerationContext'
 import { materializeGroceryList, materializeMealPlan } from '@/lib/materializeMealPlan'
 import {
+  aggregateServedRecipes,
   buildGroceryList,
   carryOverCheckedState,
   generateMealPlan,
@@ -13,7 +14,7 @@ import {
   type GenerateMealPlanInput,
   type GenerateMealPlanResult,
 } from '@/generators/meal'
-import type { Aisle, GroceryItem, GroceryList, Ingredient, MealPlan, MealPlanEntry, MealSlot, Recipe, Unit } from '@/types/domain'
+import type { Aisle, GroceryItem, GroceryList, Ingredient, MealPlan, MealPlanEntry, MealSlot, Recipe, Unit, UserRecipeFeedback } from '@/types/domain'
 
 const GENERATOR_VERSION = '2026-08-29.1'
 
@@ -242,6 +243,54 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     }
   }
 
+  /**
+   * "I'm done with this week, plan the next one" — archives the current
+   * plan (via generateFreshPlan's own archive-before-add) and generates a
+   * fresh one anchored to today, same as a first-ever generation. Unlike
+   * regenerate() (which replaces a week you haven't lived yet, so nothing
+   * in it should count as "served"), this assumes the outgoing week
+   * actually happened and records it: every recipe in it gets its
+   * user_recipe_feedback.last_served_on/serve_count updated, which is
+   * the ONLY place in the app that writes those fields today — the
+   * recency term in scoring.ts's scoreCandidate has been fully wired
+   * since the meal generator shipped but had no real data feeding it
+   * until now. Best-effort: a failure here is surfaced as a warning but
+   * never blocks generating the new week.
+   */
+  async function advanceToNextWeek(userId: string): Promise<boolean> {
+    // Read entries.value BEFORE generateFreshPlan() overwrites it below,
+    // and stash any failure to report AFTER — generateFreshPlan resets
+    // warnings.value itself, which would otherwise wipe this out.
+    let feedbackWarning: string | null = null
+
+    if (plan.value && entries.value.length > 0) {
+      try {
+        const servedByRecipe = aggregateServedRecipes(entries.value)
+
+        await db.transaction('rw', [db.userRecipeFeedback], async () => {
+          for (const [recipeId, served] of servedByRecipe) {
+            const previous = await db.userRecipeFeedback.get([userId, recipeId])
+            const updated: UserRecipeFeedback = {
+              userId,
+              recipeId,
+              rating: previous?.rating ?? null,
+              lastServedOn: served.lastServedOn,
+              serveCount: (previous?.serveCount ?? 0) + served.serveCount,
+              updatedAt: new Date().toISOString(),
+            }
+            await db.userRecipeFeedback.put(updated)
+          }
+        })
+      } catch (err) {
+        feedbackWarning = `Couldn't record what you served this week: ${(err as Error).message}`
+      }
+    }
+
+    const success = await generateFreshPlan(userId)
+    if (feedbackWarning) warnings.value = [...warnings.value, feedbackWarning]
+    return success
+  }
+
   async function regenerate(userId: string): Promise<boolean> {
     if (!plan.value) {
       error.value = 'No plan to regenerate yet.'
@@ -352,6 +401,7 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     aisleName,
     loadActivePlan,
     generateFreshPlan,
+    advanceToNextWeek,
     regenerate,
     swapMeal,
     toggleLock,

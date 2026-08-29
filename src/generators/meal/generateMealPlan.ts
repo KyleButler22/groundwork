@@ -277,3 +277,36 @@ export function swapOneMeal(
 
   return result
 }
+
+export interface ServedRecipeSummary {
+  lastServedOn: string
+  serveCount: number
+}
+
+/**
+ * Summarizes a completed (or completing) week's entries into what should
+ * be written to `user_recipe_feedback` for each recipe — the data
+ * scoring.ts's `recency()` term needs and, before this existed anywhere,
+ * never actually got. A recipe counts as served once per entry that uses
+ * it, fresh or leftover alike (a leftover meal is still a real instance
+ * of eating that food); `lastServedOn` takes the LATEST date across every
+ * entry for that recipe, not just the first one found.
+ *
+ * Deliberately not called from generateMealPlan/regenerateWeek/swapOneMeal
+ * themselves — those replace a week that mostly hasn't happened yet (the
+ * whole point of "regenerate" is undoing a choice before it's cooked), so
+ * writing "served" there would be wrong. It's meant for whatever caller
+ * represents "this week is over, start the next one" (see
+ * src/stores/mealPlan.ts's `advanceToNextWeek`).
+ */
+export function aggregateServedRecipes(entries: readonly MealPlanEntry[]): Map<string, ServedRecipeSummary> {
+  const summaryByRecipe = new Map<string, ServedRecipeSummary>()
+  for (const entry of entries) {
+    const existing = summaryByRecipe.get(entry.recipeId)
+    summaryByRecipe.set(entry.recipeId, {
+      lastServedOn: existing && existing.lastServedOn > entry.serveOn ? existing.lastServedOn : entry.serveOn,
+      serveCount: (existing?.serveCount ?? 0) + 1,
+    })
+  }
+  return summaryByRecipe
+}
