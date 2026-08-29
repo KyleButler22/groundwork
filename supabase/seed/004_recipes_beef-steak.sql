@@ -133,3 +133,130 @@ insert into recipe_meal_slots (recipe_id, slot) values
 insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'philly-style-beef-skillet'), (select id from diet_tags where slug = 'high_protein'));
 
+-- Chimichurri Steak (Argentinian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('chimichurri-steak', 'Chimichurri Steak', 'Grilled sirloin with a bright, herby Argentinian chimichurri.', 4, 15, 10, 'Argentinian', 2, 620.3, 50.9, 31.1, 31.6);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'chimichurri-steak'), (select id from ingredients where slug = 'beef_sirloin'), 700, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'chimichurri-steak'), (select id from ingredients where slug = 'parsley'), 0.5, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'chimichurri-steak'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'chimichurri-steak'), (select id from ingredients where slug = 'red_pepper_flakes'), 0.25, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'chimichurri-steak'), (select id from ingredients where slug = 'olive_oil'), 0.33, (select id from units where slug = 'cup'), null, false, 4),
+  ((select id from recipes where slug = 'chimichurri-steak'), (select id from ingredients where slug = 'balsamic_vinegar'), 2, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'chimichurri-steak'), (select id from ingredients where slug = 'potato'), 4, (select id from units where slug = 'each'), null, false, 6),
+  ((select id from recipes where slug = 'chimichurri-steak'), (select id from ingredients where slug = 'salt'), 1.5, (select id from units where slug = 'tsp'), null, false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'chimichurri-steak'), 1, 'Blend parsley, garlic, red pepper flakes, olive oil, balsamic vinegar, and half the salt for the chimichurri.'),
+  ((select id from recipes where slug = 'chimichurri-steak'), 2, 'Roast or boil the potatoes until tender.'),
+  ((select id from recipes where slug = 'chimichurri-steak'), 3, 'Season the steak with remaining salt and grill or sear, 3-4 minutes per side for medium-rare.'),
+  ((select id from recipes where slug = 'chimichurri-steak'), 4, 'Rest 5 minutes, slice against the grain, and spoon chimichurri generously over the top.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'chimichurri-steak'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'chimichurri-steak'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'chimichurri-steak'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'chimichurri-steak'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Vietnamese Beef Salad (Vietnamese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('vietnamese-beef-salad', 'Vietnamese Beef Salad', 'Seared steak over crisp greens with a tangy lime dressing.', 4, 15, 8, 'Vietnamese', 2, 328.3, 36.0, 14.5, 14.5);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from ingredients where slug = 'beef_flank_steak'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from ingredients where slug = 'lime'), 2, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from ingredients where slug = 'fish_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from ingredients where slug = 'honey'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 4),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from ingredients where slug = 'cucumber'), 1, (select id from units where slug = 'each'), 'sliced', false, 5),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from ingredients where slug = 'cherry_tomatoes'), 1, (select id from units where slug = 'cup'), null, false, 6),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from ingredients where slug = 'lettuce_romaine'), 4, (select id from units where slug = 'cup'), 'chopped', false, 7),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from ingredients where slug = 'cilantro'), 0.25, (select id from units where slug = 'cup'), null, false, 8),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from ingredients where slug = 'peanuts_roasted'), 0.25, (select id from units where slug = 'cup'), null, true, 9),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from ingredients where slug = 'vegetable_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), 1, 'Whisk lime juice, fish sauce, honey, and minced garlic for the dressing.'),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), 2, 'Sear the flank steak in oil, 3-4 minutes per side for medium-rare. Rest, then slice thinly against the grain.'),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), 3, 'Toss lettuce, cucumber, and tomatoes with half the dressing; divide among plates.'),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), 4, 'Top with the sliced steak, cilantro, and peanuts, and drizzle with remaining dressing.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), 'lunch'),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'vietnamese-beef-salad'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Lomo Saltado (Peruvian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('peruvian-lomo-saltado', 'Lomo Saltado', 'Peruvian stir-fried steak with tomatoes and fries over rice.', 4, 15, 20, 'Peruvian', 2, 564.2, 46.1, 43.2, 22.2);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from ingredients where slug = 'beef_sirloin'), 600, (select id from units where slug = 'g'), 'sliced into strips', false, 0),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from ingredients where slug = 'red_onion'), 1, (select id from units where slug = 'each'), 'sliced', false, 1),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from ingredients where slug = 'tomato'), 2, (select id from units where slug = 'each'), 'cut into wedges', false, 2),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 3),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from ingredients where slug = 'soy_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from ingredients where slug = 'balsamic_vinegar'), 1, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from ingredients where slug = 'potato'), 3, (select id from units where slug = 'each'), 'cut into fries', false, 6),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from ingredients where slug = 'vegetable_oil'), 3, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 8),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from ingredients where slug = 'cilantro'), 2, (select id from units where slug = 'tbsp'), null, true, 9),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), 1, 'Toss the potato fries with 1 tbsp oil and roast or fry until crisp.'),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), 2, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), 3, 'Heat remaining oil in a hot wok or skillet; sear the beef strips 2-3 minutes until browned.'),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), 4, 'Add onion and garlic, stir-fry 2 minutes, then add tomato, soy sauce, and balsamic vinegar; cook 2 more minutes.'),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), 5, 'Toss in the crispy fries just before serving over rice, garnished with cilantro.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'peruvian-lomo-saltado'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Thai-Style Beef Salad (Nam Tok) (Thai)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('thai-beef-salad', 'Thai-Style Beef Salad (Nam Tok)', 'Grilled steak tossed with lime, chili, and fresh herbs.', 4, 15, 8, 'Thai', 2, 398.9, 43.3, 21.5, 15.3);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'thai-beef-salad'), (select id from ingredients where slug = 'beef_sirloin'), 600, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'thai-beef-salad'), (select id from ingredients where slug = 'lime'), 2, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'thai-beef-salad'), (select id from ingredients where slug = 'fish_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'thai-beef-salad'), (select id from ingredients where slug = 'red_pepper_flakes'), 0.5, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'thai-beef-salad'), (select id from ingredients where slug = 'red_onion'), 0.5, (select id from units where slug = 'each'), 'thinly sliced', false, 4),
+  ((select id from recipes where slug = 'thai-beef-salad'), (select id from ingredients where slug = 'cilantro'), 0.25, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'thai-beef-salad'), (select id from ingredients where slug = 'lettuce_romaine'), 4, (select id from units where slug = 'cup'), 'chopped', false, 6),
+  ((select id from recipes where slug = 'thai-beef-salad'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 7),
+  ((select id from recipes where slug = 'thai-beef-salad'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'thai-beef-salad'), 1, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'thai-beef-salad'), 2, 'Sear the steak in oil, 3-4 minutes per side for medium-rare. Rest, then slice thinly.'),
+  ((select id from recipes where slug = 'thai-beef-salad'), 3, 'Whisk lime juice, fish sauce, and red pepper flakes.'),
+  ((select id from recipes where slug = 'thai-beef-salad'), 4, 'Toss the sliced steak with the dressing, red onion, and cilantro.'),
+  ((select id from recipes where slug = 'thai-beef-salad'), 5, 'Serve over the lettuce with rice on the side.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'thai-beef-salad'), 'lunch'),
+  ((select id from recipes where slug = 'thai-beef-salad'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'thai-beef-salad'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'thai-beef-salad'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'thai-beef-salad'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Steak and Eggs (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('steak-and-eggs', 'Steak and Eggs', 'A classic high-protein breakfast of seared steak and fried eggs.', 2, 5, 12, 'American', 1, 572.8, 60.4, 1.1, 35.2);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'steak-and-eggs'), (select id from ingredients where slug = 'beef_sirloin'), 350, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'steak-and-eggs'), (select id from ingredients where slug = 'egg'), 4, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'steak-and-eggs'), (select id from ingredients where slug = 'butter'), 1, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'steak-and-eggs'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'steak-and-eggs'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'steak-and-eggs'), (select id from ingredients where slug = 'black_pepper'), 0.5, (select id from units where slug = 'tsp'), null, false, 5);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'steak-and-eggs'), 1, 'Season the steak with salt and pepper. Sear in oil over high heat, 3 minutes per side for medium-rare. Rest 5 minutes, then slice.'),
+  ((select id from recipes where slug = 'steak-and-eggs'), 2, 'Fry the eggs in butter to your liking.'),
+  ((select id from recipes where slug = 'steak-and-eggs'), 3, 'Serve the sliced steak alongside the eggs.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'steak-and-eggs'), 'breakfast');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'steak-and-eggs'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'steak-and-eggs'), (select id from diet_tags where slug = 'high_protein'));
+

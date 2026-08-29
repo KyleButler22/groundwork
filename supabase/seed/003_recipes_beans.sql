@@ -170,3 +170,139 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'loaded-nachos'), (select id from diet_tags where slug = 'gluten_free')),
   ((select id from recipes where slug = 'loaded-nachos'), (select id from diet_tags where slug = 'high_protein'));
 
+-- Rajma (Kidney Bean Curry) (Indian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('indian-rajma', 'Rajma (Kidney Bean Curry)', 'North Indian spiced kidney beans, simmered until rich and thick.', 4, 10, 30, 'Indian', 1, 460.4, 21.6, 76.1, 8.5);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'indian-rajma'), (select id from ingredients where slug = 'pinto_beans_canned'), 2, (select id from units where slug = 'can'), 'or kidney beans if available', false, 0),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from ingredients where slug = 'ginger'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from ingredients where slug = 'cumin'), 1, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from ingredients where slug = 'garam_masala'), 1, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from ingredients where slug = 'turmeric'), 0.5, (select id from units where slug = 'tsp'), null, false, 6),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from ingredients where slug = 'tomato_paste'), 2, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 8),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 9),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from ingredients where slug = 'cilantro'), 2, (select id from units where slug = 'tbsp'), null, true, 10),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 11);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'indian-rajma'), 1, 'Heat oil; soften onion, garlic, and ginger, about 6 minutes.'),
+  ((select id from recipes where slug = 'indian-rajma'), 2, 'Add cumin, garam masala, and turmeric; cook 1 minute.'),
+  ((select id from recipes where slug = 'indian-rajma'), 3, 'Stir in tomato paste and the beans (with some liquid). Simmer 20 minutes, mashing some beans for thickness.'),
+  ((select id from recipes where slug = 'indian-rajma'), 4, 'Cook rice, season the beans with salt, garnish with cilantro, and serve over rice.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'indian-rajma'), 'dinner'),
+  ((select id from recipes where slug = 'indian-rajma'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'indian-rajma'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'indian-rajma'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Greek-Style Baked Beans (Greek)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('greek-gigantes-style-beans', 'Greek-Style Baked Beans', 'Large beans baked in a rich tomato and herb sauce.', 4, 10, 35, 'Greek', 1, 455.8, 21.7, 70.0, 11.7);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from ingredients where slug = 'pinto_beans_canned'), 2, (select id from units where slug = 'can'), null, false, 0),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from ingredients where slug = 'carrot'), 1, (select id from units where slug = 'each'), 'diced', false, 3),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from ingredients where slug = 'tomato_canned_diced'), 2, (select id from units where slug = 'can'), null, false, 4),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from ingredients where slug = 'oregano_dried'), 1, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from ingredients where slug = 'olive_oil'), 3, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from ingredients where slug = 'feta_cheese'), 0.33, (select id from units where slug = 'cup'), null, true, 7),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from ingredients where slug = 'parsley'), 2, (select id from units where slug = 'tbsp'), null, true, 8),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), 1, 'Preheat oven to 375°F (190°C). Heat 2 tbsp oil; soften onion, garlic, and carrot, about 6 minutes.'),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), 2, 'Stir in diced tomatoes, oregano, and salt; simmer 5 minutes.'),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), 3, 'Add beans, transfer to a baking dish, drizzle with remaining oil, and bake 25 minutes until bubbling.'),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), 4, 'Top with feta and parsley before serving.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), 'dinner'),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'greek-gigantes-style-beans'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Caribbean Rice and Peas (Caribbean)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('caribbean-rice-and-peas', 'Caribbean Rice and Peas', 'Coconut rice simmered with pinto beans and warm spice.', 4, 10, 25, 'Caribbean', 1, 492.8, 14.4, 57.2, 24.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), (select id from ingredients where slug = 'pinto_beans_canned'), 1, (select id from units where slug = 'can'), null, false, 0),
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), (select id from ingredients where slug = 'white_rice'), 1.5, (select id from units where slug = 'cup'), 'uncooked', false, 1),
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), (select id from ingredients where slug = 'coconut_milk'), 1, (select id from units where slug = 'can'), null, false, 2),
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), (select id from ingredients where slug = 'onion'), 0.5, (select id from units where slug = 'each'), null, false, 3),
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 4),
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), (select id from ingredients where slug = 'thyme_dried'), 1, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), (select id from ingredients where slug = 'green_onion'), 2, (select id from units where slug = 'each'), null, false, 6),
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), 1, 'Combine rice, coconut milk, 1 cup water, onion, garlic, thyme, and salt in a pot.'),
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), 2, 'Bring to a boil, then reduce heat, cover, and simmer 15-18 minutes until the rice is tender.'),
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), 3, 'Stir in the beans and warm through. Top with green onion.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), 'dinner'),
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'caribbean-rice-and-peas'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- White Bean and Kale Soup (Italian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('white-bean-and-kale-soup', 'White Bean and Kale Soup', 'A simple, hearty Tuscan-style bean and greens soup.', 4, 10, 25, 'Italian', 1, 403.4, 21.0, 63.9, 8.3);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from ingredients where slug = 'pinto_beans_canned'), 2, (select id from units where slug = 'can'), 'or cannellini beans if available', false, 0),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from ingredients where slug = 'carrot'), 1, (select id from units where slug = 'each'), 'diced', false, 3),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from ingredients where slug = 'kale'), 3, (select id from units where slug = 'cup'), 'chopped', false, 4),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from ingredients where slug = 'vegetable_broth'), 4, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from ingredients where slug = 'italian_seasoning'), 1, (select id from units where slug = 'tsp'), null, false, 6),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from ingredients where slug = 'parmesan_cheese'), 0.33, (select id from units where slug = 'cup'), null, true, 8),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), 1, 'Heat oil; soften onion, garlic, and carrot, about 6 minutes.'),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), 2, 'Add broth, beans, and italian seasoning. Simmer 15 minutes, mashing some beans for body.'),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), 3, 'Stir in kale and cook 3-4 minutes until wilted.'),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), 4, 'Season with salt and top with parmesan.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), 'lunch'),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'white-bean-and-kale-soup'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Refried Bean Tostadas (Mexican)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('refried-bean-tostadas', 'Refried Bean Tostadas', 'Crispy tostadas piled with refried-style beans and fresh toppings.', 4, 10, 15, 'Mexican', 1, 537.2, 26.0, 79.4, 14.3);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from ingredients where slug = 'pinto_beans_canned'), 2, (select id from units where slug = 'can'), null, false, 0),
+  ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 1),
+  ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from ingredients where slug = 'cumin'), 1, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from ingredients where slug = 'tortilla_corn'), 8, (select id from units where slug = 'each'), null, false, 3),
+  ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from ingredients where slug = 'lettuce_romaine'), 1, (select id from units where slug = 'cup'), 'shredded', false, 5),
+  ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from ingredients where slug = 'tomato'), 1, (select id from units where slug = 'each'), 'diced', false, 6),
+  ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from ingredients where slug = 'cheddar_cheese'), 0.5, (select id from units where slug = 'cup'), 'shredded', false, 7),
+  ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from ingredients where slug = 'sour_cream'), 0.25, (select id from units where slug = 'cup'), null, true, 8),
+  ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from ingredients where slug = 'salt'), 0.5, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'refried-bean-tostadas'), 1, 'Crisp the tortillas in a dry pan or oven until golden and crunchy.'),
+  ((select id from recipes where slug = 'refried-bean-tostadas'), 2, 'Heat 1 tbsp oil; sauté garlic, then add beans, cumin, and salt. Mash to a chunky paste, adding a splash of water if needed.'),
+  ((select id from recipes where slug = 'refried-bean-tostadas'), 3, 'Spread beans on the tostadas and top with lettuce, tomato, cheese, and sour cream.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'refried-bean-tostadas'), 'lunch'),
+  ((select id from recipes where slug = 'refried-bean-tostadas'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from diet_tags where slug = 'gluten_free'));
+

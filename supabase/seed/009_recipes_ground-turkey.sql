@@ -207,3 +207,79 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'turkey-and-rice-stuffed-cabbage'), (select id from diet_tags where slug = 'dairy_free')),
   ((select id from recipes where slug = 'turkey-and-rice-stuffed-cabbage'), (select id from diet_tags where slug = 'high_protein'));
 
+-- Turkey Larb (Thai)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('turkey-larb', 'Turkey Larb', 'A zesty Thai/Laotian minced turkey salad with lime and herbs.', 4, 15, 10, 'Thai', 2, 308.1, 27.6, 20.7, 13.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'turkey-larb'), (select id from ingredients where slug = 'ground_turkey'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'turkey-larb'), (select id from ingredients where slug = 'lime'), 2, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'turkey-larb'), (select id from ingredients where slug = 'fish_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'turkey-larb'), (select id from ingredients where slug = 'red_pepper_flakes'), 0.5, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'turkey-larb'), (select id from ingredients where slug = 'red_onion'), 0.5, (select id from units where slug = 'each'), 'thinly sliced', false, 4),
+  ((select id from recipes where slug = 'turkey-larb'), (select id from ingredients where slug = 'cilantro'), 0.25, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'turkey-larb'), (select id from ingredients where slug = 'lettuce_romaine'), 8, (select id from units where slug = 'each'), 'whole leaves, for wrapping', false, 6),
+  ((select id from recipes where slug = 'turkey-larb'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 7),
+  ((select id from recipes where slug = 'turkey-larb'), (select id from ingredients where slug = 'vegetable_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'turkey-larb'), 1, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'turkey-larb'), 2, 'Heat oil; cook the ground turkey through, breaking it up, about 7-8 minutes.'),
+  ((select id from recipes where slug = 'turkey-larb'), 3, 'Remove from heat and toss with lime juice, fish sauce, and red pepper flakes.'),
+  ((select id from recipes where slug = 'turkey-larb'), 4, 'Stir in red onion and cilantro.'),
+  ((select id from recipes where slug = 'turkey-larb'), 5, 'Serve in lettuce leaves alongside rice.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'turkey-larb'), 'lunch'),
+  ((select id from recipes where slug = 'turkey-larb'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'turkey-larb'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'turkey-larb'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Greek Turkey Meatball Bowls (Greek)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('greek-turkey-meatball-bowls', 'Greek Turkey Meatball Bowls', 'Baked oregano turkey meatballs over rice with tzatziki.', 4, 15, 20, 'Greek', 2, 326.4, 32.5, 23.8, 11.2);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), (select id from ingredients where slug = 'ground_turkey'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), (select id from ingredients where slug = 'panko_breadcrumbs'), 0.33, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), (select id from ingredients where slug = 'egg'), 1, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), (select id from ingredients where slug = 'oregano_dried'), 1, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 4),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), (select id from ingredients where slug = 'greek_yogurt'), 0.5, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), (select id from ingredients where slug = 'cucumber'), 0.5, (select id from units where slug = 'each'), 'diced', false, 6),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), (select id from ingredients where slug = 'lemon'), 1, (select id from units where slug = 'each'), null, false, 7),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 8),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), (select id from ingredients where slug = 'cherry_tomatoes'), 1, (select id from units where slug = 'cup'), null, false, 9),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), 1, 'Preheat oven to 400°F (200°C). Mix turkey, breadcrumbs, egg, oregano, minced garlic, and half the salt; form into 16 meatballs.'),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), 2, 'Bake 18-20 minutes until cooked through.'),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), 3, 'Mix yogurt, cucumber, lemon juice, and remaining salt for the sauce.'),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), 4, 'Cook rice and serve with the meatballs, cherry tomatoes, and yogurt sauce.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), 'dinner'),
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'greek-turkey-meatball-bowls'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Moroccan-Spiced Turkey Stuffed Peppers (Moroccan)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('moroccan-turkey-stuffed-peppers', 'Moroccan-Spiced Turkey Stuffed Peppers', 'Bell peppers stuffed with warm-spiced turkey and rice.', 4, 15, 40, 'Moroccan', 2, 325.0, 28.4, 22.6, 13.5);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), (select id from ingredients where slug = 'ground_turkey'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), (select id from ingredients where slug = 'bell_pepper_red'), 4, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), (select id from ingredients where slug = 'white_rice'), 0.5, (select id from units where slug = 'cup'), 'uncooked', false, 2),
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), (select id from ingredients where slug = 'onion'), 0.5, (select id from units where slug = 'each'), null, false, 3),
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), (select id from ingredients where slug = 'cumin'), 1, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), (select id from ingredients where slug = 'cinnamon'), 0.25, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), (select id from ingredients where slug = 'tomato_canned_diced'), 1, (select id from units where slug = 'can'), null, false, 6),
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), 1, 'Preheat oven to 375°F (190°C). Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), 2, 'Halve the peppers lengthwise and remove seeds; arrange in a baking dish.'),
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), 3, 'Cook turkey and onion in oil until browned; stir in rice, cumin, cinnamon, half the tomatoes, and salt.'),
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), 4, 'Fill the peppers, top with remaining tomatoes, cover with foil, and bake 30 minutes until tender.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), (select id from diet_tags where slug = 'dairy_free'));
+

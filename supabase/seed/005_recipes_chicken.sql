@@ -267,3 +267,110 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'chicken-shawarma-bowl'), (select id from diet_tags where slug = 'gluten_free')),
   ((select id from recipes where slug = 'chicken-shawarma-bowl'), (select id from diet_tags where slug = 'high_protein'));
 
+-- Thai Basil Chicken (Thai)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('thai-basil-chicken', 'Thai Basil Chicken', 'Spicy ground-style chicken stir-fry with garlic and basil.', 4, 15, 12, 'Thai', 2, 466.0, 41.5, 20.1, 23.5);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'thai-basil-chicken'), (select id from ingredients where slug = 'chicken_thigh'), 600, (select id from units where slug = 'g'), 'finely chopped', false, 0),
+  ((select id from recipes where slug = 'thai-basil-chicken'), (select id from ingredients where slug = 'garlic'), 4, (select id from units where slug = 'clove'), null, false, 1),
+  ((select id from recipes where slug = 'thai-basil-chicken'), (select id from ingredients where slug = 'red_pepper_flakes'), 0.5, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'thai-basil-chicken'), (select id from ingredients where slug = 'fish_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'thai-basil-chicken'), (select id from ingredients where slug = 'soy_sauce'), 1, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'thai-basil-chicken'), (select id from ingredients where slug = 'honey'), 1, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'thai-basil-chicken'), (select id from ingredients where slug = 'basil_fresh'), 1, (select id from units where slug = 'cup'), null, false, 6),
+  ((select id from recipes where slug = 'thai-basil-chicken'), (select id from ingredients where slug = 'vegetable_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'thai-basil-chicken'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 8),
+  ((select id from recipes where slug = 'thai-basil-chicken'), (select id from ingredients where slug = 'egg'), 4, (select id from units where slug = 'each'), 'fried, to top', true, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'thai-basil-chicken'), 1, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'thai-basil-chicken'), 2, 'Heat oil in a wok; fry garlic and red pepper flakes 30 seconds.'),
+  ((select id from recipes where slug = 'thai-basil-chicken'), 3, 'Add chicken and stir-fry until cooked through, about 6-7 minutes.'),
+  ((select id from recipes where slug = 'thai-basil-chicken'), 4, 'Stir in fish sauce, soy sauce, and honey; cook 1 minute.'),
+  ((select id from recipes where slug = 'thai-basil-chicken'), 5, 'Remove from heat and stir in basil until wilted. Serve over rice, topped with a fried egg if desired.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'thai-basil-chicken'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'thai-basil-chicken'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'thai-basil-chicken'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'thai-basil-chicken'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Jerk-Spiced Chicken Thighs (Caribbean)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('jerk-chicken', 'Jerk-Spiced Chicken Thighs', 'Warm-spiced Caribbean chicken thighs with a sweet heat.', 4, 15, 30, 'Caribbean', 2, 488.8, 47.2, 21.8, 22.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from ingredients where slug = 'chicken_thigh'), 700, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from ingredients where slug = 'lime'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from ingredients where slug = 'ginger'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from ingredients where slug = 'cinnamon'), 0.5, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from ingredients where slug = 'cayenne_pepper'), 0.5, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from ingredients where slug = 'thyme_dried'), 1, (select id from units where slug = 'tsp'), null, false, 6),
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from ingredients where slug = 'honey'), 1, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 8),
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 9),
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'jerk-chicken'), 1, 'Whisk lime juice, garlic, ginger, cinnamon, cayenne, thyme, honey, oil, and salt into a marinade. Coat the chicken and marinate at least 15 minutes.'),
+  ((select id from recipes where slug = 'jerk-chicken'), 2, 'Preheat oven to 400°F (200°C). Roast the chicken 25-30 minutes until cooked through (165°F / 74°C).'),
+  ((select id from recipes where slug = 'jerk-chicken'), 3, 'Cook rice according to package directions and serve alongside.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'jerk-chicken'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'jerk-chicken'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Chicken Provençal (French)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('chicken-provencal', 'Chicken Provençal', 'French-style braised chicken with tomatoes, olives, and herbs.', 4, 10, 35, 'French', 2, 544.1, 49.7, 31.1, 24.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'chicken-provencal'), (select id from ingredients where slug = 'chicken_thigh'), 700, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'chicken-provencal'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'chicken-provencal'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'chicken-provencal'), (select id from ingredients where slug = 'tomato_canned_diced'), 1, (select id from units where slug = 'can'), null, false, 3),
+  ((select id from recipes where slug = 'chicken-provencal'), (select id from ingredients where slug = 'kalamata_olives'), 0.33, (select id from units where slug = 'cup'), null, false, 4),
+  ((select id from recipes where slug = 'chicken-provencal'), (select id from ingredients where slug = 'italian_seasoning'), 1, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'chicken-provencal'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'chicken-provencal'), (select id from ingredients where slug = 'potato'), 3, (select id from units where slug = 'each'), null, false, 7),
+  ((select id from recipes where slug = 'chicken-provencal'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'chicken-provencal'), 1, 'Season chicken with salt. Sear in oil, about 5 minutes, then set aside.'),
+  ((select id from recipes where slug = 'chicken-provencal'), 2, 'Soften onion and garlic in the same pan, about 5 minutes.'),
+  ((select id from recipes where slug = 'chicken-provencal'), 3, 'Add diced tomatoes, olives, and italian seasoning. Return the chicken to the pan.'),
+  ((select id from recipes where slug = 'chicken-provencal'), 4, 'Cover and simmer 25 minutes until the chicken is cooked through.'),
+  ((select id from recipes where slug = 'chicken-provencal'), 5, 'Boil the potatoes until tender and serve alongside.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'chicken-provencal'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'chicken-provencal'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'chicken-provencal'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'chicken-provencal'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Teriyaki Chicken (Japanese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('teriyaki-chicken', 'Teriyaki Chicken', 'Pan-glazed chicken thighs in a simple homemade teriyaki sauce.', 4, 10, 15, 'Japanese', 1, 506.3, 48.0, 24.7, 22.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from ingredients where slug = 'chicken_thigh'), 700, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from ingredients where slug = 'soy_sauce'), 3, (select id from units where slug = 'tbsp'), null, false, 1),
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from ingredients where slug = 'honey'), 2, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from ingredients where slug = 'rice_vinegar'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from ingredients where slug = 'garlic'), 1, (select id from units where slug = 'clove'), null, false, 4),
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from ingredients where slug = 'ginger'), 1, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from ingredients where slug = 'cornstarch'), 1, (select id from units where slug = 'tsp'), null, false, 6),
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from ingredients where slug = 'vegetable_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 8),
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from ingredients where slug = 'green_onion'), 2, (select id from units where slug = 'each'), null, false, 9),
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from ingredients where slug = 'sesame_seeds'), 1, (select id from units where slug = 'tsp'), null, true, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'teriyaki-chicken'), 1, 'Whisk soy sauce, honey, rice vinegar, garlic, ginger, and cornstarch for the sauce.'),
+  ((select id from recipes where slug = 'teriyaki-chicken'), 2, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'teriyaki-chicken'), 3, 'Sear the chicken in oil, 5-6 minutes per side, until cooked through.'),
+  ((select id from recipes where slug = 'teriyaki-chicken'), 4, 'Pour the sauce into the pan and simmer 2 minutes until it thickens and coats the chicken.'),
+  ((select id from recipes where slug = 'teriyaki-chicken'), 5, 'Slice and serve over rice, topped with green onion and sesame seeds.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'teriyaki-chicken'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'teriyaki-chicken'), (select id from diet_tags where slug = 'high_protein'));
+

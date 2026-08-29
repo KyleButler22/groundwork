@@ -269,3 +269,108 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'beef-and-potato-hash'), (select id from diet_tags where slug = 'gluten_free')),
   ((select id from recipes where slug = 'beef-and-potato-hash'), (select id from diet_tags where slug = 'dairy_free'));
 
+-- Greek-Style Beef and Orzo Skillet (Greek)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('greek-beef-and-orzo', 'Greek-Style Beef and Orzo Skillet', 'One-pan spiced beef simmered with orzo, tomato, and feta.', 4, 10, 25, 'Greek', 1, 384.9, 30.8, 19.4, 20.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), (select id from ingredients where slug = 'ground_beef'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), (select id from ingredients where slug = 'couscous'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 3),
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), (select id from ingredients where slug = 'tomato_canned_diced'), 1, (select id from units where slug = 'can'), null, false, 4),
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), (select id from ingredients where slug = 'vegetable_broth'), 1.5, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), (select id from ingredients where slug = 'oregano_dried'), 1, (select id from units where slug = 'tsp'), null, false, 6),
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), (select id from ingredients where slug = 'feta_cheese'), 0.5, (select id from units where slug = 'cup'), 'crumbled', false, 7),
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 8),
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), 1, 'Heat oil; brown the ground beef with onion and garlic, about 7 minutes.'),
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), 2, 'Stir in couscous, diced tomatoes, broth, oregano, and salt.'),
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), 3, 'Bring to a simmer, cover, and cook 10 minutes until the couscous absorbs the liquid.'),
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), 4, 'Top with feta before serving.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'greek-beef-and-orzo'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Vietnamese-Style Ground Beef Noodle Bowl (Vietnamese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('vietnamese-beef-noodle-bowl', 'Vietnamese-Style Ground Beef Noodle Bowl', 'Savory beef over rice noodles with fresh herbs and lime.', 4, 15, 12, 'Vietnamese', 2, 372.4, 27.1, 29.4, 16.2);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), (select id from ingredients where slug = 'ground_beef'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 1),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), (select id from ingredients where slug = 'fish_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), (select id from ingredients where slug = 'soy_sauce'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), (select id from ingredients where slug = 'lime'), 2, (select id from units where slug = 'each'), null, false, 4),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), (select id from ingredients where slug = 'honey'), 1, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), (select id from ingredients where slug = 'rice_noodles'), 300, (select id from units where slug = 'g'), null, false, 6),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), (select id from ingredients where slug = 'cucumber'), 0.5, (select id from units where slug = 'each'), 'julienned', false, 7),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), (select id from ingredients where slug = 'cilantro'), 0.25, (select id from units where slug = 'cup'), null, false, 8),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), (select id from ingredients where slug = 'bean_sprouts'), 1, (select id from units where slug = 'cup'), null, true, 9),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), (select id from ingredients where slug = 'vegetable_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), 1, 'Cook rice noodles according to package directions; rinse and drain.'),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), 2, 'Heat oil; brown the ground beef with garlic, about 6-7 minutes.'),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), 3, 'Whisk fish sauce, soy sauce, lime juice, and honey for the dressing.'),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), 4, 'Divide noodles into bowls, top with beef, cucumber, bean sprouts, and cilantro, and drizzle with dressing.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'vietnamese-beef-noodle-bowl'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Brazilian-Style Beef and Rice (Brazilian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('brazilian-beef-and-rice', 'Brazilian-Style Beef and Rice', 'Garlicky seasoned ground beef over rice with black beans.', 4, 10, 25, 'Brazilian', 1, 538.7, 38.5, 59.1, 16.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), (select id from ingredients where slug = 'ground_beef'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), (select id from ingredients where slug = 'garlic'), 4, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), (select id from ingredients where slug = 'bell_pepper_green'), 1, (select id from units where slug = 'each'), null, false, 3),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), (select id from ingredients where slug = 'tomato_canned_diced'), 1, (select id from units where slug = 'can'), null, false, 4),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), (select id from ingredients where slug = 'black_beans_canned'), 1, (select id from units where slug = 'can'), null, false, 5),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), (select id from ingredients where slug = 'white_rice'), 1.5, (select id from units where slug = 'cup'), 'uncooked', false, 6),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), (select id from ingredients where slug = 'lime'), 1, (select id from units where slug = 'each'), null, false, 8),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), 1, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), 2, 'Heat oil; brown the beef with onion, garlic, and bell pepper, about 8 minutes.'),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), 3, 'Stir in diced tomatoes and simmer 10 minutes.'),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), 4, 'Warm the black beans separately and serve alongside the beef and rice with a squeeze of lime.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'brazilian-beef-and-rice'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Beef Keema (Indian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('indian-beef-keema', 'Beef Keema', 'Spiced ground beef simmered with peas, Indian-style.', 4, 10, 25, 'Indian', 2, 590.6, 36.2, 57.0, 22.7);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from ingredients where slug = 'ground_beef'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from ingredients where slug = 'ginger'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from ingredients where slug = 'garam_masala'), 1.5, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from ingredients where slug = 'turmeric'), 0.5, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from ingredients where slug = 'cumin'), 1, (select id from units where slug = 'tsp'), null, false, 6),
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from ingredients where slug = 'tomato_paste'), 2, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from ingredients where slug = 'peas'), 1, (select id from units where slug = 'cup'), null, false, 8),
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 9),
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from ingredients where slug = 'naan'), 4, (select id from units where slug = 'each'), null, false, 10),
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from ingredients where slug = 'cilantro'), 2, (select id from units where slug = 'tbsp'), null, true, 11),
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 12);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'indian-beef-keema'), 1, 'Heat oil; soften onion, garlic, and ginger, about 5 minutes.'),
+  ((select id from recipes where slug = 'indian-beef-keema'), 2, 'Add garam masala, turmeric, and cumin; cook 1 minute.'),
+  ((select id from recipes where slug = 'indian-beef-keema'), 3, 'Add ground beef and cook until browned, breaking it up as it cooks.'),
+  ((select id from recipes where slug = 'indian-beef-keema'), 4, 'Stir in tomato paste and peas; simmer 10 minutes. Season with salt.'),
+  ((select id from recipes where slug = 'indian-beef-keema'), 5, 'Garnish with cilantro and serve with warm naan.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'indian-beef-keema'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'indian-beef-keema'), (select id from diet_tags where slug = 'high_protein'));
+
