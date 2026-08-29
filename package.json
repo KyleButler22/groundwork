@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "verify:sql": "node scripts/verify-sql.mjs && node scripts/verify-movement-graph.mjs",
+    "gen:recipes": "node scripts/generate-recipes.mjs",
+    "verify:sql": "node scripts/verify-sql.mjs && node scripts/verify-movement-graph.mjs && node scripts/verify-food-reference.mjs && node scripts/verify-recipes.mjs",
     "verify": "npm run typecheck && npm run verify:sql && npm run test"
   },
   "dependencies": {

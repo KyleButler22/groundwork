@@ -137,6 +137,19 @@ try {
   console.log('(no supabase/seed directory yet — skipping seed checks)')
 }
 
+// Slug lookups resolve GLOBALLY across all seed files, not just within
+// the file doing the looking-up — 001_movement_library.sql is
+// self-contained, but every recipe file references ingredients defined
+// in 002_food_reference.sql, and that cross-file reference is the whole
+// point of factoring ingredients out once. Pass 1 builds one registry of
+// every slug inserted anywhere; pass 2 checks every file's lookups
+// against it. (An earlier per-file-only version of this check flagged
+// every recipe file's ingredient references as "missing" — a bug in the
+// checker, not the recipes; content that legitimately spans files needs
+// a global registry, not a per-file one.)
+const strippedByFile = new Map() // file -> comment-stripped sql
+const insertedSlugs = new Map() // table -> Set<slug>, global across all files
+
 for (const { file, sql: rawSql } of seedFiles) {
   const open = (rawSql.match(/\(/g) || []).length
   const close = (rawSql.match(/\)/g) || []).length
@@ -147,9 +160,8 @@ for (const { file, sql: rawSql } of seedFiles) {
   // splitting on `),\s*(` boundaries. Strip them before any structural
   // parsing below; the raw text is still what was checked above.
   const sql = stripLineComments(rawSql)
+  strippedByFile.set(file, sql)
 
-  // Track every slug inserted, per table, in insertion order.
-  const insertedSlugs = new Map() // table -> Set<slug>
   const insertRe = /insert into (\w+)\s*\(([^)]*)\)\s*values\s*([\s\S]*?);/g
   let im
   while ((im = insertRe.exec(sql))) {
@@ -168,9 +180,13 @@ for (const { file, sql: rawSql } of seedFiles) {
       }
     }
   }
+}
+
+for (const { file } of seedFiles) {
+  const sql = strippedByFile.get(file)
 
   // Every `(select id from TABLE where slug = 'X')` must reference a slug
-  // that was actually inserted into TABLE somewhere in this file.
+  // that was actually inserted into TABLE in SOME seed file.
   const lookupRe = /select id from (\w+) where slug\s*=\s*'([^']+)'/g
   let lm
   let lookups = 0
@@ -182,9 +198,9 @@ for (const { file, sql: rawSql } of seedFiles) {
     if (!set || !set.has(slug)) missingLookups.push(`${table}.${slug}`)
   }
   if (missingLookups.length) {
-    fail(`${file}: ${missingLookups.length} slug lookup(s) with no matching insert: ${missingLookups.slice(0, 10).join(', ')}${missingLookups.length > 10 ? '…' : ''}`)
+    fail(`${file}: ${missingLookups.length} slug lookup(s) with no matching insert anywhere: ${missingLookups.slice(0, 10).join(', ')}${missingLookups.length > 10 ? '…' : ''}`)
   } else {
-    ok(`${file}: all ${lookups} slug subquery lookups resolve to an insert in this file`)
+    ok(`${file}: all ${lookups} slug subquery lookups resolve to an insert somewhere in supabase/seed/`)
   }
 
   // Check-constraint conformance for a few high-value columns.
@@ -192,6 +208,12 @@ for (const { file, sql: rawSql } of seedFiles) {
   checkColumnValues(file, sql, 'progression_edges', 'kind', tables.get('progression_edges'))
   checkColumnValues(file, sql, 'exercise_contraindications', 'severity', tables.get('exercise_contraindications'))
   checkColumnValues(file, sql, 'movement_patterns', 'category', tables.get('movement_patterns'))
+  // Note: 'difficulty' uses `check (... between 1 and 3)`, which the
+  // `check (... in (...))` regex above doesn't capture — nothing to
+  // check here without teaching the table parser a second constraint
+  // shape, which isn't worth it for one column already range-enforced
+  // by Postgres itself once a real database exists.
+  checkColumnValues(file, sql, 'recipe_meal_slots', 'slot', tables.get('recipe_meal_slots'))
 }
 
 // Splits a `VALUES (...), (...), (...)` block into its top-level row
