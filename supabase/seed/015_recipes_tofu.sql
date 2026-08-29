@@ -172,3 +172,184 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'mapo-tofu'), (select id from diet_tags where slug = 'gluten_free')),
   ((select id from recipes where slug = 'mapo-tofu'), (select id from diet_tags where slug = 'dairy_free'));
 
+-- Tofu Satay Skewers (Thai)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('thai-tofu-satay', 'Tofu Satay Skewers', 'Grilled marinated tofu skewers with a peanut dipping sauce.', 4, 20, 10, 'Thai', 2, 321.9, 14.6, 26.5, 19.6);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'thai-tofu-satay'), (select id from ingredients where slug = 'tofu_firm'), 450, (select id from units where slug = 'g'), 'pressed and cubed', false, 0),
+  ((select id from recipes where slug = 'thai-tofu-satay'), (select id from ingredients where slug = 'curry_powder'), 1, (select id from units where slug = 'tsp'), null, false, 1),
+  ((select id from recipes where slug = 'thai-tofu-satay'), (select id from ingredients where slug = 'soy_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'thai-tofu-satay'), (select id from ingredients where slug = 'vegetable_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'thai-tofu-satay'), (select id from ingredients where slug = 'peanut_butter'), 3, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'thai-tofu-satay'), (select id from ingredients where slug = 'coconut_milk'), 0.33, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'thai-tofu-satay'), (select id from ingredients where slug = 'lime'), 1, (select id from units where slug = 'each'), null, false, 6),
+  ((select id from recipes where slug = 'thai-tofu-satay'), (select id from ingredients where slug = 'honey'), 1, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'thai-tofu-satay'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'thai-tofu-satay'), 1, 'Toss the tofu with curry powder, soy sauce, and oil; thread onto skewers.'),
+  ((select id from recipes where slug = 'thai-tofu-satay'), 2, 'Whisk peanut butter, coconut milk, lime juice, and honey for the dipping sauce.'),
+  ((select id from recipes where slug = 'thai-tofu-satay'), 3, 'Grill or broil the skewers 8-10 minutes, turning occasionally, until lightly charred.'),
+  ((select id from recipes where slug = 'thai-tofu-satay'), 4, 'Cook rice and serve the skewers with the peanut sauce.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'thai-tofu-satay'), 'dinner'),
+  ((select id from recipes where slug = 'thai-tofu-satay'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'thai-tofu-satay'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'thai-tofu-satay'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'thai-tofu-satay'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Korean-Style Soft Tofu Stew (Korean)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('korean-tofu-stew', 'Korean-Style Soft Tofu Stew', 'A spicy, comforting stew built around silky tofu.', 4, 10, 20, 'Korean', 2, 214.1, 11.8, 20.8, 10.3);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from ingredients where slug = 'tofu_firm'), 450, (select id from units where slug = 'g'), 'cubed', false, 0),
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from ingredients where slug = 'onion'), 0.5, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from ingredients where slug = 'red_pepper_flakes'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from ingredients where slug = 'soy_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from ingredients where slug = 'sesame_oil'), 1, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from ingredients where slug = 'vegetable_broth'), 2, (select id from units where slug = 'cup'), null, false, 6),
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from ingredients where slug = 'egg'), 1, (select id from units where slug = 'each'), null, true, 7),
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from ingredients where slug = 'green_onion'), 2, (select id from units where slug = 'each'), null, false, 8),
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 9),
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from ingredients where slug = 'vegetable_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'korean-tofu-stew'), 1, 'Heat oil; soften onion and garlic, about 4 minutes.'),
+  ((select id from recipes where slug = 'korean-tofu-stew'), 2, 'Stir in red pepper flakes, then add broth and soy sauce; simmer 5 minutes.'),
+  ((select id from recipes where slug = 'korean-tofu-stew'), 3, 'Gently add the tofu and simmer 8-10 minutes.'),
+  ((select id from recipes where slug = 'korean-tofu-stew'), 4, 'Crack in the egg if using and simmer 1-2 minutes until just set. Finish with sesame oil and green onion; serve over rice.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'korean-tofu-stew'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'korean-tofu-stew'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Vietnamese-Style Lemon Tofu (Vietnamese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('vietnamese-tofu-and-lemongrass', 'Vietnamese-Style Lemon Tofu', 'Crispy tofu tossed in a bright lemon-garlic sauce.', 4, 15, 15, 'Vietnamese', 2, 308.2, 11.2, 33.3, 15.8);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), (select id from ingredients where slug = 'tofu_firm'), 450, (select id from units where slug = 'g'), 'pressed and cubed', false, 0),
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), (select id from ingredients where slug = 'cornstarch'), 3, (select id from units where slug = 'tbsp'), null, false, 1),
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), (select id from ingredients where slug = 'lemon'), 1, (select id from units where slug = 'each'), null, false, 3),
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), (select id from ingredients where slug = 'fish_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), (select id from ingredients where slug = 'honey'), 2, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), (select id from ingredients where slug = 'vegetable_oil'), 3, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 7),
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), (select id from ingredients where slug = 'cilantro'), 2, (select id from units where slug = 'tbsp'), null, true, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), 1, 'Toss the tofu in cornstarch. Fry in oil until golden and crisp on all sides, about 8 minutes.'),
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), 2, 'Whisk garlic, lemon juice, fish sauce, and honey.'),
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), 3, 'Pour the sauce over the crispy tofu and toss to coat.'),
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), 4, 'Cook rice, garnish with cilantro, and serve.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'vietnamese-tofu-and-lemongrass'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Tofu Shawarma Wrap (Middle Eastern)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('middle-eastern-tofu-shawarma', 'Tofu Shawarma Wrap', 'Spiced roasted tofu wrapped with vegetables and tahini sauce.', 4, 15, 20, 'Middle Eastern', 1, 371.0, 16.5, 40.9, 17.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from ingredients where slug = 'tofu_firm'), 450, (select id from units where slug = 'g'), 'sliced', false, 0),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from ingredients where slug = 'cumin'), 1, (select id from units where slug = 'tsp'), null, false, 1),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from ingredients where slug = 'coriander_ground'), 1, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from ingredients where slug = 'turmeric'), 0.5, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from ingredients where slug = 'tahini'), 2, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from ingredients where slug = 'lemon'), 1, (select id from units where slug = 'each'), null, false, 6),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from ingredients where slug = 'pita_bread'), 4, (select id from units where slug = 'each'), null, false, 7),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from ingredients where slug = 'lettuce_romaine'), 1, (select id from units where slug = 'cup'), 'shredded', false, 8),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from ingredients where slug = 'tomato'), 1, (select id from units where slug = 'each'), 'diced', false, 9),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), 1, 'Preheat oven to 400°F (220°C). Toss tofu with cumin, coriander, turmeric, oil, and salt.'),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), 2, 'Roast 20 minutes, turning once, until crisped at the edges.'),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), 3, 'Whisk tahini and lemon juice with a splash of water for the sauce.'),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), 4, 'Warm the pita and fill with tofu, lettuce, tomato, and tahini sauce.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), 'lunch'),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'middle-eastern-tofu-shawarma'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- BBQ Tofu Bowl (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('american-tofu-bowl', 'BBQ Tofu Bowl', 'Sticky BBQ-glazed tofu over rice with corn and greens.', 4, 10, 20, 'American', 1, 306.0, 12.3, 38.1, 13.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'american-tofu-bowl'), (select id from ingredients where slug = 'tofu_firm'), 450, (select id from units where slug = 'g'), 'cubed', false, 0),
+  ((select id from recipes where slug = 'american-tofu-bowl'), (select id from ingredients where slug = 'cornstarch'), 2, (select id from units where slug = 'tbsp'), null, false, 1),
+  ((select id from recipes where slug = 'american-tofu-bowl'), (select id from ingredients where slug = 'bbq_sauce'), 0.33, (select id from units where slug = 'cup'), null, false, 2),
+  ((select id from recipes where slug = 'american-tofu-bowl'), (select id from ingredients where slug = 'vegetable_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'american-tofu-bowl'), (select id from ingredients where slug = 'corn'), 1, (select id from units where slug = 'cup'), null, false, 4),
+  ((select id from recipes where slug = 'american-tofu-bowl'), (select id from ingredients where slug = 'kale'), 2, (select id from units where slug = 'cup'), 'chopped', false, 5),
+  ((select id from recipes where slug = 'american-tofu-bowl'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 6),
+  ((select id from recipes where slug = 'american-tofu-bowl'), (select id from ingredients where slug = 'salt'), 0.5, (select id from units where slug = 'tsp'), null, false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'american-tofu-bowl'), 1, 'Toss the tofu in cornstarch and fry in oil until golden and crisp, about 8 minutes.'),
+  ((select id from recipes where slug = 'american-tofu-bowl'), 2, 'Toss the crisped tofu in BBQ sauce.'),
+  ((select id from recipes where slug = 'american-tofu-bowl'), 3, 'Cook rice; sauté the kale briefly until wilted.'),
+  ((select id from recipes where slug = 'american-tofu-bowl'), 4, 'Build bowls with rice, kale, corn, and the BBQ tofu.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'american-tofu-bowl'), 'dinner'),
+  ((select id from recipes where slug = 'american-tofu-bowl'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'american-tofu-bowl'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'american-tofu-bowl'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'american-tofu-bowl'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'american-tofu-bowl'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Tofu Pad See Ew (Thai)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('tofu-pad-see-ew', 'Tofu Pad See Ew', 'Wide noodles stir-fried with crispy tofu and broccoli.', 4, 15, 15, 'Thai', 2, 318.9, 14.9, 27.2, 17.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), (select id from ingredients where slug = 'tofu_firm'), 400, (select id from units where slug = 'g'), 'cubed', false, 0),
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), (select id from ingredients where slug = 'rice_noodles'), 300, (select id from units where slug = 'g'), null, false, 1),
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), (select id from ingredients where slug = 'broccoli'), 250, (select id from units where slug = 'g'), null, false, 2),
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 3),
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), (select id from ingredients where slug = 'egg'), 2, (select id from units where slug = 'each'), null, false, 4),
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), (select id from ingredients where slug = 'soy_sauce'), 3, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), (select id from ingredients where slug = 'oyster_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), (select id from ingredients where slug = 'vegetable_oil'), 3, (select id from units where slug = 'tbsp'), null, false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), 1, 'Cook rice noodles according to package directions.'),
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), 2, 'Fry the tofu in oil until golden on most sides, about 6 minutes; remove.'),
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), 3, 'Scramble the eggs softly in the same pan, push aside, then add garlic and broccoli; stir-fry 3 minutes.'),
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), 4, 'Add the noodles, tofu, soy sauce, and oyster sauce; toss over high heat 2-3 minutes.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'tofu-pad-see-ew'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Tofu Bánh Mì (Vietnamese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('tofu-banh-mi', 'Tofu Bánh Mì', 'Crispy marinated tofu on a baguette with pickled vegetables.', 4, 15, 12, 'Vietnamese', 2, 289.8, 11.6, 23.3, 17.7);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'tofu-banh-mi'), (select id from ingredients where slug = 'tofu_firm'), 400, (select id from units where slug = 'g'), 'sliced', false, 0),
+  ((select id from recipes where slug = 'tofu-banh-mi'), (select id from ingredients where slug = 'soy_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 1),
+  ((select id from recipes where slug = 'tofu-banh-mi'), (select id from ingredients where slug = 'honey'), 1, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'tofu-banh-mi'), (select id from ingredients where slug = 'carrot'), 1, (select id from units where slug = 'each'), 'julienned', false, 3),
+  ((select id from recipes where slug = 'tofu-banh-mi'), (select id from ingredients where slug = 'cucumber'), 0.5, (select id from units where slug = 'each'), 'julienned', false, 4),
+  ((select id from recipes where slug = 'tofu-banh-mi'), (select id from ingredients where slug = 'rice_vinegar'), 2, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'tofu-banh-mi'), (select id from ingredients where slug = 'mayonnaise'), 2, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'tofu-banh-mi'), (select id from ingredients where slug = 'bread_sandwich'), 4, (select id from units where slug = 'slice'), 'or a baguette if available', false, 7),
+  ((select id from recipes where slug = 'tofu-banh-mi'), (select id from ingredients where slug = 'cilantro'), 0.25, (select id from units where slug = 'cup'), null, false, 8),
+  ((select id from recipes where slug = 'tofu-banh-mi'), (select id from ingredients where slug = 'vegetable_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'tofu-banh-mi'), 1, 'Toss carrot and cucumber with rice vinegar; set aside to quick-pickle.'),
+  ((select id from recipes where slug = 'tofu-banh-mi'), 2, 'Toss tofu with soy sauce and honey; pan-fry in oil until golden and crisped, about 8 minutes.'),
+  ((select id from recipes where slug = 'tofu-banh-mi'), 3, 'Spread mayonnaise on the bread, layer with tofu, pickled vegetables, and cilantro.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'tofu-banh-mi'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'tofu-banh-mi'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'tofu-banh-mi'), (select id from diet_tags where slug = 'dairy_free'));
+

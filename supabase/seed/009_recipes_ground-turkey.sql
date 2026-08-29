@@ -283,3 +283,124 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), (select id from diet_tags where slug = 'gluten_free')),
   ((select id from recipes where slug = 'moroccan-turkey-stuffed-peppers'), (select id from diet_tags where slug = 'dairy_free'));
 
+-- Turkey and Black Bean Chili (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('turkey-and-black-bean-chili', 'Turkey and Black Bean Chili', 'A lighter chili built on ground turkey and black beans.', 6, 10, 35, 'American', 1, 426.5, 37.9, 44.0, 12.3);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), (select id from ingredients where slug = 'ground_turkey'), 700, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), (select id from ingredients where slug = 'chili_powder'), 2, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), (select id from ingredients where slug = 'cumin'), 1, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), (select id from ingredients where slug = 'tomato_canned_diced'), 2, (select id from units where slug = 'can'), null, false, 5),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), (select id from ingredients where slug = 'black_beans_canned'), 2, (select id from units where slug = 'can'), null, false, 6),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), (select id from ingredients where slug = 'cheddar_cheese'), 0.5, (select id from units where slug = 'cup'), null, true, 8),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), (select id from ingredients where slug = 'salt'), 1.5, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), 1, 'Heat oil; soften onion and garlic, about 5 minutes.'),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), 2, 'Add ground turkey and cook until no longer pink.'),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), 3, 'Stir in chili powder and cumin, then diced tomatoes and black beans. Simmer uncovered 25 minutes.'),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), 4, 'Season with salt and top with cheddar if using.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), 'dinner'),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'turkey-and-black-bean-chili'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Turkey Katsu (Japanese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('turkey-katsu', 'Turkey Katsu', 'Crispy breaded turkey cutlets, Japanese katsu-style.', 4, 15, 15, 'Japanese', 2, 571.8, 53.6, 45.9, 18.3);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'turkey-katsu'), (select id from ingredients where slug = 'turkey_breast'), 600, (select id from units where slug = 'g'), 'pounded thin', false, 0),
+  ((select id from recipes where slug = 'turkey-katsu'), (select id from ingredients where slug = 'all_purpose_flour'), 0.5, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'turkey-katsu'), (select id from ingredients where slug = 'egg'), 2, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'turkey-katsu'), (select id from ingredients where slug = 'panko_breadcrumbs'), 1, (select id from units where slug = 'cup'), null, false, 3),
+  ((select id from recipes where slug = 'turkey-katsu'), (select id from ingredients where slug = 'vegetable_oil'), 4, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'turkey-katsu'), (select id from ingredients where slug = 'cabbage'), 0.25, (select id from units where slug = 'each'), 'shredded', false, 5),
+  ((select id from recipes where slug = 'turkey-katsu'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 6),
+  ((select id from recipes where slug = 'turkey-katsu'), (select id from ingredients where slug = 'bbq_sauce'), 0.25, (select id from units where slug = 'cup'), 'or tonkatsu sauce if available', false, 7),
+  ((select id from recipes where slug = 'turkey-katsu'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'turkey-katsu'), 1, 'Season turkey with salt. Dredge in flour, then egg, then breadcrumbs.'),
+  ((select id from recipes where slug = 'turkey-katsu'), 2, 'Pan-fry in oil, 3-4 minutes per side, until golden and cooked through.'),
+  ((select id from recipes where slug = 'turkey-katsu'), 3, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'turkey-katsu'), 4, 'Slice the cutlets and serve over rice with shredded cabbage and sauce.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'turkey-katsu'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'turkey-katsu'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'turkey-katsu'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Turkey Shepherd's Pie (British)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('turkey-shepherds-pie', 'Turkey Shepherd''s Pie', 'A comforting baked dish of turkey and vegetables under mashed potato.', 6, 20, 35, 'British', 2, 402.8, 28.9, 33.6, 17.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), (select id from ingredients where slug = 'ground_turkey'), 700, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), (select id from ingredients where slug = 'carrot'), 2, (select id from units where slug = 'each'), 'diced', false, 2),
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), (select id from ingredients where slug = 'peas'), 1, (select id from units where slug = 'cup'), null, false, 3),
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), (select id from ingredients where slug = 'tomato_paste'), 2, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), (select id from ingredients where slug = 'chicken_broth'), 1, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), (select id from ingredients where slug = 'potato'), 5, (select id from units where slug = 'each'), null, false, 6),
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), (select id from ingredients where slug = 'butter'), 3, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), (select id from ingredients where slug = 'milk'), 0.33, (select id from units where slug = 'cup'), null, false, 8),
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 9),
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), (select id from ingredients where slug = 'salt'), 1.5, (select id from units where slug = 'tsp'), null, false, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), 1, 'Boil the potatoes until tender, then mash with butter, milk, and half the salt.'),
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), 2, 'Preheat oven to 400°F (200°C). Heat oil; brown turkey with onion and carrot, about 8 minutes.'),
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), 3, 'Stir in tomato paste, broth, peas, and remaining salt; simmer 10 minutes.'),
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), 4, 'Transfer to a baking dish, top with mashed potato, and bake 20 minutes until golden.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'turkey-shepherds-pie'), (select id from diet_tags where slug = 'gluten_free'));
+
+-- Turkey and Quinoa Stuffed Zucchini (Mediterranean)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('turkey-and-quinoa-stuffed-zucchini', 'Turkey and Quinoa Stuffed Zucchini', 'Zucchini boats filled with seasoned turkey and quinoa.', 4, 15, 30, 'Mediterranean', 2, 267.7, 24.6, 17.4, 12.0);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), (select id from ingredients where slug = 'zucchini'), 4, (select id from units where slug = 'each'), null, false, 0),
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), (select id from ingredients where slug = 'ground_turkey'), 400, (select id from units where slug = 'g'), null, false, 1),
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), (select id from ingredients where slug = 'quinoa'), 0.5, (select id from units where slug = 'cup'), 'uncooked', false, 2),
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), (select id from ingredients where slug = 'onion'), 0.5, (select id from units where slug = 'each'), null, false, 3),
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 4),
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), (select id from ingredients where slug = 'tomato_canned_diced'), 1, (select id from units where slug = 'can'), null, false, 5),
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), (select id from ingredients where slug = 'feta_cheese'), 0.33, (select id from units where slug = 'cup'), null, true, 6),
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), (select id from ingredients where slug = 'oregano_dried'), 1, (select id from units where slug = 'tsp'), null, false, 8),
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), 1, 'Preheat oven to 375°F (190°C). Halve zucchini lengthwise and scoop out the centers, leaving a shell.'),
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), 2, 'Cook quinoa according to package directions.'),
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), 3, 'Heat oil; brown turkey with onion and garlic. Stir in quinoa, half the tomatoes, oregano, and salt.'),
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), 4, 'Fill the zucchini shells, top with remaining tomatoes and feta, and bake 20-25 minutes until tender.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'turkey-and-quinoa-stuffed-zucchini'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Turkey Club Sandwich (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('turkey-club-sandwich', 'Turkey Club Sandwich', 'A classic stacked sandwich with turkey, lettuce, and tomato.', 2, 10, 5, 'American', 1, 529.9, 53.4, 44.1, 14.5);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'turkey-club-sandwich'), (select id from ingredients where slug = 'turkey_breast'), 300, (select id from units where slug = 'g'), 'cooked and sliced', false, 0),
+  ((select id from recipes where slug = 'turkey-club-sandwich'), (select id from ingredients where slug = 'bread_sandwich'), 6, (select id from units where slug = 'slice'), null, false, 1),
+  ((select id from recipes where slug = 'turkey-club-sandwich'), (select id from ingredients where slug = 'lettuce_romaine'), 2, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'turkey-club-sandwich'), (select id from ingredients where slug = 'tomato'), 1, (select id from units where slug = 'each'), 'sliced', false, 3),
+  ((select id from recipes where slug = 'turkey-club-sandwich'), (select id from ingredients where slug = 'mayonnaise'), 2, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'turkey-club-sandwich'), (select id from ingredients where slug = 'cheddar_cheese'), 2, (select id from units where slug = 'slice'), null, true, 5);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'turkey-club-sandwich'), 1, 'Toast the bread slices.'),
+  ((select id from recipes where slug = 'turkey-club-sandwich'), 2, 'Spread mayonnaise on the bread, then layer turkey, lettuce, tomato, and cheese between the slices.'),
+  ((select id from recipes where slug = 'turkey-club-sandwich'), 3, 'Cut into halves or quarters and serve.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'turkey-club-sandwich'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'turkey-club-sandwich'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'turkey-club-sandwich'), (select id from diet_tags where slug = 'high_protein'));
+

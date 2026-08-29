@@ -220,3 +220,200 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'salmon-and-avocado-salad'), (select id from diet_tags where slug = 'dairy_free')),
   ((select id from recipes where slug = 'salmon-and-avocado-salad'), (select id from diet_tags where slug = 'high_protein'));
 
+-- Peruvian-Style Ceviche (Peruvian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('peruvian-ceviche', 'Peruvian-Style Ceviche', 'Citrus-cured white fish with red onion and cilantro.', 4, 20, 0, 'Peruvian', 2, 136.4, 23.3, 11.2, 1.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'peruvian-ceviche'), (select id from ingredients where slug = 'cod_fillet'), 500, (select id from units where slug = 'g'), 'very fresh, cubed small', false, 0),
+  ((select id from recipes where slug = 'peruvian-ceviche'), (select id from ingredients where slug = 'lime'), 5, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'peruvian-ceviche'), (select id from ingredients where slug = 'red_onion'), 0.5, (select id from units where slug = 'each'), 'thinly sliced', false, 2),
+  ((select id from recipes where slug = 'peruvian-ceviche'), (select id from ingredients where slug = 'jalapeno'), 1, (select id from units where slug = 'each'), 'thinly sliced', false, 3),
+  ((select id from recipes where slug = 'peruvian-ceviche'), (select id from ingredients where slug = 'cilantro'), 0.25, (select id from units where slug = 'cup'), null, false, 4),
+  ((select id from recipes where slug = 'peruvian-ceviche'), (select id from ingredients where slug = 'sweet_potato'), 1, (select id from units where slug = 'each'), null, true, 5),
+  ((select id from recipes where slug = 'peruvian-ceviche'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 6);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'peruvian-ceviche'), 1, 'Combine the cubed fish with lime juice, ensuring it is fully submerged. Refrigerate 15-20 minutes until opaque throughout ("cooked" by the acid).'),
+  ((select id from recipes where slug = 'peruvian-ceviche'), 2, 'Stir in red onion, jalapeño, cilantro, and salt.'),
+  ((select id from recipes where slug = 'peruvian-ceviche'), 3, 'If using, boil the sweet potato until tender and serve alongside.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'peruvian-ceviche'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'peruvian-ceviche'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'peruvian-ceviche'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'peruvian-ceviche'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Chinese-Style Steamed Fish (Chinese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('chinese-steamed-fish', 'Chinese-Style Steamed Fish', 'Delicate steamed fish with ginger, scallion, and hot soy-sesame oil.', 4, 10, 15, 'Chinese', 2, 311.6, 32.5, 16.0, 13.0);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'chinese-steamed-fish'), (select id from ingredients where slug = 'tilapia_fillet'), 600, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'chinese-steamed-fish'), (select id from ingredients where slug = 'ginger'), 2, (select id from units where slug = 'tbsp'), 'julienned', false, 1),
+  ((select id from recipes where slug = 'chinese-steamed-fish'), (select id from ingredients where slug = 'green_onion'), 3, (select id from units where slug = 'each'), 'julienned', false, 2),
+  ((select id from recipes where slug = 'chinese-steamed-fish'), (select id from ingredients where slug = 'soy_sauce'), 3, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'chinese-steamed-fish'), (select id from ingredients where slug = 'sesame_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'chinese-steamed-fish'), (select id from ingredients where slug = 'vegetable_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'chinese-steamed-fish'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 6);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'chinese-steamed-fish'), 1, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'chinese-steamed-fish'), 2, 'Place the fish on a heatproof plate and scatter half the ginger over it. Steam 10-12 minutes until it flakes easily.'),
+  ((select id from recipes where slug = 'chinese-steamed-fish'), 3, 'Top the cooked fish with remaining ginger and green onion; drizzle with soy sauce.'),
+  ((select id from recipes where slug = 'chinese-steamed-fish'), 4, 'Heat vegetable oil and sesame oil until just smoking, then carefully pour over the fish (it will sizzle). Serve over rice.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'chinese-steamed-fish'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'chinese-steamed-fish'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'chinese-steamed-fish'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'chinese-steamed-fish'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'chinese-steamed-fish'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Portuguese-Style Fish Stew (Portuguese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('portuguese-fish-stew', 'Portuguese-Style Fish Stew', 'A brothy tomato stew with cod, peppers, and paprika.', 4, 10, 25, 'Portuguese', 2, 317.0, 31.6, 30.1, 8.4);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from ingredients where slug = 'cod_fillet'), 600, (select id from units where slug = 'g'), 'cut into chunks', false, 0),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from ingredients where slug = 'bell_pepper_red'), 1, (select id from units where slug = 'each'), null, false, 3),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from ingredients where slug = 'smoked_paprika'), 1, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from ingredients where slug = 'tomato_canned_diced'), 2, (select id from units where slug = 'can'), null, false, 5),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from ingredients where slug = 'potato'), 2, (select id from units where slug = 'each'), 'cubed', false, 6),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from ingredients where slug = 'parsley'), 2, (select id from units where slug = 'tbsp'), null, false, 8),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'portuguese-fish-stew'), 1, 'Heat oil; soften onion, garlic, and bell pepper, about 6 minutes.'),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), 2, 'Add smoked paprika, diced tomatoes, potato, and 1 cup water. Simmer 15 minutes until the potato is nearly tender.'),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), 3, 'Add the fish and simmer gently 8-10 minutes until it flakes easily.'),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), 4, 'Season with salt, top with parsley, and serve.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'portuguese-fish-stew'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'portuguese-fish-stew'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Thai Fish Cakes (Thai)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('thai-fish-cakes', 'Thai Fish Cakes', 'Pan-fried patties of minced fish with red curry and lime.', 4, 15, 12, 'Thai', 2, 315.8, 28.9, 19.0, 14.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'thai-fish-cakes'), (select id from ingredients where slug = 'tilapia_fillet'), 500, (select id from units where slug = 'g'), 'finely chopped or minced', false, 0),
+  ((select id from recipes where slug = 'thai-fish-cakes'), (select id from ingredients where slug = 'curry_paste'), 2, (select id from units where slug = 'tbsp'), null, false, 1),
+  ((select id from recipes where slug = 'thai-fish-cakes'), (select id from ingredients where slug = 'egg'), 1, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'thai-fish-cakes'), (select id from ingredients where slug = 'fish_sauce'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'thai-fish-cakes'), (select id from ingredients where slug = 'lime'), 1, (select id from units where slug = 'each'), null, false, 4),
+  ((select id from recipes where slug = 'thai-fish-cakes'), (select id from ingredients where slug = 'green_beans'), 100, (select id from units where slug = 'g'), 'finely sliced', false, 5),
+  ((select id from recipes where slug = 'thai-fish-cakes'), (select id from ingredients where slug = 'vegetable_oil'), 3, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'thai-fish-cakes'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'thai-fish-cakes'), 1, 'Mix the minced fish with curry paste, egg, and fish sauce until sticky. Fold in green beans.'),
+  ((select id from recipes where slug = 'thai-fish-cakes'), 2, 'Shape into small patties.'),
+  ((select id from recipes where slug = 'thai-fish-cakes'), 3, 'Pan-fry in oil, 3-4 minutes per side, until cooked through and golden.'),
+  ((select id from recipes where slug = 'thai-fish-cakes'), 4, 'Cook rice and serve the fish cakes with lime wedges.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'thai-fish-cakes'), 'dinner'),
+  ((select id from recipes where slug = 'thai-fish-cakes'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'thai-fish-cakes'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'thai-fish-cakes'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'thai-fish-cakes'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Salmon Burgers (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('salmon-burgers', 'Salmon Burgers', 'Pan-seared homemade salmon patties with a lemon-dill flavor.', 4, 15, 10, 'American', 2, 436.8, 30.1, 19.4, 25.4);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'salmon-burgers'), (select id from ingredients where slug = 'salmon_fillet'), 500, (select id from units where slug = 'g'), 'finely chopped', false, 0),
+  ((select id from recipes where slug = 'salmon-burgers'), (select id from ingredients where slug = 'panko_breadcrumbs'), 0.33, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'salmon-burgers'), (select id from ingredients where slug = 'egg'), 1, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'salmon-burgers'), (select id from ingredients where slug = 'lemon'), 1, (select id from units where slug = 'each'), null, false, 3),
+  ((select id from recipes where slug = 'salmon-burgers'), (select id from ingredients where slug = 'dijon_mustard'), 1, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'salmon-burgers'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'salmon-burgers'), (select id from ingredients where slug = 'bread_sandwich'), 4, (select id from units where slug = 'slice'), null, false, 6),
+  ((select id from recipes where slug = 'salmon-burgers'), (select id from ingredients where slug = 'lettuce_romaine'), 4, (select id from units where slug = 'each'), null, false, 7),
+  ((select id from recipes where slug = 'salmon-burgers'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'salmon-burgers'), 1, 'Mix chopped salmon with breadcrumbs, egg, lemon juice, dijon, and salt; form into 4 patties.'),
+  ((select id from recipes where slug = 'salmon-burgers'), 2, 'Sear in oil, 4 minutes per side, until golden and cooked through.'),
+  ((select id from recipes where slug = 'salmon-burgers'), 3, 'Toast the bread and build burgers with lettuce.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'salmon-burgers'), 'dinner'),
+  ((select id from recipes where slug = 'salmon-burgers'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'salmon-burgers'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'salmon-burgers'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'salmon-burgers'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Sheet-Pan Baked Salmon with Asparagus (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('baked-salmon-with-asparagus', 'Sheet-Pan Baked Salmon with Asparagus', 'An easy one-pan dinner of roasted salmon and asparagus.', 4, 5, 15, 'American', 1, 438.1, 36.1, 5.7, 29.0);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), (select id from ingredients where slug = 'salmon_fillet'), 680, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), (select id from ingredients where slug = 'asparagus'), 16, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), (select id from ingredients where slug = 'garlic_powder'), 1, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), (select id from ingredients where slug = 'lemon'), 1, (select id from units where slug = 'each'), null, false, 4),
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), (select id from ingredients where slug = 'black_pepper'), 0.5, (select id from units where slug = 'tsp'), null, false, 6);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), 1, 'Preheat oven to 400°F (200°C). Arrange salmon and asparagus on a sheet pan.'),
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), 2, 'Drizzle with oil, season with garlic powder, salt, and pepper.'),
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), 3, 'Roast 12-15 minutes until the salmon flakes easily and asparagus is tender.'),
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), 4, 'Finish with a squeeze of lemon.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'baked-salmon-with-asparagus'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Baked Fish and Chips (British)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('fish-and-chips', 'Baked Fish and Chips', 'Crispy oven-baked breaded cod with seasoned potato wedges.', 4, 15, 30, 'British', 2, 490.6, 37.0, 52.4, 14.4);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'fish-and-chips'), (select id from ingredients where slug = 'cod_fillet'), 600, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'fish-and-chips'), (select id from ingredients where slug = 'all_purpose_flour'), 0.5, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'fish-and-chips'), (select id from ingredients where slug = 'egg'), 2, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'fish-and-chips'), (select id from ingredients where slug = 'panko_breadcrumbs'), 1, (select id from units where slug = 'cup'), null, false, 3),
+  ((select id from recipes where slug = 'fish-and-chips'), (select id from ingredients where slug = 'potato'), 4, (select id from units where slug = 'each'), 'cut into wedges', false, 4),
+  ((select id from recipes where slug = 'fish-and-chips'), (select id from ingredients where slug = 'olive_oil'), 3, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'fish-and-chips'), (select id from ingredients where slug = 'lemon'), 1, (select id from units where slug = 'each'), null, false, 6),
+  ((select id from recipes where slug = 'fish-and-chips'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'fish-and-chips'), 1, 'Preheat oven to 425°F (220°C). Toss potato wedges with 2 tbsp oil and half the salt; roast 20 minutes.'),
+  ((select id from recipes where slug = 'fish-and-chips'), 2, 'Dredge the cod in flour, then egg, then breadcrumbs.'),
+  ((select id from recipes where slug = 'fish-and-chips'), 3, 'Place the fish on a lined tray, drizzle with remaining oil, and bake 15 minutes alongside the potatoes until golden and flaking.'),
+  ((select id from recipes where slug = 'fish-and-chips'), 4, 'Serve with lemon wedges.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'fish-and-chips'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'fish-and-chips'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'fish-and-chips'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'fish-and-chips'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Tilapia Veracruz-Style (Mexican)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('tilapia-veracruz', 'Tilapia Veracruz-Style', 'Fish simmered in a tomato, olive, and jalapeño sauce.', 4, 10, 20, 'Mexican', 2, 338.3, 33.9, 28.0, 11.0);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'tilapia-veracruz'), (select id from ingredients where slug = 'tilapia_fillet'), 600, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'tilapia-veracruz'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'tilapia-veracruz'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'tilapia-veracruz'), (select id from ingredients where slug = 'tomato_canned_diced'), 2, (select id from units where slug = 'can'), null, false, 3),
+  ((select id from recipes where slug = 'tilapia-veracruz'), (select id from ingredients where slug = 'kalamata_olives'), 0.33, (select id from units where slug = 'cup'), null, false, 4),
+  ((select id from recipes where slug = 'tilapia-veracruz'), (select id from ingredients where slug = 'jalapeno'), 1, (select id from units where slug = 'each'), 'sliced', false, 5),
+  ((select id from recipes where slug = 'tilapia-veracruz'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'tilapia-veracruz'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 7),
+  ((select id from recipes where slug = 'tilapia-veracruz'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'tilapia-veracruz'), 1, 'Heat oil; soften onion and garlic, about 5 minutes.'),
+  ((select id from recipes where slug = 'tilapia-veracruz'), 2, 'Add diced tomatoes, olives, and jalapeño; simmer 10 minutes.'),
+  ((select id from recipes where slug = 'tilapia-veracruz'), 3, 'Add the fish and simmer gently 8-10 minutes until it flakes easily.'),
+  ((select id from recipes where slug = 'tilapia-veracruz'), 4, 'Season with salt. Cook rice and serve the fish and sauce over it.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'tilapia-veracruz'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'tilapia-veracruz'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'tilapia-veracruz'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'tilapia-veracruz'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'tilapia-veracruz'), (select id from diet_tags where slug = 'high_protein'));
+

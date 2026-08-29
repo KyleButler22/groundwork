@@ -176,3 +176,199 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'honey-garlic-pork-chops'), (select id from diet_tags where slug = 'dairy_free')),
   ((select id from recipes where slug = 'honey-garlic-pork-chops'), (select id from diet_tags where slug = 'high_protein'));
 
+-- Pork Adobo (Filipino)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('filipino-pork-adobo', 'Pork Adobo', 'Tangy, savory braised pork in a soy-vinegar sauce.', 4, 10, 40, 'Filipino', 2, 502.5, 47.0, 19.9, 24.8);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'filipino-pork-adobo'), (select id from ingredients where slug = 'pork_chop'), 700, (select id from units where slug = 'g'), 'cut into chunks', false, 0),
+  ((select id from recipes where slug = 'filipino-pork-adobo'), (select id from ingredients where slug = 'soy_sauce'), 0.33, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'filipino-pork-adobo'), (select id from ingredients where slug = 'rice_vinegar'), 0.25, (select id from units where slug = 'cup'), null, false, 2),
+  ((select id from recipes where slug = 'filipino-pork-adobo'), (select id from ingredients where slug = 'garlic'), 5, (select id from units where slug = 'clove'), null, false, 3),
+  ((select id from recipes where slug = 'filipino-pork-adobo'), (select id from ingredients where slug = 'bay_leaf'), 2, (select id from units where slug = 'each'), null, false, 4),
+  ((select id from recipes where slug = 'filipino-pork-adobo'), (select id from ingredients where slug = 'black_pepper'), 0.5, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'filipino-pork-adobo'), (select id from ingredients where slug = 'brown_sugar'), 1, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'filipino-pork-adobo'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'filipino-pork-adobo'), 1, 'Combine pork, soy sauce, vinegar, garlic, bay leaves, and black pepper in a pot. Marinate 10 minutes if time allows.'),
+  ((select id from recipes where slug = 'filipino-pork-adobo'), 2, 'Bring to a simmer, cover, and cook 25 minutes.'),
+  ((select id from recipes where slug = 'filipino-pork-adobo'), 3, 'Uncover, stir in brown sugar, and simmer 10-15 more minutes until the sauce reduces and thickens.'),
+  ((select id from recipes where slug = 'filipino-pork-adobo'), 4, 'Cook rice and serve the pork and sauce over it.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'filipino-pork-adobo'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'filipino-pork-adobo'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'filipino-pork-adobo'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'filipino-pork-adobo'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Vietnamese Pork Bánh Mì Bowl (Vietnamese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('vietnamese-pork-banh-mi-bowl', 'Vietnamese Pork Bánh Mì Bowl', 'Caramelized pork over rice with quick-pickled vegetables.', 4, 15, 15, 'Vietnamese', 2, 476.1, 23.6, 26.6, 29.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), (select id from ingredients where slug = 'ground_pork'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 1),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), (select id from ingredients where slug = 'fish_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), (select id from ingredients where slug = 'honey'), 2, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), (select id from ingredients where slug = 'carrot'), 1, (select id from units where slug = 'each'), 'julienned', false, 4),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), (select id from ingredients where slug = 'cucumber'), 0.5, (select id from units where slug = 'each'), 'julienned', false, 5),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), (select id from ingredients where slug = 'rice_vinegar'), 2, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 7),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), (select id from ingredients where slug = 'cilantro'), 0.25, (select id from units where slug = 'cup'), null, false, 8),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), (select id from ingredients where slug = 'vegetable_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), 1, 'Toss carrot and cucumber with rice vinegar; let sit while you cook (a quick pickle).'),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), 2, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), 3, 'Heat oil; brown the pork with garlic, about 7 minutes.'),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), 4, 'Stir in fish sauce and honey; cook 2-3 minutes until caramelized and sticky.'),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), 5, 'Serve over rice with the quick-pickled vegetables and cilantro.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), 'dinner'),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'vietnamese-pork-banh-mi-bowl'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Pan-Fried Pork Schnitzel (German)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('german-pork-schnitzel', 'Pan-Fried Pork Schnitzel', 'Crispy breaded pork cutlets with a squeeze of lemon.', 4, 15, 15, 'German', 2, 803.0, 53.8, 52.6, 41.3);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'german-pork-schnitzel'), (select id from ingredients where slug = 'pork_chop'), 700, (select id from units where slug = 'g'), 'pounded thin', false, 0),
+  ((select id from recipes where slug = 'german-pork-schnitzel'), (select id from ingredients where slug = 'all_purpose_flour'), 0.5, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'german-pork-schnitzel'), (select id from ingredients where slug = 'egg'), 2, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'german-pork-schnitzel'), (select id from ingredients where slug = 'panko_breadcrumbs'), 1, (select id from units where slug = 'cup'), null, false, 3),
+  ((select id from recipes where slug = 'german-pork-schnitzel'), (select id from ingredients where slug = 'vegetable_oil'), 4, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'german-pork-schnitzel'), (select id from ingredients where slug = 'lemon'), 1, (select id from units where slug = 'each'), null, false, 5),
+  ((select id from recipes where slug = 'german-pork-schnitzel'), (select id from ingredients where slug = 'potato'), 4, (select id from units where slug = 'each'), null, false, 6),
+  ((select id from recipes where slug = 'german-pork-schnitzel'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 7),
+  ((select id from recipes where slug = 'german-pork-schnitzel'), (select id from ingredients where slug = 'black_pepper'), 0.5, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'german-pork-schnitzel'), 1, 'Boil the potatoes until tender.'),
+  ((select id from recipes where slug = 'german-pork-schnitzel'), 2, 'Season pork with salt and pepper. Dredge in flour, then beaten egg, then breadcrumbs.'),
+  ((select id from recipes where slug = 'german-pork-schnitzel'), 3, 'Pan-fry in oil, 3-4 minutes per side, until golden and cooked through.'),
+  ((select id from recipes where slug = 'german-pork-schnitzel'), 4, 'Serve with the boiled potatoes and a squeeze of lemon.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'german-pork-schnitzel'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'german-pork-schnitzel'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'german-pork-schnitzel'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Thai Basil Pork (Thai)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('thai-basil-pork', 'Thai Basil Pork', 'Spicy stir-fried ground pork with garlic and fresh basil.', 4, 10, 12, 'Thai', 1, 465.3, 23.7, 15.8, 33.3);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'thai-basil-pork'), (select id from ingredients where slug = 'ground_pork'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'thai-basil-pork'), (select id from ingredients where slug = 'garlic'), 4, (select id from units where slug = 'clove'), null, false, 1),
+  ((select id from recipes where slug = 'thai-basil-pork'), (select id from ingredients where slug = 'red_pepper_flakes'), 0.5, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'thai-basil-pork'), (select id from ingredients where slug = 'fish_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'thai-basil-pork'), (select id from ingredients where slug = 'soy_sauce'), 1, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'thai-basil-pork'), (select id from ingredients where slug = 'basil_fresh'), 1, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'thai-basil-pork'), (select id from ingredients where slug = 'vegetable_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'thai-basil-pork'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 7),
+  ((select id from recipes where slug = 'thai-basil-pork'), (select id from ingredients where slug = 'egg'), 4, (select id from units where slug = 'each'), 'fried, to top', true, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'thai-basil-pork'), 1, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'thai-basil-pork'), 2, 'Heat oil; fry garlic and red pepper flakes 30 seconds.'),
+  ((select id from recipes where slug = 'thai-basil-pork'), 3, 'Add ground pork and stir-fry until cooked through, about 7 minutes.'),
+  ((select id from recipes where slug = 'thai-basil-pork'), 4, 'Stir in fish sauce and soy sauce; cook 1 minute, then remove from heat and stir in basil.'),
+  ((select id from recipes where slug = 'thai-basil-pork'), 5, 'Serve over rice, topped with a fried egg if desired.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'thai-basil-pork'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'thai-basil-pork'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'thai-basil-pork'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Pork and Apple Skillet (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('pork-and-apple-skillet', 'Pork and Apple Skillet', 'Pan-seared pork chops with sautéed apple and onion.', 4, 10, 20, 'American', 2, 545.8, 44.5, 16.5, 33.6);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), (select id from ingredients where slug = 'pork_chop'), 700, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), (select id from ingredients where slug = 'apple'), 2, (select id from units where slug = 'each'), 'sliced', false, 1),
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), 'sliced', false, 2),
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), (select id from ingredients where slug = 'butter'), 2, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), (select id from ingredients where slug = 'cinnamon'), 0.25, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 6),
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), (select id from ingredients where slug = 'black_pepper'), 0.5, (select id from units where slug = 'tsp'), null, false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), 1, 'Season pork with salt and pepper; sear in oil, 4-5 minutes per side; remove.'),
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), 2, 'Add butter, onion, and apple to the pan with cinnamon; cook 8-10 minutes until softened and lightly caramelized.'),
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), 3, 'Return the pork to the pan and warm through before serving.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'pork-and-apple-skillet'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Pork Ramen Bowl (Japanese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('pork-ramen-bowl', 'Pork Ramen Bowl', 'A savory noodle soup with tender pork and a soft egg.', 4, 10, 25, 'Japanese', 2, 409.8, 45.2, 21.8, 14.8);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'pork-ramen-bowl'), (select id from ingredients where slug = 'pork_tenderloin'), 500, (select id from units where slug = 'g'), 'thinly sliced', false, 0),
+  ((select id from recipes where slug = 'pork-ramen-bowl'), (select id from ingredients where slug = 'chicken_broth'), 2, (select id from units where slug = 'can'), null, false, 1),
+  ((select id from recipes where slug = 'pork-ramen-bowl'), (select id from ingredients where slug = 'soy_sauce'), 3, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'pork-ramen-bowl'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 3),
+  ((select id from recipes where slug = 'pork-ramen-bowl'), (select id from ingredients where slug = 'ginger'), 1, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'pork-ramen-bowl'), (select id from ingredients where slug = 'spaghetti'), 300, (select id from units where slug = 'g'), 'or ramen noodles if available', false, 5),
+  ((select id from recipes where slug = 'pork-ramen-bowl'), (select id from ingredients where slug = 'egg'), 4, (select id from units where slug = 'each'), 'soft-boiled', false, 6),
+  ((select id from recipes where slug = 'pork-ramen-bowl'), (select id from ingredients where slug = 'green_onion'), 2, (select id from units where slug = 'each'), null, false, 7),
+  ((select id from recipes where slug = 'pork-ramen-bowl'), (select id from ingredients where slug = 'sesame_oil'), 1, (select id from units where slug = 'tsp'), null, false, 8),
+  ((select id from recipes where slug = 'pork-ramen-bowl'), (select id from ingredients where slug = 'vegetable_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'pork-ramen-bowl'), 1, 'Simmer broth with soy sauce, garlic, and ginger for 15 minutes.'),
+  ((select id from recipes where slug = 'pork-ramen-bowl'), 2, 'Sear the pork slices in oil, 2-3 minutes, until just cooked through.'),
+  ((select id from recipes where slug = 'pork-ramen-bowl'), 3, 'Cook the noodles according to package directions.'),
+  ((select id from recipes where slug = 'pork-ramen-bowl'), 4, 'Divide noodles among bowls, ladle over the broth, and top with pork, a halved soft-boiled egg, and green onion. Finish with sesame oil.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'pork-ramen-bowl'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'pork-ramen-bowl'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'pork-ramen-bowl'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Pork Fried Rice (Chinese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('pork-fried-rice', 'Pork Fried Rice', 'Classic fried rice built around savory ground pork.', 4, 10, 15, 'Chinese', 1, 596.5, 26.6, 48.0, 32.0);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'pork-fried-rice'), (select id from ingredients where slug = 'ground_pork'), 400, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'pork-fried-rice'), (select id from ingredients where slug = 'white_rice'), 3, (select id from units where slug = 'cup'), 'cooked and cooled', false, 1),
+  ((select id from recipes where slug = 'pork-fried-rice'), (select id from ingredients where slug = 'egg'), 2, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'pork-fried-rice'), (select id from ingredients where slug = 'peas'), 0.5, (select id from units where slug = 'cup'), null, false, 3),
+  ((select id from recipes where slug = 'pork-fried-rice'), (select id from ingredients where slug = 'carrot'), 1, (select id from units where slug = 'each'), 'diced', false, 4),
+  ((select id from recipes where slug = 'pork-fried-rice'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 5),
+  ((select id from recipes where slug = 'pork-fried-rice'), (select id from ingredients where slug = 'soy_sauce'), 3, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'pork-fried-rice'), (select id from ingredients where slug = 'sesame_oil'), 1, (select id from units where slug = 'tsp'), null, false, 7),
+  ((select id from recipes where slug = 'pork-fried-rice'), (select id from ingredients where slug = 'vegetable_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 8),
+  ((select id from recipes where slug = 'pork-fried-rice'), (select id from ingredients where slug = 'green_onion'), 2, (select id from units where slug = 'each'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'pork-fried-rice'), 1, 'Heat 1 tbsp oil; scramble the eggs softly and set aside.'),
+  ((select id from recipes where slug = 'pork-fried-rice'), 2, 'Add remaining oil, brown the pork with garlic, about 6 minutes.'),
+  ((select id from recipes where slug = 'pork-fried-rice'), 3, 'Add carrot and peas; cook 2-3 minutes.'),
+  ((select id from recipes where slug = 'pork-fried-rice'), 4, 'Add the rice, breaking up clumps, and stir-fry 3-4 minutes. Stir in soy sauce, sesame oil, and egg. Top with green onion.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'pork-fried-rice'), 'dinner'),
+  ((select id from recipes where slug = 'pork-fried-rice'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'pork-fried-rice'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'pork-fried-rice'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Pork Souvlaki Skewers (Greek)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('pork-souvlaki', 'Pork Souvlaki Skewers', 'Greek-style grilled marinated pork skewers with pita.', 4, 15, 10, 'Greek', 2, 545.6, 54.9, 40.4, 17.3);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'pork-souvlaki'), (select id from ingredients where slug = 'pork_tenderloin'), 700, (select id from units where slug = 'g'), 'cubed', false, 0),
+  ((select id from recipes where slug = 'pork-souvlaki'), (select id from ingredients where slug = 'lemon'), 2, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'pork-souvlaki'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'pork-souvlaki'), (select id from ingredients where slug = 'oregano_dried'), 1.5, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'pork-souvlaki'), (select id from ingredients where slug = 'olive_oil'), 3, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'pork-souvlaki'), (select id from ingredients where slug = 'pita_bread'), 4, (select id from units where slug = 'each'), null, false, 5),
+  ((select id from recipes where slug = 'pork-souvlaki'), (select id from ingredients where slug = 'greek_yogurt'), 0.5, (select id from units where slug = 'cup'), null, false, 6),
+  ((select id from recipes where slug = 'pork-souvlaki'), (select id from ingredients where slug = 'cucumber'), 0.5, (select id from units where slug = 'each'), 'diced', false, 7),
+  ((select id from recipes where slug = 'pork-souvlaki'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'pork-souvlaki'), 1, 'Whisk lemon juice, garlic, oregano, oil, and salt. Marinate the pork at least 15 minutes.'),
+  ((select id from recipes where slug = 'pork-souvlaki'), 2, 'Thread onto skewers and grill or broil, turning occasionally, 8-10 minutes until cooked through.'),
+  ((select id from recipes where slug = 'pork-souvlaki'), 3, 'Mix yogurt with cucumber for a quick tzatziki-style sauce.'),
+  ((select id from recipes where slug = 'pork-souvlaki'), 4, 'Serve the skewers with warm pita and the yogurt sauce.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'pork-souvlaki'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'pork-souvlaki'), (select id from diet_tags where slug = 'high_protein'));
+

@@ -374,3 +374,79 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'teriyaki-chicken'), (select id from diet_tags where slug = 'dairy_free')),
   ((select id from recipes where slug = 'teriyaki-chicken'), (select id from diet_tags where slug = 'high_protein'));
 
+-- Chicken Parmesan (Italian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('chicken-parmesan', 'Chicken Parmesan', 'Crispy breaded chicken baked with marinara and melted mozzarella.', 4, 15, 25, 'Italian', 2, 715.8, 66.9, 45.8, 28.0);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'chicken-parmesan'), (select id from ingredients where slug = 'chicken_breast'), 600, (select id from units where slug = 'g'), 'pounded thin', false, 0),
+  ((select id from recipes where slug = 'chicken-parmesan'), (select id from ingredients where slug = 'all_purpose_flour'), 0.5, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'chicken-parmesan'), (select id from ingredients where slug = 'egg'), 2, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'chicken-parmesan'), (select id from ingredients where slug = 'panko_breadcrumbs'), 1, (select id from units where slug = 'cup'), null, false, 3),
+  ((select id from recipes where slug = 'chicken-parmesan'), (select id from ingredients where slug = 'parmesan_cheese'), 0.33, (select id from units where slug = 'cup'), 'grated', false, 4),
+  ((select id from recipes where slug = 'chicken-parmesan'), (select id from ingredients where slug = 'tomato_canned_diced'), 1, (select id from units where slug = 'can'), null, false, 5),
+  ((select id from recipes where slug = 'chicken-parmesan'), (select id from ingredients where slug = 'mozzarella_cheese'), 1, (select id from units where slug = 'cup'), 'shredded', false, 6),
+  ((select id from recipes where slug = 'chicken-parmesan'), (select id from ingredients where slug = 'olive_oil'), 3, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'chicken-parmesan'), (select id from ingredients where slug = 'italian_seasoning'), 1, (select id from units where slug = 'tsp'), null, false, 8),
+  ((select id from recipes where slug = 'chicken-parmesan'), (select id from ingredients where slug = 'spaghetti'), 300, (select id from units where slug = 'g'), null, false, 9),
+  ((select id from recipes where slug = 'chicken-parmesan'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'chicken-parmesan'), 1, 'Preheat oven to 425°F (220°C). Dredge chicken in flour, then egg, then a mix of breadcrumbs and parmesan.'),
+  ((select id from recipes where slug = 'chicken-parmesan'), 2, 'Pan-fry in oil, 3 minutes per side, until golden (it will finish cooking in the oven).'),
+  ((select id from recipes where slug = 'chicken-parmesan'), 3, 'Simmer diced tomatoes with italian seasoning and salt for 10 minutes for a quick sauce.'),
+  ((select id from recipes where slug = 'chicken-parmesan'), 4, 'Place chicken in a baking dish, top with sauce and mozzarella, and bake 12-15 minutes until bubbly and cooked through.'),
+  ((select id from recipes where slug = 'chicken-parmesan'), 5, 'Cook pasta and serve alongside.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'chicken-parmesan'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'chicken-parmesan'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Chicken Yakitori Skewers (Japanese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('chicken-yakitori', 'Chicken Yakitori Skewers', 'Grilled skewered chicken glazed with a sweet soy tare sauce.', 4, 15, 12, 'Japanese', 2, 477.6, 48.4, 24.8, 19.5);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'chicken-yakitori'), (select id from ingredients where slug = 'chicken_thigh'), 700, (select id from units where slug = 'g'), 'cubed', false, 0),
+  ((select id from recipes where slug = 'chicken-yakitori'), (select id from ingredients where slug = 'soy_sauce'), 0.25, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'chicken-yakitori'), (select id from ingredients where slug = 'honey'), 2, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'chicken-yakitori'), (select id from ingredients where slug = 'rice_vinegar'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'chicken-yakitori'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 4),
+  ((select id from recipes where slug = 'chicken-yakitori'), (select id from ingredients where slug = 'green_onion'), 3, (select id from units where slug = 'each'), 'cut into 1-inch pieces', false, 5),
+  ((select id from recipes where slug = 'chicken-yakitori'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 6),
+  ((select id from recipes where slug = 'chicken-yakitori'), (select id from ingredients where slug = 'sesame_seeds'), 1, (select id from units where slug = 'tsp'), null, true, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'chicken-yakitori'), 1, 'Whisk soy sauce, honey, rice vinegar, and garlic; reserve half for basting.'),
+  ((select id from recipes where slug = 'chicken-yakitori'), 2, 'Marinate the chicken in the remaining sauce for at least 10 minutes.'),
+  ((select id from recipes where slug = 'chicken-yakitori'), 3, 'Thread chicken and green onion onto skewers, alternating.'),
+  ((select id from recipes where slug = 'chicken-yakitori'), 4, 'Grill or broil 10-12 minutes, turning and basting with reserved sauce, until cooked through.'),
+  ((select id from recipes where slug = 'chicken-yakitori'), 5, 'Cook rice and serve alongside, sprinkled with sesame seeds.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'chicken-yakitori'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'chicken-yakitori'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'chicken-yakitori'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'chicken-yakitori'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Classic Chicken Noodle Soup (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('chicken-noodle-soup', 'Classic Chicken Noodle Soup', 'A comforting homemade chicken soup with vegetables and noodles.', 6, 10, 30, 'American', 1, 218.0, 28.5, 11.8, 5.8);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'chicken-noodle-soup'), (select id from ingredients where slug = 'chicken_breast'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'chicken-noodle-soup'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'chicken-noodle-soup'), (select id from ingredients where slug = 'carrot'), 2, (select id from units where slug = 'each'), 'sliced', false, 2),
+  ((select id from recipes where slug = 'chicken-noodle-soup'), (select id from ingredients where slug = 'celery'), 2, (select id from units where slug = 'each'), 'sliced', false, 3),
+  ((select id from recipes where slug = 'chicken-noodle-soup'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 4),
+  ((select id from recipes where slug = 'chicken-noodle-soup'), (select id from ingredients where slug = 'chicken_broth'), 2, (select id from units where slug = 'can'), null, false, 5),
+  ((select id from recipes where slug = 'chicken-noodle-soup'), (select id from ingredients where slug = 'spaghetti'), 150, (select id from units where slug = 'g'), 'broken into pieces', false, 6),
+  ((select id from recipes where slug = 'chicken-noodle-soup'), (select id from ingredients where slug = 'thyme_dried'), 1, (select id from units where slug = 'tsp'), null, false, 7),
+  ((select id from recipes where slug = 'chicken-noodle-soup'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 8),
+  ((select id from recipes where slug = 'chicken-noodle-soup'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'chicken-noodle-soup'), 1, 'Heat oil; soften onion, carrot, celery, and garlic, about 6 minutes.'),
+  ((select id from recipes where slug = 'chicken-noodle-soup'), 2, 'Add broth, chicken breasts, and thyme. Simmer 20 minutes until the chicken is cooked through.'),
+  ((select id from recipes where slug = 'chicken-noodle-soup'), 3, 'Remove and shred the chicken, then return it to the pot along with the noodles.'),
+  ((select id from recipes where slug = 'chicken-noodle-soup'), 4, 'Simmer 8-10 minutes until the noodles are tender. Season with salt.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'chicken-noodle-soup'), 'lunch'),
+  ((select id from recipes where slug = 'chicken-noodle-soup'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'chicken-noodle-soup'), (select id from diet_tags where slug = 'dairy_free'));
+

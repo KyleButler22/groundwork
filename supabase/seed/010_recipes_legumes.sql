@@ -229,3 +229,165 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'chickpea-coconut-curry'), (select id from diet_tags where slug = 'gluten_free')),
   ((select id from recipes where slug = 'chickpea-coconut-curry'), (select id from diet_tags where slug = 'dairy_free'));
 
+-- Misir Wot (Ethiopian Spiced Lentils) (Ethiopian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('ethiopian-misir-wot', 'Misir Wot (Ethiopian Spiced Lentils)', 'Deeply spiced red lentil stew, Ethiopian-style.', 4, 10, 30, 'Ethiopian', 2, 517.4, 25.1, 84.6, 8.7);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from ingredients where slug = 'lentils_dry'), 1.5, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from ingredients where slug = 'ginger'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from ingredients where slug = 'cayenne_pepper'), 1, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from ingredients where slug = 'paprika'), 1, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from ingredients where slug = 'cardamom'), 0.25, (select id from units where slug = 'tsp'), null, false, 6),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from ingredients where slug = 'tomato_paste'), 2, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from ingredients where slug = 'vegetable_broth'), 3, (select id from units where slug = 'cup'), null, false, 8),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 9),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from ingredients where slug = 'pita_bread'), 4, (select id from units where slug = 'each'), 'or injera if available', false, 10),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 11);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), 1, 'Heat oil; soften onion, garlic, and ginger, about 6 minutes.'),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), 2, 'Add cayenne, paprika, and cardamom; cook 1 minute.'),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), 3, 'Stir in tomato paste, lentils, and broth. Simmer 20-25 minutes until the lentils are tender.'),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), 4, 'Season with salt and serve with warm flatbread.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'ethiopian-misir-wot'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Spanish-Style Lentil Stew (Spanish)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('spanish-lentil-stew', 'Spanish-Style Lentil Stew', 'Smoky paprika-spiced lentils with vegetables.', 4, 10, 30, 'Spanish', 1, 370.9, 20.2, 56.4, 7.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'spanish-lentil-stew'), (select id from ingredients where slug = 'lentils_dry'), 1.5, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), (select id from ingredients where slug = 'carrot'), 2, (select id from units where slug = 'each'), 'diced', false, 3),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), (select id from ingredients where slug = 'smoked_paprika'), 1.5, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), (select id from ingredients where slug = 'tomato_canned_diced'), 1, (select id from units where slug = 'can'), null, false, 5),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), (select id from ingredients where slug = 'vegetable_broth'), 3, (select id from units where slug = 'cup'), null, false, 6),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'spanish-lentil-stew'), 1, 'Heat oil; soften onion, garlic, and carrot, about 6 minutes.'),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), 2, 'Stir in smoked paprika, cook 1 minute, then add diced tomatoes, lentils, and broth.'),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), 3, 'Simmer 25 minutes until the lentils are tender.'),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), 4, 'Season with salt and serve.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'spanish-lentil-stew'), 'dinner'),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'spanish-lentil-stew'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'spanish-lentil-stew'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Chana Saag (Chickpea and Spinach Curry) (Indian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('chickpea-and-spinach-curry-bowl', 'Chana Saag (Chickpea and Spinach Curry)', 'Chickpeas simmered into a garlicky spinach curry.', 4, 10, 20, 'Indian', 1, 763.3, 30.6, 111.7, 22.6);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from ingredients where slug = 'chickpeas_canned'), 2, (select id from units where slug = 'can'), null, false, 0),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from ingredients where slug = 'ginger'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from ingredients where slug = 'cumin'), 1, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from ingredients where slug = 'coriander_ground'), 1, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from ingredients where slug = 'spinach'), 300, (select id from units where slug = 'g'), null, false, 6),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from ingredients where slug = 'coconut_milk'), 0.5, (select id from units where slug = 'cup'), null, false, 7),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 8),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from ingredients where slug = 'naan'), 4, (select id from units where slug = 'each'), null, false, 9),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), 1, 'Heat oil; soften onion, garlic, and ginger, about 5 minutes.'),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), 2, 'Add cumin and coriander; cook 1 minute.'),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), 3, 'Add chickpeas and spinach; cook until the spinach wilts, about 4 minutes.'),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), 4, 'Stir in coconut milk and simmer 5 minutes. Season with salt and serve with naan.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'chickpea-and-spinach-curry-bowl'), (select id from diet_tags where slug = 'high_protein'));
+
+-- French Lentil Salad (French)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('french-lentil-salad', 'French Lentil Salad', 'A cold lentil salad with dijon vinaigrette and fresh herbs.', 4, 15, 20, 'French', 1, 365.1, 18.5, 47.4, 11.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from ingredients where slug = 'lentils_dry'), 1.5, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from ingredients where slug = 'dijon_mustard'), 1, (select id from units where slug = 'tbsp'), null, false, 1),
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from ingredients where slug = 'balsamic_vinegar'), 2, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from ingredients where slug = 'olive_oil'), 3, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from ingredients where slug = 'celery'), 1, (select id from units where slug = 'each'), 'diced', false, 4),
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from ingredients where slug = 'carrot'), 1, (select id from units where slug = 'each'), 'diced', false, 5),
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from ingredients where slug = 'red_onion'), 0.25, (select id from units where slug = 'each'), 'finely diced', false, 6),
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from ingredients where slug = 'parsley'), 2, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from ingredients where slug = 'feta_cheese'), 0.33, (select id from units where slug = 'cup'), null, true, 8),
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'french-lentil-salad'), 1, 'Cook lentils in water until tender but not mushy, about 18-20 minutes; drain and cool slightly.'),
+  ((select id from recipes where slug = 'french-lentil-salad'), 2, 'Whisk dijon, balsamic vinegar, olive oil, and salt for the dressing.'),
+  ((select id from recipes where slug = 'french-lentil-salad'), 3, 'Toss the lentils with celery, carrot, red onion, and parsley.'),
+  ((select id from recipes where slug = 'french-lentil-salad'), 4, 'Add the dressing and toss to coat. Top with feta if using.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'french-lentil-salad'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'french-lentil-salad'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Chickpea and Spinach Pasta (Italian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('chickpea-and-spinach-pasta', 'Chickpea and Spinach Pasta', 'A quick pantry pasta with chickpeas, garlic, and spinach.', 4, 5, 20, 'Italian', 1, 388.7, 15.0, 52.3, 14.0);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), (select id from ingredients where slug = 'chickpeas_canned'), 1, (select id from units where slug = 'can'), null, false, 0),
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), (select id from ingredients where slug = 'pasta_penne'), 340, (select id from units where slug = 'g'), null, false, 1),
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), (select id from ingredients where slug = 'garlic'), 4, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), (select id from ingredients where slug = 'spinach'), 150, (select id from units where slug = 'g'), null, false, 3),
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), (select id from ingredients where slug = 'red_pepper_flakes'), 0.25, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), (select id from ingredients where slug = 'olive_oil'), 3, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), (select id from ingredients where slug = 'parmesan_cheese'), 0.5, (select id from units where slug = 'cup'), null, true, 6),
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), 1, 'Cook pasta according to package directions, reserving 0.5 cup pasta water.'),
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), 2, 'Heat oil; sauté garlic and red pepper flakes 30 seconds.'),
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), 3, 'Add chickpeas and cook 3-4 minutes, lightly mashing some.'),
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), 4, 'Add spinach and cook until wilted; toss with the pasta, a splash of pasta water, and salt. Top with parmesan.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), 'dinner'),
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'chickpea-and-spinach-pasta'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Mexican-Spiced Lentil Tacos (Mexican)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('mexican-lentil-tacos', 'Mexican-Spiced Lentil Tacos', 'Seasoned lentils standing in for meat in a taco.', 4, 10, 25, 'Mexican', 1, 413.9, 17.0, 61.4, 13.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from ingredients where slug = 'lentils_dry'), 1, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from ingredients where slug = 'onion'), 0.5, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from ingredients where slug = 'taco_seasoning'), 2, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from ingredients where slug = 'vegetable_broth'), 2, (select id from units where slug = 'cup'), null, false, 4),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from ingredients where slug = 'tortilla_corn'), 8, (select id from units where slug = 'each'), null, false, 5),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from ingredients where slug = 'lettuce_romaine'), 1, (select id from units where slug = 'cup'), 'shredded', false, 6),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from ingredients where slug = 'tomato'), 1, (select id from units where slug = 'each'), 'diced', false, 7),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from ingredients where slug = 'avocado'), 1, (select id from units where slug = 'each'), null, false, 8),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), 1, 'Heat oil; soften onion and garlic, about 4 minutes.'),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), 2, 'Add lentils, taco seasoning, and broth. Simmer 20 minutes until the lentils are tender and most liquid is absorbed.'),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), 3, 'Warm the tortillas and fill with the lentil mixture, lettuce, tomato, and avocado.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), 'dinner'),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'mexican-lentil-tacos'), (select id from diet_tags where slug = 'dairy_free'));
+

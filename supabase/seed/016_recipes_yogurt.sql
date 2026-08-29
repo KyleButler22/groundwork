@@ -131,3 +131,154 @@ insert into recipe_meal_slots (recipe_id, slot) values
 insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'cottage-cheese-pancakes'), (select id from diet_tags where slug = 'vegetarian'));
 
+-- Cucumber Raita Bowl (Indian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('indian-cucumber-raita', 'Cucumber Raita Bowl', 'A cooling yogurt and cucumber side, hearty enough as a light meal with rice.', 2, 10, 0, 'Indian', 1, 229.3, 16.1, 38.2, 1.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'indian-cucumber-raita'), (select id from ingredients where slug = 'greek_yogurt'), 1, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'indian-cucumber-raita'), (select id from ingredients where slug = 'cucumber'), 1, (select id from units where slug = 'each'), 'grated', false, 1),
+  ((select id from recipes where slug = 'indian-cucumber-raita'), (select id from ingredients where slug = 'cumin'), 0.5, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'indian-cucumber-raita'), (select id from ingredients where slug = 'cilantro'), 2, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'indian-cucumber-raita'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 4),
+  ((select id from recipes where slug = 'indian-cucumber-raita'), (select id from ingredients where slug = 'salt'), 0.5, (select id from units where slug = 'tsp'), null, false, 5);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'indian-cucumber-raita'), 1, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'indian-cucumber-raita'), 2, 'Mix yogurt with grated cucumber, cumin, cilantro, and salt.'),
+  ((select id from recipes where slug = 'indian-cucumber-raita'), 3, 'Serve over or alongside warm rice.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'indian-cucumber-raita'), 'lunch'),
+  ((select id from recipes where slug = 'indian-cucumber-raita'), 'snack');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'indian-cucumber-raita'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'indian-cucumber-raita'), (select id from diet_tags where slug = 'gluten_free'));
+
+-- Turkish Yogurt and Rice Soup (Turkish)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('turkish-yogurt-soup', 'Turkish Yogurt and Rice Soup', 'A gently tangy, warming yogurt-based soup.', 4, 10, 20, 'Turkish', 2, 138.1, 8.9, 9.9, 7.0);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), (select id from ingredients where slug = 'greek_yogurt'), 1, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), (select id from ingredients where slug = 'white_rice'), 0.33, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), (select id from ingredients where slug = 'vegetable_broth'), 4, (select id from units where slug = 'cup'), null, false, 2),
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), (select id from ingredients where slug = 'egg'), 1, (select id from units where slug = 'each'), null, false, 3),
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), (select id from ingredients where slug = 'all_purpose_flour'), 1, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), (select id from ingredients where slug = 'butter'), 2, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), (select id from ingredients where slug = 'red_pepper_flakes'), 0.25, (select id from units where slug = 'tsp'), null, true, 6),
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), 1, 'Simmer rice in broth until tender, about 15 minutes.'),
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), 2, 'Whisk yogurt, egg, and flour together, then gradually whisk in a ladle of the hot broth to temper it.'),
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), 3, 'Stir the tempered mixture back into the pot and warm gently (do not boil) until slightly thickened.'),
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), 4, 'Season with salt. Melt butter with red pepper flakes and drizzle over each bowl.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), 'lunch'),
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'turkish-yogurt-soup'), (select id from diet_tags where slug = 'vegetarian'));
+
+-- Persian Spinach Yogurt Dip (Middle Eastern)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('persian-yogurt-dip-with-spinach', 'Persian Spinach Yogurt Dip', 'A garlicky yogurt and sautéed spinach dip, served with warm bread.', 4, 10, 10, 'Middle Eastern', 1, 274.7, 13.1, 37.5, 7.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'persian-yogurt-dip-with-spinach'), (select id from ingredients where slug = 'greek_yogurt'), 1, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'persian-yogurt-dip-with-spinach'), (select id from ingredients where slug = 'spinach'), 200, (select id from units where slug = 'g'), null, false, 1),
+  ((select id from recipes where slug = 'persian-yogurt-dip-with-spinach'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'persian-yogurt-dip-with-spinach'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'persian-yogurt-dip-with-spinach'), (select id from ingredients where slug = 'walnuts'), 0.25, (select id from units where slug = 'cup'), null, true, 4),
+  ((select id from recipes where slug = 'persian-yogurt-dip-with-spinach'), (select id from ingredients where slug = 'pita_bread'), 4, (select id from units where slug = 'each'), null, false, 5),
+  ((select id from recipes where slug = 'persian-yogurt-dip-with-spinach'), (select id from ingredients where slug = 'salt'), 0.5, (select id from units where slug = 'tsp'), null, false, 6);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'persian-yogurt-dip-with-spinach'), 1, 'Heat oil; sauté garlic and spinach until wilted, about 4 minutes. Cool slightly and chop finely.'),
+  ((select id from recipes where slug = 'persian-yogurt-dip-with-spinach'), 2, 'Mix the spinach into the yogurt with salt.'),
+  ((select id from recipes where slug = 'persian-yogurt-dip-with-spinach'), 3, 'Top with chopped walnuts and serve with warm pita.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'persian-yogurt-dip-with-spinach'), 'snack'),
+  ((select id from recipes where slug = 'persian-yogurt-dip-with-spinach'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'persian-yogurt-dip-with-spinach'), (select id from diet_tags where slug = 'vegetarian'));
+
+-- Yogurt Smoothie Bowl (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('yogurt-berry-smoothie-bowl', 'Yogurt Smoothie Bowl', 'A thick, spoonable yogurt smoothie bowl with toppings.', 1, 5, 0, 'American', 1, 400.4, 27.9, 55.0, 10.0);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'yogurt-berry-smoothie-bowl'), (select id from ingredients where slug = 'greek_yogurt'), 1, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'yogurt-berry-smoothie-bowl'), (select id from ingredients where slug = 'banana'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'yogurt-berry-smoothie-bowl'), (select id from ingredients where slug = 'honey'), 1, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'yogurt-berry-smoothie-bowl'), (select id from ingredients where slug = 'walnuts'), 2, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'yogurt-berry-smoothie-bowl'), (select id from ingredients where slug = 'chia_seeds'), 1, (select id from units where slug = 'tsp'), null, true, 4);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'yogurt-berry-smoothie-bowl'), 1, 'Blend yogurt with half the banana and honey until thick and smooth.'),
+  ((select id from recipes where slug = 'yogurt-berry-smoothie-bowl'), 2, 'Pour into a bowl and top with the remaining banana sliced, walnuts, and chia seeds.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'yogurt-berry-smoothie-bowl'), 'breakfast');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'yogurt-berry-smoothie-bowl'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'yogurt-berry-smoothie-bowl'), (select id from diet_tags where slug = 'gluten_free'));
+
+-- Yogurt-Marinated Chicken Bowl (Indian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('chicken-yogurt-marinade-bowl', 'Yogurt-Marinated Chicken Bowl', 'Tender yogurt-marinated chicken over rice with cucumber salad.', 4, 15, 15, 'Indian', 2, 460.4, 46.0, 21.5, 20.5);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), (select id from ingredients where slug = 'chicken_thigh'), 600, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), (select id from ingredients where slug = 'greek_yogurt'), 0.75, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), (select id from ingredients where slug = 'garam_masala'), 1.5, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), (select id from ingredients where slug = 'turmeric'), 0.5, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 4),
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), (select id from ingredients where slug = 'lemon'), 1, (select id from units where slug = 'each'), null, false, 5),
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), (select id from ingredients where slug = 'cucumber'), 1, (select id from units where slug = 'each'), 'diced', false, 6),
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 7),
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 8),
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), 1, 'Mix half the yogurt with garam masala, turmeric, garlic, and half the lemon juice. Marinate the chicken at least 15 minutes.'),
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), 2, 'Sear the chicken in oil, 6-7 minutes per side, until cooked through.'),
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), 3, 'Mix remaining yogurt with cucumber, remaining lemon juice, and salt for a quick side salad.'),
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), 4, 'Cook rice and serve with the sliced chicken and cucumber salad.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'chicken-yogurt-marinade-bowl'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Yogurt Ranch Veggie Dip (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('yogurt-ranch-veggie-dip', 'Yogurt Ranch Veggie Dip', 'A lighter, protein-rich take on ranch dip with fresh vegetables.', 4, 10, 0, 'American', 1, 104.4, 7.4, 11.0, 3.8);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'yogurt-ranch-veggie-dip'), (select id from ingredients where slug = 'greek_yogurt'), 1, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'yogurt-ranch-veggie-dip'), (select id from ingredients where slug = 'ranch_dressing'), 2, (select id from units where slug = 'tbsp'), null, false, 1),
+  ((select id from recipes where slug = 'yogurt-ranch-veggie-dip'), (select id from ingredients where slug = 'garlic_powder'), 0.5, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'yogurt-ranch-veggie-dip'), (select id from ingredients where slug = 'carrot'), 3, (select id from units where slug = 'each'), 'cut into sticks', false, 3),
+  ((select id from recipes where slug = 'yogurt-ranch-veggie-dip'), (select id from ingredients where slug = 'celery'), 3, (select id from units where slug = 'each'), 'cut into sticks', false, 4),
+  ((select id from recipes where slug = 'yogurt-ranch-veggie-dip'), (select id from ingredients where slug = 'cucumber'), 1, (select id from units where slug = 'each'), 'sliced', false, 5),
+  ((select id from recipes where slug = 'yogurt-ranch-veggie-dip'), (select id from ingredients where slug = 'salt'), 0.25, (select id from units where slug = 'tsp'), null, false, 6);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'yogurt-ranch-veggie-dip'), 1, 'Mix yogurt, ranch dressing, garlic powder, and salt.'),
+  ((select id from recipes where slug = 'yogurt-ranch-veggie-dip'), 2, 'Serve with carrot, celery, and cucumber for dipping.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'yogurt-ranch-veggie-dip'), 'snack');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'yogurt-ranch-veggie-dip'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'yogurt-ranch-veggie-dip'), (select id from diet_tags where slug = 'gluten_free'));
+
+-- Baked Yogurt Chicken Tenders (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('baked-yogurt-chicken-tenders', 'Baked Yogurt Chicken Tenders', 'Crispy baked chicken tenders with a yogurt-based marinade.', 4, 15, 20, 'American', 1, 403.9, 53.7, 11.6, 14.6);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), (select id from ingredients where slug = 'chicken_breast'), 600, (select id from units where slug = 'g'), 'cut into strips', false, 0),
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), (select id from ingredients where slug = 'greek_yogurt'), 0.5, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), (select id from ingredients where slug = 'garlic_powder'), 1, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), (select id from ingredients where slug = 'paprika'), 1, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), (select id from ingredients where slug = 'panko_breadcrumbs'), 1, (select id from units where slug = 'cup'), null, false, 4),
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), (select id from ingredients where slug = 'parmesan_cheese'), 0.25, (select id from units where slug = 'cup'), 'grated', false, 5),
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), 1, 'Mix yogurt with garlic powder, paprika, and salt; coat the chicken strips and marinate at least 15 minutes.'),
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), 2, 'Preheat oven to 425°F (220°C). Mix breadcrumbs and parmesan.'),
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), 3, 'Dredge the marinated chicken in the breadcrumb mixture and place on a lined tray; drizzle with oil.'),
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), 4, 'Bake 18-20 minutes, flipping halfway, until golden and cooked through.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), 'dinner'),
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'baked-yogurt-chicken-tenders'), (select id from diet_tags where slug = 'high_protein'));
+

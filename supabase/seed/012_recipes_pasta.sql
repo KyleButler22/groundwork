@@ -208,3 +208,171 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'peanut-noodles-with-vegetables'), (select id from diet_tags where slug = 'vegetarian')),
   ((select id from recipes where slug = 'peanut-noodles-with-vegetables'), (select id from diet_tags where slug = 'dairy_free'));
 
+-- Cajun-Spiced Pasta (Cajun)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('cajun-pasta', 'Cajun-Spiced Pasta', 'Creamy penne with a smoky, spiced Cajun-style sauce.', 4, 10, 20, 'Cajun', 2, 526.8, 41.5, 26.3, 27.7);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'cajun-pasta'), (select id from ingredients where slug = 'pasta_penne'), 340, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'cajun-pasta'), (select id from ingredients where slug = 'chicken_breast'), 400, (select id from units where slug = 'g'), 'sliced', false, 1),
+  ((select id from recipes where slug = 'cajun-pasta'), (select id from ingredients where slug = 'smoked_paprika'), 1.5, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'cajun-pasta'), (select id from ingredients where slug = 'cayenne_pepper'), 0.5, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'cajun-pasta'), (select id from ingredients where slug = 'garlic_powder'), 1, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'cajun-pasta'), (select id from ingredients where slug = 'bell_pepper_red'), 1, (select id from units where slug = 'each'), null, false, 5),
+  ((select id from recipes where slug = 'cajun-pasta'), (select id from ingredients where slug = 'heavy_cream'), 0.75, (select id from units where slug = 'cup'), null, false, 6),
+  ((select id from recipes where slug = 'cajun-pasta'), (select id from ingredients where slug = 'parmesan_cheese'), 0.5, (select id from units where slug = 'cup'), 'grated', false, 7),
+  ((select id from recipes where slug = 'cajun-pasta'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 8),
+  ((select id from recipes where slug = 'cajun-pasta'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'cajun-pasta'), 1, 'Cook pasta according to package directions.'),
+  ((select id from recipes where slug = 'cajun-pasta'), 2, 'Toss chicken with smoked paprika, cayenne, garlic powder, and salt. Sear in oil until cooked through, about 7 minutes; remove.'),
+  ((select id from recipes where slug = 'cajun-pasta'), 3, 'Add bell pepper to the pan and cook 4 minutes, then stir in cream and simmer 2-3 minutes.'),
+  ((select id from recipes where slug = 'cajun-pasta'), 4, 'Return the chicken to the pan, toss with pasta and parmesan, and serve.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'cajun-pasta'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'cajun-pasta'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Greek-Style Pasta Bake (Greek)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('greek-pastitsio-style-bake', 'Greek-Style Pasta Bake', 'Baked pasta with spiced beef and a creamy cheese topping.', 6, 15, 35, 'Greek', 2, 374.7, 25.7, 26.4, 18.3);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), (select id from ingredients where slug = 'pasta_penne'), 400, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), (select id from ingredients where slug = 'ground_beef'), 500, (select id from units where slug = 'g'), null, false, 1),
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), (select id from ingredients where slug = 'cinnamon'), 0.5, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), (select id from ingredients where slug = 'tomato_canned_diced'), 1, (select id from units where slug = 'can'), null, false, 4),
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), (select id from ingredients where slug = 'milk'), 1, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), (select id from ingredients where slug = 'all_purpose_flour'), 2, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), (select id from ingredients where slug = 'butter'), 2, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), (select id from ingredients where slug = 'parmesan_cheese'), 0.5, (select id from units where slug = 'cup'), 'grated', false, 8),
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 9),
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), 1, 'Preheat oven to 375°F (190°C). Cook pasta according to package directions.'),
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), 2, 'Heat oil; brown beef and onion, about 7 minutes. Stir in cinnamon and diced tomatoes; simmer 10 minutes.'),
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), 3, 'Melt butter, whisk in flour, then gradually add milk; simmer until thickened, about 4 minutes. Stir in parmesan.'),
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), 4, 'Layer pasta and meat sauce in a baking dish, top with the cheese sauce, and bake 20-25 minutes until golden.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'greek-pastitsio-style-bake'), 'dinner');
+
+-- Yaki Udon-Style Noodles (Japanese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('japanese-yaki-udon-style', 'Yaki Udon-Style Noodles', 'Stir-fried noodles with vegetables in a savory soy-based sauce.', 4, 10, 12, 'Japanese', 1, 216.9, 6.4, 28.6, 9.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), (select id from ingredients where slug = 'spaghetti'), 340, (select id from units where slug = 'g'), 'or udon noodles if available', false, 0),
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), (select id from ingredients where slug = 'cabbage'), 0.25, (select id from units where slug = 'each'), 'shredded', false, 1),
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), (select id from ingredients where slug = 'carrot'), 1, (select id from units where slug = 'each'), 'sliced', false, 2),
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 3),
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), (select id from ingredients where slug = 'soy_sauce'), 3, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), (select id from ingredients where slug = 'oyster_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), (select id from ingredients where slug = 'sesame_oil'), 1, (select id from units where slug = 'tsp'), null, false, 6),
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), (select id from ingredients where slug = 'vegetable_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), (select id from ingredients where slug = 'green_onion'), 2, (select id from units where slug = 'each'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), 1, 'Cook the noodles according to package directions.'),
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), 2, 'Heat oil in a wok; stir-fry cabbage, carrot, and garlic 4-5 minutes.'),
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), 3, 'Add the noodles, soy sauce, and oyster sauce; toss over high heat 2-3 minutes.'),
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), 4, 'Finish with sesame oil and green onion.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'japanese-yaki-udon-style'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Japchae-Style Glass Noodles (Korean)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('korean-japchae', 'Japchae-Style Glass Noodles', 'Sweet-savory stir-fried noodles with vegetables, Korean-style.', 4, 15, 15, 'Korean', 2, 222.9, 3.4, 28.2, 11.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'korean-japchae'), (select id from ingredients where slug = 'rice_noodles'), 300, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'korean-japchae'), (select id from ingredients where slug = 'spinach'), 100, (select id from units where slug = 'g'), null, false, 1),
+  ((select id from recipes where slug = 'korean-japchae'), (select id from ingredients where slug = 'carrot'), 1, (select id from units where slug = 'each'), 'julienned', false, 2),
+  ((select id from recipes where slug = 'korean-japchae'), (select id from ingredients where slug = 'bell_pepper_red'), 1, (select id from units where slug = 'each'), 'sliced', false, 3),
+  ((select id from recipes where slug = 'korean-japchae'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 4),
+  ((select id from recipes where slug = 'korean-japchae'), (select id from ingredients where slug = 'soy_sauce'), 4, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'korean-japchae'), (select id from ingredients where slug = 'brown_sugar'), 1, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'korean-japchae'), (select id from ingredients where slug = 'sesame_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'korean-japchae'), (select id from ingredients where slug = 'vegetable_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 8),
+  ((select id from recipes where slug = 'korean-japchae'), (select id from ingredients where slug = 'sesame_seeds'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'korean-japchae'), 1, 'Cook the noodles according to package directions; toss with 1 tbsp sesame oil.'),
+  ((select id from recipes where slug = 'korean-japchae'), 2, 'Heat vegetable oil; stir-fry carrot and bell pepper 3-4 minutes, then add spinach and garlic until wilted.'),
+  ((select id from recipes where slug = 'korean-japchae'), 3, 'Whisk soy sauce, brown sugar, and remaining sesame oil.'),
+  ((select id from recipes where slug = 'korean-japchae'), 4, 'Toss the noodles and vegetables with the sauce. Top with sesame seeds.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'korean-japchae'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'korean-japchae'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'korean-japchae'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'korean-japchae'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'korean-japchae'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- French Herb and Garlic Butter Pasta (French)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('french-garlic-butter-pasta', 'French Herb and Garlic Butter Pasta', 'Simple pasta tossed in herbed garlic butter and parmesan.', 4, 5, 15, 'French', 1, 267.6, 9.4, 23.1, 15.5);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), (select id from ingredients where slug = 'spaghetti'), 340, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), (select id from ingredients where slug = 'butter'), 4, (select id from units where slug = 'tbsp'), null, false, 1),
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), (select id from ingredients where slug = 'garlic'), 4, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), (select id from ingredients where slug = 'parsley'), 3, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), (select id from ingredients where slug = 'thyme_dried'), 0.5, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), (select id from ingredients where slug = 'parmesan_cheese'), 0.5, (select id from units where slug = 'cup'), 'grated', false, 5),
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 6),
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), (select id from ingredients where slug = 'black_pepper'), 0.5, (select id from units where slug = 'tsp'), null, false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), 1, 'Cook pasta according to package directions, reserving 0.5 cup pasta water.'),
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), 2, 'Melt butter in a large pan; sauté garlic and thyme 1 minute.'),
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), 3, 'Toss the pasta with the garlic butter, a splash of pasta water, parmesan, salt, and pepper.'),
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), 4, 'Finish with fresh parsley.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), 'dinner'),
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'french-garlic-butter-pasta'), (select id from diet_tags where slug = 'vegetarian'));
+
+-- Chicken Alfredo (Italian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('chicken-alfredo', 'Chicken Alfredo', 'Creamy parmesan sauce with tender chicken over fettuccine-style pasta.', 4, 10, 20, 'Italian', 2, 680.6, 51.6, 24.6, 40.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'chicken-alfredo'), (select id from ingredients where slug = 'spaghetti'), 340, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'chicken-alfredo'), (select id from ingredients where slug = 'chicken_breast'), 500, (select id from units where slug = 'g'), null, false, 1),
+  ((select id from recipes where slug = 'chicken-alfredo'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'chicken-alfredo'), (select id from ingredients where slug = 'heavy_cream'), 1, (select id from units where slug = 'cup'), null, false, 3),
+  ((select id from recipes where slug = 'chicken-alfredo'), (select id from ingredients where slug = 'parmesan_cheese'), 0.75, (select id from units where slug = 'cup'), 'grated', false, 4),
+  ((select id from recipes where slug = 'chicken-alfredo'), (select id from ingredients where slug = 'butter'), 2, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'chicken-alfredo'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'chicken-alfredo'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 7),
+  ((select id from recipes where slug = 'chicken-alfredo'), (select id from ingredients where slug = 'black_pepper'), 0.5, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'chicken-alfredo'), 1, 'Cook pasta according to package directions.'),
+  ((select id from recipes where slug = 'chicken-alfredo'), 2, 'Season chicken with salt and pepper; sear in oil, 5-6 minutes per side, until cooked through. Slice.'),
+  ((select id from recipes where slug = 'chicken-alfredo'), 3, 'Melt butter in the same pan; sauté garlic 30 seconds, then add cream and simmer 3-4 minutes.'),
+  ((select id from recipes where slug = 'chicken-alfredo'), 4, 'Stir in parmesan until melted and smooth. Toss with pasta and sliced chicken.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'chicken-alfredo'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'chicken-alfredo'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Shrimp Linguine in White Sauce (Italian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('shrimp-linguine', 'Shrimp Linguine in White Sauce', 'Shrimp and garlic in a light cream sauce over pasta.', 4, 10, 15, 'Italian', 2, 509.5, 40.4, 26.2, 27.7);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'shrimp-linguine'), (select id from ingredients where slug = 'spaghetti'), 340, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'shrimp-linguine'), (select id from ingredients where slug = 'shrimp'), 500, (select id from units where slug = 'g'), null, false, 1),
+  ((select id from recipes where slug = 'shrimp-linguine'), (select id from ingredients where slug = 'garlic'), 4, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'shrimp-linguine'), (select id from ingredients where slug = 'heavy_cream'), 0.75, (select id from units where slug = 'cup'), null, false, 3),
+  ((select id from recipes where slug = 'shrimp-linguine'), (select id from ingredients where slug = 'lemon'), 1, (select id from units where slug = 'each'), null, false, 4),
+  ((select id from recipes where slug = 'shrimp-linguine'), (select id from ingredients where slug = 'parmesan_cheese'), 0.5, (select id from units where slug = 'cup'), 'grated', false, 5),
+  ((select id from recipes where slug = 'shrimp-linguine'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'shrimp-linguine'), (select id from ingredients where slug = 'parsley'), 2, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'shrimp-linguine'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'shrimp-linguine'), 1, 'Cook pasta according to package directions.'),
+  ((select id from recipes where slug = 'shrimp-linguine'), 2, 'Heat oil; sauté garlic 30 seconds, add shrimp, and cook 2-3 minutes per side until pink.'),
+  ((select id from recipes where slug = 'shrimp-linguine'), 3, 'Add cream and lemon juice; simmer 2-3 minutes.'),
+  ((select id from recipes where slug = 'shrimp-linguine'), 4, 'Toss with pasta and parmesan; season with salt and top with parsley.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'shrimp-linguine'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'shrimp-linguine'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'shrimp-linguine'), (select id from diet_tags where slug = 'high_protein'));
+

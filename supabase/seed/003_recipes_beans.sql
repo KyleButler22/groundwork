@@ -306,3 +306,107 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from diet_tags where slug = 'vegetarian')),
   ((select id from recipes where slug = 'refried-bean-tostadas'), (select id from diet_tags where slug = 'gluten_free'));
 
+-- Smoky Black Bean Soup (Mexican)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('black-bean-soup', 'Smoky Black Bean Soup', 'A simple, warming pureed black bean soup with smoked paprika.', 4, 10, 20, 'Mexican', 1, 481.3, 29.5, 83.8, 5.3);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from ingredients where slug = 'black_beans_canned'), 3, (select id from units where slug = 'can'), null, false, 0),
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from ingredients where slug = 'smoked_paprika'), 1, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from ingredients where slug = 'cumin'), 1, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from ingredients where slug = 'vegetable_broth'), 2, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from ingredients where slug = 'lime'), 1, (select id from units where slug = 'each'), null, false, 7),
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from ingredients where slug = 'sour_cream'), 0.25, (select id from units where slug = 'cup'), null, true, 8),
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'black-bean-soup'), 1, 'Heat oil; soften onion and garlic, about 5 minutes.'),
+  ((select id from recipes where slug = 'black-bean-soup'), 2, 'Add smoked paprika, cumin, beans, and broth; simmer 10 minutes.'),
+  ((select id from recipes where slug = 'black-bean-soup'), 3, 'Blend partially (or fully) for a creamy texture, leaving some beans whole if you like.'),
+  ((select id from recipes where slug = 'black-bean-soup'), 4, 'Season with salt and lime juice; top with sour cream.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'black-bean-soup'), 'lunch'),
+  ((select id from recipes where slug = 'black-bean-soup'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'black-bean-soup'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Bean and Cheese Breakfast Skillet (Mexican)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('bean-and-cheese-breakfast-skillet', 'Bean and Cheese Breakfast Skillet', 'A hearty savory breakfast of beans, eggs, and melted cheese.', 2, 5, 12, 'Mexican', 1, 622.7, 39.3, 56.6, 27.0);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), (select id from ingredients where slug = 'pinto_beans_canned'), 1, (select id from units where slug = 'can'), null, false, 0),
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), (select id from ingredients where slug = 'egg'), 4, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), (select id from ingredients where slug = 'cheddar_cheese'), 0.5, (select id from units where slug = 'cup'), 'shredded', false, 2),
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), (select id from ingredients where slug = 'cumin'), 0.5, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), (select id from ingredients where slug = 'salsa'), 0.25, (select id from units where slug = 'cup'), null, true, 5),
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), (select id from ingredients where slug = 'salt'), 0.5, (select id from units where slug = 'tsp'), null, false, 6);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), 1, 'Heat oil; warm the beans with cumin and salt in a skillet.'),
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), 2, 'Make wells and crack in the eggs; cover and cook 5-6 minutes until whites are set.'),
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), 3, 'Top with cheese until melted, and serve with salsa.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), 'breakfast');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'bean-and-cheese-breakfast-skillet'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Bean and Herb Dip Plate (Mediterranean)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('white-bean-hummus-plate', 'Bean and Herb Dip Plate', 'A simple blended bean dip with olive oil and herbs, served with vegetables.', 4, 10, 0, 'Mediterranean', 1, 622.3, 25.8, 96.5, 15.8);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), (select id from ingredients where slug = 'pinto_beans_canned'), 2, (select id from units where slug = 'can'), null, false, 0),
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), (select id from ingredients where slug = 'garlic'), 2, (select id from units where slug = 'clove'), null, false, 1),
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), (select id from ingredients where slug = 'lemon'), 1, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), (select id from ingredients where slug = 'olive_oil'), 0.25, (select id from units where slug = 'cup'), null, false, 3),
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), (select id from ingredients where slug = 'cumin'), 0.5, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), (select id from ingredients where slug = 'cucumber'), 1, (select id from units where slug = 'each'), 'sliced, for serving', false, 5),
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), (select id from ingredients where slug = 'carrot'), 2, (select id from units where slug = 'each'), 'sliced, for serving', false, 6),
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), (select id from ingredients where slug = 'pita_bread'), 4, (select id from units where slug = 'each'), null, false, 7),
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), (select id from ingredients where slug = 'salt'), 0.5, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), 1, 'Blend beans, garlic, lemon juice, olive oil, cumin, and salt until smooth, adding water as needed for consistency.'),
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), 2, 'Serve with sliced cucumber, carrot, and warm pita.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), 'snack'),
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'white-bean-hummus-plate'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Bean and Rice Burrito Bowl (Mexican)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('bean-and-rice-burrito-bowl', 'Bean and Rice Burrito Bowl', 'A build-your-own bowl with seasoned beans, rice, and fresh toppings.', 4, 10, 20, 'Mexican', 1, 553.8, 24.1, 90.9, 13.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from ingredients where slug = 'black_beans_canned'), 1, (select id from units where slug = 'can'), null, false, 0),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from ingredients where slug = 'pinto_beans_canned'), 1, (select id from units where slug = 'can'), null, false, 1),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from ingredients where slug = 'white_rice'), 1.5, (select id from units where slug = 'cup'), 'uncooked', false, 2),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from ingredients where slug = 'cumin'), 1, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from ingredients where slug = 'corn'), 1, (select id from units where slug = 'cup'), null, false, 4),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from ingredients where slug = 'lettuce_romaine'), 2, (select id from units where slug = 'cup'), 'shredded', false, 5),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from ingredients where slug = 'tomato'), 1, (select id from units where slug = 'each'), 'diced', false, 6),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from ingredients where slug = 'avocado'), 1, (select id from units where slug = 'each'), null, false, 7),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from ingredients where slug = 'cheddar_cheese'), 0.5, (select id from units where slug = 'cup'), null, true, 8),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from ingredients where slug = 'lime'), 1, (select id from units where slug = 'each'), null, false, 9),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 10),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 11);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), 1, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), 2, 'Heat oil; warm the beans with cumin and salt.'),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), 3, 'Build bowls with rice, beans, corn, lettuce, tomato, avocado, and cheese.'),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), 4, 'Finish with a squeeze of lime.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), 'lunch'),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from diet_tags where slug = 'vegan')),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'bean-and-rice-burrito-bowl'), (select id from diet_tags where slug = 'dairy_free'));
+

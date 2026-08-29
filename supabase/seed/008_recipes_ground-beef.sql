@@ -374,3 +374,52 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'indian-beef-keema'), (select id from diet_tags where slug = 'dairy_free')),
   ((select id from recipes where slug = 'indian-beef-keema'), (select id from diet_tags where slug = 'high_protein'));
 
+-- Korean Ground Beef Bowl (Korean)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('korean-beef-bulgogi-bowl', 'Korean Ground Beef Bowl', 'Sweet-savory ground beef over rice, bulgogi-style.', 4, 10, 12, 'Korean', 1, 333.7, 27.6, 22.8, 13.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), (select id from ingredients where slug = 'ground_beef'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 1),
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), (select id from ingredients where slug = 'ginger'), 1, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), (select id from ingredients where slug = 'soy_sauce'), 3, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), (select id from ingredients where slug = 'brown_sugar'), 2, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), (select id from ingredients where slug = 'sesame_oil'), 1, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 6),
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), (select id from ingredients where slug = 'green_onion'), 2, (select id from units where slug = 'each'), null, false, 7),
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), (select id from ingredients where slug = 'sesame_seeds'), 1, (select id from units where slug = 'tsp'), null, true, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), 1, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), 2, 'Brown the ground beef with garlic and ginger, about 7 minutes.'),
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), 3, 'Stir in soy sauce and brown sugar; simmer 2-3 minutes until glazed.'),
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), 4, 'Finish with sesame oil, serve over rice, and top with green onion and sesame seeds.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'korean-beef-bulgogi-bowl'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Beef Picadillo (Cuban)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('beef-picadillo', 'Beef Picadillo', 'A savory-sweet Latin American ground beef hash with olives and raisins.', 4, 10, 25, 'Cuban', 1, 371.3, 28.4, 25.2, 17.3);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'beef-picadillo'), (select id from ingredients where slug = 'ground_beef'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'beef-picadillo'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'beef-picadillo'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'beef-picadillo'), (select id from ingredients where slug = 'bell_pepper_green'), 1, (select id from units where slug = 'each'), null, false, 3),
+  ((select id from recipes where slug = 'beef-picadillo'), (select id from ingredients where slug = 'tomato_canned_diced'), 1, (select id from units where slug = 'can'), null, false, 4),
+  ((select id from recipes where slug = 'beef-picadillo'), (select id from ingredients where slug = 'kalamata_olives'), 0.25, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'beef-picadillo'), (select id from ingredients where slug = 'cumin'), 1, (select id from units where slug = 'tsp'), null, false, 6),
+  ((select id from recipes where slug = 'beef-picadillo'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'beef-picadillo'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 8),
+  ((select id from recipes where slug = 'beef-picadillo'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'beef-picadillo'), 1, 'Heat oil; soften onion, garlic, and bell pepper, about 6 minutes.'),
+  ((select id from recipes where slug = 'beef-picadillo'), 2, 'Add ground beef and brown, breaking it up as it cooks.'),
+  ((select id from recipes where slug = 'beef-picadillo'), 3, 'Stir in diced tomatoes, olives, and cumin; simmer 12-15 minutes.'),
+  ((select id from recipes where slug = 'beef-picadillo'), 4, 'Season with salt. Cook rice and serve the picadillo over it.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'beef-picadillo'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'beef-picadillo'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'beef-picadillo'), (select id from diet_tags where slug = 'dairy_free'));
+

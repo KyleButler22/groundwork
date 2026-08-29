@@ -168,3 +168,189 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'shrimp-and-veggie-skewers'), (select id from diet_tags where slug = 'dairy_free')),
   ((select id from recipes where slug = 'shrimp-and-veggie-skewers'), (select id from diet_tags where slug = 'high_protein'));
 
+-- Cajun Shrimp and Rice (Cajun)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('cajun-shrimp-and-rice', 'Cajun Shrimp and Rice', 'Blackened shrimp with peppers over rice.', 4, 10, 15, 'Cajun', 1, 295.4, 38.2, 19.2, 7.6);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from ingredients where slug = 'shrimp'), 600, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from ingredients where slug = 'smoked_paprika'), 1.5, (select id from units where slug = 'tsp'), null, false, 1),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from ingredients where slug = 'cayenne_pepper'), 0.5, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from ingredients where slug = 'garlic_powder'), 1, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from ingredients where slug = 'bell_pepper_green'), 1, (select id from units where slug = 'each'), null, false, 4),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from ingredients where slug = 'celery'), 1, (select id from units where slug = 'each'), null, false, 5),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from ingredients where slug = 'onion'), 0.5, (select id from units where slug = 'each'), null, false, 6),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 7),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 8),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 9);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), 1, 'Cook rice according to package directions.'),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), 2, 'Toss shrimp with smoked paprika, cayenne, garlic powder, and salt.'),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), 3, 'Heat oil; sauté bell pepper, celery, and onion, about 6 minutes.'),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), 4, 'Add shrimp and cook 3-4 minutes until pink and opaque. Serve over rice.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'cajun-shrimp-and-rice'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Spanish-Style Shrimp and Rice (Spanish)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('spanish-shrimp-and-rice', 'Spanish-Style Shrimp and Rice', 'A simplified paella-inspired one-pot shrimp and rice.', 4, 10, 25, 'Spanish', 2, 342.5, 34.9, 34.9, 7.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from ingredients where slug = 'shrimp'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from ingredients where slug = 'white_rice'), 1.5, (select id from units where slug = 'cup'), 'uncooked', false, 1),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from ingredients where slug = 'onion'), 1, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 3),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from ingredients where slug = 'bell_pepper_red'), 1, (select id from units where slug = 'each'), null, false, 4),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from ingredients where slug = 'smoked_paprika'), 1, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from ingredients where slug = 'tomato_canned_diced'), 1, (select id from units where slug = 'can'), null, false, 6),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from ingredients where slug = 'chicken_broth'), 2, (select id from units where slug = 'cup'), null, false, 7),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 8),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from ingredients where slug = 'lemon'), 1, (select id from units where slug = 'each'), null, false, 9),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), 1, 'Heat oil in a wide pan; soften onion, garlic, and bell pepper, about 6 minutes.'),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), 2, 'Stir in smoked paprika, rice, diced tomatoes, and broth.'),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), 3, 'Bring to a simmer, cover, and cook 15 minutes.'),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), 4, 'Nestle the shrimp into the rice and cook 5 more minutes until pink and the rice is tender. Serve with lemon.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'spanish-shrimp-and-rice'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Vietnamese Shrimp Summer Rolls (Vietnamese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('vietnamese-shrimp-summer-rolls', 'Vietnamese Shrimp Summer Rolls', 'Fresh rice-paper rolls with shrimp, herbs, and peanut dip.', 4, 25, 5, 'Vietnamese', 3, 205.7, 27.2, 16.1, 4.5);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from ingredients where slug = 'shrimp'), 400, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from ingredients where slug = 'rice_noodles'), 100, (select id from units where slug = 'g'), null, false, 1),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from ingredients where slug = 'lettuce_romaine'), 1, (select id from units where slug = 'cup'), 'shredded', false, 2),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from ingredients where slug = 'carrot'), 1, (select id from units where slug = 'each'), 'julienned', false, 3),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from ingredients where slug = 'cucumber'), 0.5, (select id from units where slug = 'each'), 'julienned', false, 4),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from ingredients where slug = 'cilantro'), 0.25, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from ingredients where slug = 'peanut_butter'), 2, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from ingredients where slug = 'soy_sauce'), 1, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from ingredients where slug = 'lime'), 1, (select id from units where slug = 'each'), null, false, 8),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from ingredients where slug = 'honey'), 1, (select id from units where slug = 'tsp'), null, false, 9),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from ingredients where slug = 'rice_paper_wrapper'), 8, (select id from units where slug = 'each'), null, false, 10);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), 1, 'Boil the shrimp 2-3 minutes until pink; halve lengthwise once cool. Cook rice noodles according to package directions.'),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), 2, 'Whisk peanut butter, soy sauce, lime juice, and honey with a splash of warm water for the dipping sauce.'),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), 3, 'Dip rice paper wrappers briefly in warm water to soften.'),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), 4, 'Layer shrimp, noodles, lettuce, carrot, cucumber, and cilantro on each wrapper and roll tightly.'),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), 5, 'Serve with the peanut dipping sauce.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'vietnamese-shrimp-summer-rolls'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Shrimp and Avocado Salad (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('shrimp-avocado-salad', 'Shrimp and Avocado Salad', 'A light, refreshing lunch salad with lime dressing.', 2, 10, 5, 'American', 1, 463.8, 39.8, 18.2, 29.4);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), (select id from ingredients where slug = 'shrimp'), 300, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), (select id from ingredients where slug = 'avocado'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), (select id from ingredients where slug = 'lettuce_romaine'), 3, (select id from units where slug = 'cup'), 'chopped', false, 2),
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), (select id from ingredients where slug = 'cherry_tomatoes'), 1, (select id from units where slug = 'cup'), null, false, 3),
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), (select id from ingredients where slug = 'lime'), 1, (select id from units where slug = 'each'), null, false, 4),
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), (select id from ingredients where slug = 'salt'), 0.5, (select id from units where slug = 'tsp'), null, false, 6);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), 1, 'Boil or sear the shrimp until pink and opaque, about 3-4 minutes.'),
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), 2, 'Whisk olive oil, lime juice, and salt for the dressing.'),
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), 3, 'Toss lettuce and cherry tomatoes with the dressing.'),
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), 4, 'Top with shrimp and sliced avocado.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'shrimp-avocado-salad'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Shrimp Pad See Ew (Thai)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('shrimp-pad-see-ew', 'Shrimp Pad See Ew', 'Wide rice noodles stir-fried with shrimp and Chinese broccoli in a sweet soy sauce.', 4, 15, 12, 'Thai', 2, 352.5, 36.9, 29.9, 10.1);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), (select id from ingredients where slug = 'shrimp'), 500, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), (select id from ingredients where slug = 'rice_noodles'), 300, (select id from units where slug = 'g'), null, false, 1),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), (select id from ingredients where slug = 'broccoli'), 250, (select id from units where slug = 'g'), null, false, 2),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 3),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), (select id from ingredients where slug = 'egg'), 2, (select id from units where slug = 'each'), null, false, 4),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), (select id from ingredients where slug = 'soy_sauce'), 3, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), (select id from ingredients where slug = 'oyster_sauce'), 2, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), (select id from ingredients where slug = 'honey'), 1, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), (select id from ingredients where slug = 'vegetable_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), 1, 'Cook rice noodles according to package directions.'),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), 2, 'Heat oil in a wok; scramble the eggs softly and push aside. Add garlic and shrimp; cook 2-3 minutes.'),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), 3, 'Add broccoli and stir-fry 3 minutes.'),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), 4, 'Add the noodles, soy sauce, oyster sauce, and honey; toss over high heat 2-3 minutes until well combined.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'shrimp-pad-see-ew'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Shrimp Ceviche (Mexican)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('shrimp-ceviche', 'Shrimp Ceviche', 'Citrus-marinated shrimp with tomato, onion, and cilantro.', 4, 20, 3, 'Mexican', 1, 243.8, 32.3, 16.6, 8.2);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'shrimp-ceviche'), (select id from ingredients where slug = 'shrimp'), 500, (select id from units where slug = 'g'), 'peeled and chopped', false, 0),
+  ((select id from recipes where slug = 'shrimp-ceviche'), (select id from ingredients where slug = 'lime'), 4, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'shrimp-ceviche'), (select id from ingredients where slug = 'tomato'), 2, (select id from units where slug = 'each'), 'diced', false, 2),
+  ((select id from recipes where slug = 'shrimp-ceviche'), (select id from ingredients where slug = 'red_onion'), 0.5, (select id from units where slug = 'each'), 'diced', false, 3),
+  ((select id from recipes where slug = 'shrimp-ceviche'), (select id from ingredients where slug = 'jalapeno'), 1, (select id from units where slug = 'each'), 'diced', false, 4),
+  ((select id from recipes where slug = 'shrimp-ceviche'), (select id from ingredients where slug = 'cilantro'), 0.25, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'shrimp-ceviche'), (select id from ingredients where slug = 'avocado'), 1, (select id from units where slug = 'each'), null, false, 6),
+  ((select id from recipes where slug = 'shrimp-ceviche'), (select id from ingredients where slug = 'tortilla_corn'), 8, (select id from units where slug = 'each'), null, true, 7),
+  ((select id from recipes where slug = 'shrimp-ceviche'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'shrimp-ceviche'), 1, 'Briefly boil the shrimp 2-3 minutes until pink; cool and chop.'),
+  ((select id from recipes where slug = 'shrimp-ceviche'), 2, 'Toss with lime juice, tomato, red onion, jalapeño, cilantro, and salt.'),
+  ((select id from recipes where slug = 'shrimp-ceviche'), 3, 'Chill 10 minutes to let the flavors meld.'),
+  ((select id from recipes where slug = 'shrimp-ceviche'), 4, 'Top with avocado and serve with tortilla chips.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'shrimp-ceviche'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'shrimp-ceviche'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'shrimp-ceviche'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'shrimp-ceviche'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'shrimp-ceviche'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Shrimp Tacos with Pineapple Salsa (Caribbean)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('shrimp-tacos-with-mango', 'Shrimp Tacos with Pineapple Salsa', 'Sweet-savory shrimp tacos with a bright fruit salsa.', 4, 15, 8, 'Caribbean', 1, 304.2, 39.4, 28.0, 5.4);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), (select id from ingredients where slug = 'shrimp'), 600, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), (select id from ingredients where slug = 'chili_powder'), 1, (select id from units where slug = 'tsp'), null, false, 1),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), (select id from ingredients where slug = 'lime'), 2, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), (select id from ingredients where slug = 'tomato'), 1, (select id from units where slug = 'each'), 'diced, or pineapple if available', false, 3),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), (select id from ingredients where slug = 'red_onion'), 0.25, (select id from units where slug = 'each'), 'diced', false, 4),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), (select id from ingredients where slug = 'cilantro'), 2, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), (select id from ingredients where slug = 'tortilla_corn'), 8, (select id from units where slug = 'each'), null, false, 6),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 7),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), 1, 'Toss shrimp with chili powder and salt.'),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), 2, 'Mix diced tomato, red onion, cilantro, and juice of one lime for the salsa.'),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), 3, 'Sear the shrimp in oil, 2 minutes per side, until pink and opaque.'),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), 4, 'Warm the tortillas and fill with shrimp and salsa. Serve with remaining lime.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), 'dinner'),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), (select id from diet_tags where slug = 'pescatarian')),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'shrimp-tacos-with-mango'), (select id from diet_tags where slug = 'high_protein'));
+

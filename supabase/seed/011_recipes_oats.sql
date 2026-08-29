@@ -112,3 +112,132 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'apple-cinnamon-oatmeal'), (select id from diet_tags where slug = 'vegetarian')),
   ((select id from recipes where slug = 'apple-cinnamon-oatmeal'), (select id from diet_tags where slug = 'gluten_free'));
 
+-- Chocolate Peanut Butter Overnight Oats (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('chocolate-peanut-butter-oats', 'Chocolate Peanut Butter Overnight Oats', 'Rich, no-cook oats with cocoa and peanut butter.', 1, 5, 0, 'American', 1, 385.8, 14.7, 56.9, 14.0);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'chocolate-peanut-butter-oats'), (select id from ingredients where slug = 'rolled_oats'), 0.5, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'chocolate-peanut-butter-oats'), (select id from ingredients where slug = 'milk'), 0.5, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'chocolate-peanut-butter-oats'), (select id from ingredients where slug = 'cocoa_powder'), 1, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'chocolate-peanut-butter-oats'), (select id from ingredients where slug = 'peanut_butter'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'chocolate-peanut-butter-oats'), (select id from ingredients where slug = 'honey'), 1, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'chocolate-peanut-butter-oats'), (select id from ingredients where slug = 'chia_seeds'), 1, (select id from units where slug = 'tsp'), null, true, 5);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'chocolate-peanut-butter-oats'), 1, 'Combine oats, milk, cocoa powder, peanut butter, honey, and chia seeds in a jar.'),
+  ((select id from recipes where slug = 'chocolate-peanut-butter-oats'), 2, 'Stir well until the cocoa is fully mixed in, cover, and refrigerate overnight.'),
+  ((select id from recipes where slug = 'chocolate-peanut-butter-oats'), 3, 'Stir again before eating.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'chocolate-peanut-butter-oats'), 'breakfast'),
+  ((select id from recipes where slug = 'chocolate-peanut-butter-oats'), 'snack');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'chocolate-peanut-butter-oats'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'chocolate-peanut-butter-oats'), (select id from diet_tags where slug = 'gluten_free'));
+
+-- Date and Cardamom Oatmeal (Middle Eastern)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('middle-eastern-date-oats', 'Date and Cardamom Oatmeal', 'Warm oats sweetened naturally with dates and fragrant cardamom.', 2, 5, 10, 'Middle Eastern', 1, 363.6, 13.5, 46.6, 14.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'middle-eastern-date-oats'), (select id from ingredients where slug = 'rolled_oats'), 1, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'middle-eastern-date-oats'), (select id from ingredients where slug = 'milk'), 1.5, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'middle-eastern-date-oats'), (select id from ingredients where slug = 'cardamom'), 0.25, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'middle-eastern-date-oats'), (select id from ingredients where slug = 'honey'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'middle-eastern-date-oats'), (select id from ingredients where slug = 'walnuts'), 0.25, (select id from units where slug = 'cup'), null, false, 4),
+  ((select id from recipes where slug = 'middle-eastern-date-oats'), (select id from ingredients where slug = 'cinnamon'), 0.25, (select id from units where slug = 'tsp'), null, true, 5);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'middle-eastern-date-oats'), 1, 'Combine oats, milk, and cardamom in a pot; bring to a simmer.'),
+  ((select id from recipes where slug = 'middle-eastern-date-oats'), 2, 'Cook 6-8 minutes, stirring occasionally, until creamy.'),
+  ((select id from recipes where slug = 'middle-eastern-date-oats'), 3, 'Stir in honey, top with chopped walnuts, and dust with cinnamon.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'middle-eastern-date-oats'), 'breakfast');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'middle-eastern-date-oats'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'middle-eastern-date-oats'), (select id from diet_tags where slug = 'gluten_free'));
+
+-- Tropical Coconut Oats (Hawaiian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('tropical-oats', 'Tropical Coconut Oats', 'Creamy coconut-milk oats with a bright, fruity finish.', 2, 5, 10, 'Hawaiian', 1, 498.1, 8.5, 55.4, 30.0);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'tropical-oats'), (select id from ingredients where slug = 'rolled_oats'), 1, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'tropical-oats'), (select id from ingredients where slug = 'coconut_milk'), 1, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'tropical-oats'), (select id from ingredients where slug = 'honey'), 1, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'tropical-oats'), (select id from ingredients where slug = 'banana'), 1, (select id from units where slug = 'each'), 'sliced', false, 3),
+  ((select id from recipes where slug = 'tropical-oats'), (select id from ingredients where slug = 'chia_seeds'), 1, (select id from units where slug = 'tbsp'), null, true, 4);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'tropical-oats'), 1, 'Combine oats and coconut milk with a splash of water in a pot; bring to a simmer.'),
+  ((select id from recipes where slug = 'tropical-oats'), 2, 'Cook 6-8 minutes, stirring occasionally, until thickened and creamy.'),
+  ((select id from recipes where slug = 'tropical-oats'), 3, 'Stir in honey and top with sliced banana and chia seeds.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'tropical-oats'), 'breakfast');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'tropical-oats'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'tropical-oats'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'tropical-oats'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Blended Oat Pancakes (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('protein-oat-pancakes', 'Blended Oat Pancakes', 'Fluffy pancakes made from blended oats and banana.', 2, 5, 12, 'American', 1, 342.5, 13.5, 43.4, 13.6);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'protein-oat-pancakes'), (select id from ingredients where slug = 'rolled_oats'), 1, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'protein-oat-pancakes'), (select id from ingredients where slug = 'banana'), 1, (select id from units where slug = 'each'), null, false, 1),
+  ((select id from recipes where slug = 'protein-oat-pancakes'), (select id from ingredients where slug = 'egg'), 2, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'protein-oat-pancakes'), (select id from ingredients where slug = 'milk'), 0.25, (select id from units where slug = 'cup'), null, false, 3),
+  ((select id from recipes where slug = 'protein-oat-pancakes'), (select id from ingredients where slug = 'baking_powder'), 1, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'protein-oat-pancakes'), (select id from ingredients where slug = 'cinnamon'), 0.5, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'protein-oat-pancakes'), (select id from ingredients where slug = 'butter'), 1, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'protein-oat-pancakes'), (select id from ingredients where slug = 'maple_syrup'), 2, (select id from units where slug = 'tbsp'), null, true, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'protein-oat-pancakes'), 1, 'Blend oats, banana, eggs, milk, baking powder, and cinnamon until mostly smooth.'),
+  ((select id from recipes where slug = 'protein-oat-pancakes'), 2, 'Melt butter in a nonstick pan over medium heat. Pour small rounds and cook 2-3 minutes per side until golden.'),
+  ((select id from recipes where slug = 'protein-oat-pancakes'), 3, 'Serve with maple syrup.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'protein-oat-pancakes'), 'breakfast');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'protein-oat-pancakes'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'protein-oat-pancakes'), (select id from diet_tags where slug = 'gluten_free'));
+
+-- Baked Oatmeal with Yogurt Swirl (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('oat-and-yogurt-breakfast-bake', 'Baked Oatmeal with Yogurt Swirl', 'A make-ahead baked oatmeal swirled with sweetened yogurt.', 6, 10, 25, 'American', 2, 201.2, 9.8, 30.9, 4.6);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), (select id from ingredients where slug = 'rolled_oats'), 2, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), (select id from ingredients where slug = 'milk'), 1.5, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), (select id from ingredients where slug = 'egg'), 2, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), (select id from ingredients where slug = 'honey'), 3, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), (select id from ingredients where slug = 'baking_powder'), 1, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), (select id from ingredients where slug = 'cinnamon'), 1, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), (select id from ingredients where slug = 'greek_yogurt'), 0.5, (select id from units where slug = 'cup'), null, false, 6),
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), (select id from ingredients where slug = 'walnuts'), 0.33, (select id from units where slug = 'cup'), null, true, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), 1, 'Preheat oven to 375°F (190°C) and grease a baking dish.'),
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), 2, 'Mix oats, milk, eggs, 2 tbsp honey, baking powder, and cinnamon; pour into the dish.'),
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), 3, 'Mix yogurt with remaining honey and dollop over the top; swirl gently with a knife.'),
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), 4, 'Bake 22-25 minutes until set. Top with walnuts before serving.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), 'breakfast');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'oat-and-yogurt-breakfast-bake'), (select id from diet_tags where slug = 'gluten_free'));
+
+-- Savory Sesame Oats with Egg (Korean)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('savory-korean-oats', 'Savory Sesame Oats with Egg', 'Oats cooked savory-style with sesame oil, egg, and green onion.', 2, 5, 10, 'Korean', 1, 259.9, 13.1, 30.2, 9.7);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'savory-korean-oats'), (select id from ingredients where slug = 'rolled_oats'), 1, (select id from units where slug = 'cup'), null, false, 0),
+  ((select id from recipes where slug = 'savory-korean-oats'), (select id from ingredients where slug = 'vegetable_broth'), 2, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'savory-korean-oats'), (select id from ingredients where slug = 'egg'), 2, (select id from units where slug = 'each'), null, false, 2),
+  ((select id from recipes where slug = 'savory-korean-oats'), (select id from ingredients where slug = 'sesame_oil'), 1, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'savory-korean-oats'), (select id from ingredients where slug = 'soy_sauce'), 1, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'savory-korean-oats'), (select id from ingredients where slug = 'green_onion'), 2, (select id from units where slug = 'each'), null, false, 5),
+  ((select id from recipes where slug = 'savory-korean-oats'), (select id from ingredients where slug = 'sesame_seeds'), 0.5, (select id from units where slug = 'tsp'), null, true, 6);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'savory-korean-oats'), 1, 'Simmer oats in vegetable broth 6-8 minutes until thickened.'),
+  ((select id from recipes where slug = 'savory-korean-oats'), 2, 'Fry the eggs separately to your liking.'),
+  ((select id from recipes where slug = 'savory-korean-oats'), 3, 'Stir soy sauce and sesame oil into the oats.'),
+  ((select id from recipes where slug = 'savory-korean-oats'), 4, 'Top with a fried egg, green onion, and sesame seeds.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'savory-korean-oats'), 'breakfast');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'savory-korean-oats'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'savory-korean-oats'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'savory-korean-oats'), (select id from diet_tags where slug = 'dairy_free'));
+

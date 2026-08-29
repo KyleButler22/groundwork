@@ -198,3 +198,163 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'egg-and-avocado-toast'), (select id from diet_tags where slug = 'vegetarian')),
   ((select id from recipes where slug = 'egg-and-avocado-toast'), (select id from diet_tags where slug = 'dairy_free'));
 
+-- Tamagoyaki (Japanese Rolled Omelet) (Japanese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('japanese-tamagoyaki', 'Tamagoyaki (Japanese Rolled Omelet)', 'A sweet-savory layered rolled omelet, sliced into pieces.', 2, 5, 10, 'Japanese', 2, 217.8, 13.6, 3.9, 16.3);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'japanese-tamagoyaki'), (select id from ingredients where slug = 'egg'), 4, (select id from units where slug = 'each'), null, false, 0),
+  ((select id from recipes where slug = 'japanese-tamagoyaki'), (select id from ingredients where slug = 'soy_sauce'), 1, (select id from units where slug = 'tbsp'), null, false, 1),
+  ((select id from recipes where slug = 'japanese-tamagoyaki'), (select id from ingredients where slug = 'honey'), 1, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'japanese-tamagoyaki'), (select id from ingredients where slug = 'vegetable_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 3),
+  ((select id from recipes where slug = 'japanese-tamagoyaki'), (select id from ingredients where slug = 'green_onion'), 1, (select id from units where slug = 'each'), null, true, 4);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'japanese-tamagoyaki'), 1, 'Whisk eggs, soy sauce, and honey together.'),
+  ((select id from recipes where slug = 'japanese-tamagoyaki'), 2, 'Heat a lightly oiled nonstick pan over medium-low heat. Pour in a thin layer of egg and let set.'),
+  ((select id from recipes where slug = 'japanese-tamagoyaki'), 3, 'Roll the set egg to one side, then pour in more egg, letting it flow under the roll, and roll again.'),
+  ((select id from recipes where slug = 'japanese-tamagoyaki'), 4, 'Repeat until all the egg is used, forming layers. Slice into pieces and garnish with green onion.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'japanese-tamagoyaki'), 'breakfast');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'japanese-tamagoyaki'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'japanese-tamagoyaki'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'japanese-tamagoyaki'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Menemen (Turkish Scrambled Eggs) (Turkish)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('turkish-menemen', 'Menemen (Turkish Scrambled Eggs)', 'Soft scrambled eggs cooked into a spiced tomato and pepper base.', 2, 5, 15, 'Turkish', 1, 315.6, 15.2, 12.6, 23.5);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'turkish-menemen'), (select id from ingredients where slug = 'egg'), 4, (select id from units where slug = 'each'), null, false, 0),
+  ((select id from recipes where slug = 'turkish-menemen'), (select id from ingredients where slug = 'tomato'), 2, (select id from units where slug = 'each'), 'diced', false, 1),
+  ((select id from recipes where slug = 'turkish-menemen'), (select id from ingredients where slug = 'bell_pepper_green'), 1, (select id from units where slug = 'each'), 'diced', false, 2),
+  ((select id from recipes where slug = 'turkish-menemen'), (select id from ingredients where slug = 'onion'), 0.5, (select id from units where slug = 'each'), null, false, 3),
+  ((select id from recipes where slug = 'turkish-menemen'), (select id from ingredients where slug = 'red_pepper_flakes'), 0.25, (select id from units where slug = 'tsp'), null, false, 4),
+  ((select id from recipes where slug = 'turkish-menemen'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'turkish-menemen'), (select id from ingredients where slug = 'feta_cheese'), 0.25, (select id from units where slug = 'cup'), null, true, 6),
+  ((select id from recipes where slug = 'turkish-menemen'), (select id from ingredients where slug = 'bread_sandwich'), 4, (select id from units where slug = 'slice'), null, true, 7),
+  ((select id from recipes where slug = 'turkish-menemen'), (select id from ingredients where slug = 'salt'), 0.5, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'turkish-menemen'), 1, 'Heat oil; soften onion and bell pepper, about 5 minutes.'),
+  ((select id from recipes where slug = 'turkish-menemen'), 2, 'Add tomato and red pepper flakes; cook 8-10 minutes until the tomato breaks down.'),
+  ((select id from recipes where slug = 'turkish-menemen'), 3, 'Whisk the eggs with salt and pour into the pan; stir gently until softly scrambled into the vegetables.'),
+  ((select id from recipes where slug = 'turkish-menemen'), 4, 'Top with feta and serve with bread.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'turkish-menemen'), 'breakfast');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'turkish-menemen'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'turkish-menemen'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'turkish-menemen'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Italian Vegetable Frittata (Italian)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('italian-frittata', 'Italian Vegetable Frittata', 'A baked egg dish loaded with vegetables and parmesan.', 4, 10, 20, 'Italian', 2, 261.5, 17.3, 5.8, 18.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'italian-frittata'), (select id from ingredients where slug = 'egg'), 8, (select id from units where slug = 'each'), null, false, 0),
+  ((select id from recipes where slug = 'italian-frittata'), (select id from ingredients where slug = 'zucchini'), 1, (select id from units where slug = 'each'), 'sliced', false, 1),
+  ((select id from recipes where slug = 'italian-frittata'), (select id from ingredients where slug = 'cherry_tomatoes'), 1, (select id from units where slug = 'cup'), null, false, 2),
+  ((select id from recipes where slug = 'italian-frittata'), (select id from ingredients where slug = 'onion'), 0.5, (select id from units where slug = 'each'), null, false, 3),
+  ((select id from recipes where slug = 'italian-frittata'), (select id from ingredients where slug = 'parmesan_cheese'), 0.33, (select id from units where slug = 'cup'), 'grated', false, 4),
+  ((select id from recipes where slug = 'italian-frittata'), (select id from ingredients where slug = 'basil_fresh'), 0.25, (select id from units where slug = 'cup'), null, false, 5),
+  ((select id from recipes where slug = 'italian-frittata'), (select id from ingredients where slug = 'olive_oil'), 2, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'italian-frittata'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'italian-frittata'), 1, 'Preheat oven to 375°F (190°C). Heat oil in an oven-safe skillet; soften onion and zucchini, about 6 minutes.'),
+  ((select id from recipes where slug = 'italian-frittata'), 2, 'Whisk eggs with salt and parmesan; pour into the pan over the vegetables. Scatter cherry tomatoes on top.'),
+  ((select id from recipes where slug = 'italian-frittata'), 3, 'Cook on the stovetop 2-3 minutes until the edges set, then transfer to the oven and bake 12-15 minutes until fully set.'),
+  ((select id from recipes where slug = 'italian-frittata'), 4, 'Top with fresh basil and slice into wedges.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'italian-frittata'), 'breakfast'),
+  ((select id from recipes where slug = 'italian-frittata'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'italian-frittata'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'italian-frittata'), (select id from diet_tags where slug = 'gluten_free'));
+
+-- Gyeranmari (Korean Rolled Omelet) (Korean)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('korean-gyeranmari', 'Gyeranmari (Korean Rolled Omelet)', 'A savory Korean rolled omelet with finely diced vegetables.', 2, 10, 10, 'Korean', 2, 214.1, 13.4, 3.3, 16.4);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'korean-gyeranmari'), (select id from ingredients where slug = 'egg'), 4, (select id from units where slug = 'each'), null, false, 0),
+  ((select id from recipes where slug = 'korean-gyeranmari'), (select id from ingredients where slug = 'carrot'), 0.5, (select id from units where slug = 'each'), 'finely diced', false, 1),
+  ((select id from recipes where slug = 'korean-gyeranmari'), (select id from ingredients where slug = 'green_onion'), 2, (select id from units where slug = 'each'), 'finely sliced', false, 2),
+  ((select id from recipes where slug = 'korean-gyeranmari'), (select id from ingredients where slug = 'salt'), 0.25, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'korean-gyeranmari'), (select id from ingredients where slug = 'vegetable_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'korean-gyeranmari'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', true, 5);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'korean-gyeranmari'), 1, 'Whisk eggs with salt, carrot, and green onion.'),
+  ((select id from recipes where slug = 'korean-gyeranmari'), 2, 'Heat a lightly oiled nonstick pan over medium-low heat. Pour in a thin layer and let set.'),
+  ((select id from recipes where slug = 'korean-gyeranmari'), 3, 'Roll to one side, add more egg mixture, and roll again, building layers.'),
+  ((select id from recipes where slug = 'korean-gyeranmari'), 4, 'Slice into rounds and serve, with rice on the side if desired.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'korean-gyeranmari'), 'breakfast'),
+  ((select id from recipes where slug = 'korean-gyeranmari'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'korean-gyeranmari'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'korean-gyeranmari'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'korean-gyeranmari'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Chilaquiles (Mexican)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('chilaquiles', 'Chilaquiles', 'Crisp tortilla chips simmered in salsa and topped with fried eggs.', 4, 10, 15, 'Mexican', 1, 325.5, 15.0, 35.3, 14.8);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'chilaquiles'), (select id from ingredients where slug = 'egg'), 4, (select id from units where slug = 'each'), null, false, 0),
+  ((select id from recipes where slug = 'chilaquiles'), (select id from ingredients where slug = 'tortilla_corn'), 10, (select id from units where slug = 'each'), 'cut into wedges and crisped, or use chips', false, 1),
+  ((select id from recipes where slug = 'chilaquiles'), (select id from ingredients where slug = 'salsa'), 1.5, (select id from units where slug = 'cup'), null, false, 2),
+  ((select id from recipes where slug = 'chilaquiles'), (select id from ingredients where slug = 'cheddar_cheese'), 0.5, (select id from units where slug = 'cup'), 'shredded', false, 3),
+  ((select id from recipes where slug = 'chilaquiles'), (select id from ingredients where slug = 'onion'), 0.25, (select id from units where slug = 'each'), null, false, 4),
+  ((select id from recipes where slug = 'chilaquiles'), (select id from ingredients where slug = 'sour_cream'), 0.25, (select id from units where slug = 'cup'), null, true, 5),
+  ((select id from recipes where slug = 'chilaquiles'), (select id from ingredients where slug = 'cilantro'), 2, (select id from units where slug = 'tbsp'), null, true, 6),
+  ((select id from recipes where slug = 'chilaquiles'), (select id from ingredients where slug = 'olive_oil'), 1, (select id from units where slug = 'tbsp'), null, false, 7);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'chilaquiles'), 1, 'Warm the salsa in a large skillet. Add the crisped tortilla chips and toss gently to coat, cooking 2-3 minutes.'),
+  ((select id from recipes where slug = 'chilaquiles'), 2, 'Top with cheese and cover briefly until melted.'),
+  ((select id from recipes where slug = 'chilaquiles'), 3, 'Fry the eggs in oil in a separate pan.'),
+  ((select id from recipes where slug = 'chilaquiles'), 4, 'Top the chilaquiles with fried eggs, onion, sour cream, and cilantro.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'chilaquiles'), 'breakfast');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'chilaquiles'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'chilaquiles'), (select id from diet_tags where slug = 'gluten_free'));
+
+-- Egg Drop Soup (Chinese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('egg-drop-soup', 'Egg Drop Soup', 'A simple, silky Chinese soup of ribboned egg in savory broth.', 4, 5, 10, 'Chinese', 1, 91.9, 6.6, 5.3, 4.9);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'egg-drop-soup'), (select id from ingredients where slug = 'egg'), 3, (select id from units where slug = 'each'), null, false, 0),
+  ((select id from recipes where slug = 'egg-drop-soup'), (select id from ingredients where slug = 'chicken_broth'), 2, (select id from units where slug = 'can'), null, false, 1),
+  ((select id from recipes where slug = 'egg-drop-soup'), (select id from ingredients where slug = 'cornstarch'), 2, (select id from units where slug = 'tbsp'), null, false, 2),
+  ((select id from recipes where slug = 'egg-drop-soup'), (select id from ingredients where slug = 'ginger'), 1, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'egg-drop-soup'), (select id from ingredients where slug = 'soy_sauce'), 1, (select id from units where slug = 'tbsp'), null, false, 4),
+  ((select id from recipes where slug = 'egg-drop-soup'), (select id from ingredients where slug = 'sesame_oil'), 1, (select id from units where slug = 'tsp'), null, false, 5),
+  ((select id from recipes where slug = 'egg-drop-soup'), (select id from ingredients where slug = 'green_onion'), 2, (select id from units where slug = 'each'), null, false, 6);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'egg-drop-soup'), 1, 'Bring broth to a simmer with ginger and soy sauce.'),
+  ((select id from recipes where slug = 'egg-drop-soup'), 2, 'Mix cornstarch with a little water and stir into the broth to thicken slightly.'),
+  ((select id from recipes where slug = 'egg-drop-soup'), 3, 'Whisk the eggs, then slowly drizzle into the simmering broth while stirring gently to form ribbons.'),
+  ((select id from recipes where slug = 'egg-drop-soup'), 4, 'Finish with sesame oil and green onion.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'egg-drop-soup'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'egg-drop-soup'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'egg-drop-soup'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'egg-drop-soup'), (select id from diet_tags where slug = 'dairy_free'));
+
+-- Classic Deviled Eggs (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('deviled-eggs', 'Classic Deviled Eggs', 'Creamy, tangy deviled eggs — a great high-protein snack.', 4, 15, 10, 'American', 1, 177.1, 9.9, 0.8, 14.8);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'deviled-eggs'), (select id from ingredients where slug = 'egg'), 6, (select id from units where slug = 'each'), null, false, 0),
+  ((select id from recipes where slug = 'deviled-eggs'), (select id from ingredients where slug = 'mayonnaise'), 3, (select id from units where slug = 'tbsp'), null, false, 1),
+  ((select id from recipes where slug = 'deviled-eggs'), (select id from ingredients where slug = 'dijon_mustard'), 1, (select id from units where slug = 'tsp'), null, false, 2),
+  ((select id from recipes where slug = 'deviled-eggs'), (select id from ingredients where slug = 'paprika'), 0.25, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'deviled-eggs'), (select id from ingredients where slug = 'salt'), 0.5, (select id from units where slug = 'tsp'), null, false, 4);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'deviled-eggs'), 1, 'Boil the eggs 10 minutes, cool, and peel. Halve lengthwise and remove yolks.'),
+  ((select id from recipes where slug = 'deviled-eggs'), 2, 'Mash the yolks with mayonnaise, dijon, and salt.'),
+  ((select id from recipes where slug = 'deviled-eggs'), 3, 'Pipe or spoon the filling back into the egg whites, and dust with paprika.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'deviled-eggs'), 'snack'),
+  ((select id from recipes where slug = 'deviled-eggs'), 'lunch');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'deviled-eggs'), (select id from diet_tags where slug = 'vegetarian')),
+  ((select id from recipes where slug = 'deviled-eggs'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'deviled-eggs'), (select id from diet_tags where slug = 'dairy_free'));
+

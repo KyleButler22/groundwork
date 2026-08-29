@@ -260,3 +260,53 @@ insert into recipe_diet_tags (recipe_id, diet_tag_id) values
   ((select id from recipes where slug = 'steak-and-eggs'), (select id from diet_tags where slug = 'gluten_free')),
   ((select id from recipes where slug = 'steak-and-eggs'), (select id from diet_tags where slug = 'high_protein'));
 
+-- Steak Salad with Feta (American)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('steak-salad-with-blue-cheese', 'Steak Salad with Feta', 'Sliced grilled steak over greens with tomato and tangy cheese.', 4, 15, 10, 'American', 1, 443.9, 44.5, 6.9, 26.0);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), (select id from ingredients where slug = 'beef_sirloin'), 600, (select id from units where slug = 'g'), null, false, 0),
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), (select id from ingredients where slug = 'lettuce_romaine'), 6, (select id from units where slug = 'cup'), 'chopped', false, 1),
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), (select id from ingredients where slug = 'cherry_tomatoes'), 1, (select id from units where slug = 'cup'), null, false, 2),
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), (select id from ingredients where slug = 'red_onion'), 0.25, (select id from units where slug = 'each'), 'thinly sliced', false, 3),
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), (select id from ingredients where slug = 'feta_cheese'), 0.5, (select id from units where slug = 'cup'), 'crumbled', false, 4),
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), (select id from ingredients where slug = 'balsamic_vinegar'), 2, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), (select id from ingredients where slug = 'olive_oil'), 3, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), (select id from ingredients where slug = 'salt'), 1, (select id from units where slug = 'tsp'), null, false, 7),
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), (select id from ingredients where slug = 'black_pepper'), 0.5, (select id from units where slug = 'tsp'), null, false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), 1, 'Season the steak with salt and pepper; sear 3-4 minutes per side for medium-rare. Rest, then slice.'),
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), 2, 'Whisk balsamic vinegar and olive oil for the dressing.'),
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), 3, 'Toss lettuce, tomatoes, and red onion with the dressing.'),
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), 4, 'Top with sliced steak and feta.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), 'lunch'),
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'steak-salad-with-blue-cheese'), (select id from diet_tags where slug = 'high_protein'));
+
+-- Mongolian Beef (Chinese)
+insert into recipes (slug, title, summary, servings, prep_minutes, cook_minutes, cuisine, difficulty, kcal_per_serving, protein_per_serving, carb_per_serving, fat_per_serving)
+values ('mongolian-beef', 'Mongolian Beef', 'Crispy sliced beef in a sweet, garlicky soy glaze.', 4, 15, 12, 'Chinese', 2, 541.0, 43.9, 36.4, 23.4);
+insert into recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, prep_note, is_optional, order_index) values
+  ((select id from recipes where slug = 'mongolian-beef'), (select id from ingredients where slug = 'beef_flank_steak'), 600, (select id from units where slug = 'g'), 'thinly sliced', false, 0),
+  ((select id from recipes where slug = 'mongolian-beef'), (select id from ingredients where slug = 'cornstarch'), 0.33, (select id from units where slug = 'cup'), null, false, 1),
+  ((select id from recipes where slug = 'mongolian-beef'), (select id from ingredients where slug = 'garlic'), 3, (select id from units where slug = 'clove'), null, false, 2),
+  ((select id from recipes where slug = 'mongolian-beef'), (select id from ingredients where slug = 'ginger'), 1, (select id from units where slug = 'tsp'), null, false, 3),
+  ((select id from recipes where slug = 'mongolian-beef'), (select id from ingredients where slug = 'soy_sauce'), 0.33, (select id from units where slug = 'cup'), null, false, 4),
+  ((select id from recipes where slug = 'mongolian-beef'), (select id from ingredients where slug = 'brown_sugar'), 3, (select id from units where slug = 'tbsp'), null, false, 5),
+  ((select id from recipes where slug = 'mongolian-beef'), (select id from ingredients where slug = 'vegetable_oil'), 3, (select id from units where slug = 'tbsp'), null, false, 6),
+  ((select id from recipes where slug = 'mongolian-beef'), (select id from ingredients where slug = 'green_onion'), 3, (select id from units where slug = 'each'), null, false, 7),
+  ((select id from recipes where slug = 'mongolian-beef'), (select id from ingredients where slug = 'white_rice'), 1, (select id from units where slug = 'cup'), 'uncooked', false, 8);
+insert into recipe_steps (recipe_id, step_number, instruction) values
+  ((select id from recipes where slug = 'mongolian-beef'), 1, 'Toss the beef slices in cornstarch. Fry in oil until crisped, about 2-3 minutes per side; remove.'),
+  ((select id from recipes where slug = 'mongolian-beef'), 2, 'Sauté garlic and ginger 30 seconds, then add soy sauce and brown sugar; simmer 1-2 minutes.'),
+  ((select id from recipes where slug = 'mongolian-beef'), 3, 'Return the beef to the pan and toss to coat.'),
+  ((select id from recipes where slug = 'mongolian-beef'), 4, 'Cook rice and serve topped with green onion.');
+insert into recipe_meal_slots (recipe_id, slot) values
+  ((select id from recipes where slug = 'mongolian-beef'), 'dinner');
+insert into recipe_diet_tags (recipe_id, diet_tag_id) values
+  ((select id from recipes where slug = 'mongolian-beef'), (select id from diet_tags where slug = 'gluten_free')),
+  ((select id from recipes where slug = 'mongolian-beef'), (select id from diet_tags where slug = 'dairy_free')),
+  ((select id from recipes where slug = 'mongolian-beef'), (select id from diet_tags where slug = 'high_protein'));
+

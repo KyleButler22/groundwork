@@ -276,7 +276,8 @@ values
   ('tortilla_corn',  'Corn tortilla',  (select id from aisles where slug='bakery'), 24, 218, 5.7, 45,  2.9, 6.3, false),
   ('bread_sandwich', 'Sandwich bread', (select id from aisles where slug='bakery'), 28, 265, 9,   49,  3.3, 2.7, false),
   ('naan',           'Naan bread',     (select id from aisles where slug='bakery'), 90, 310, 9,   50,  7,   2,   false),
-  ('pita_bread',     'Pita bread',     (select id from aisles where slug='bakery'), 60, 275, 9.1, 55,  1.2, 2.2, false);
+  ('pita_bread',     'Pita bread',     (select id from aisles where slug='bakery'), 60, 275, 9.1, 55,  1.2, 2.2, false),
+  ('rice_paper_wrapper', 'Rice paper wrapper', (select id from aisles where slug='dry_goods'), 8, 33, 0.1, 8,   0,   0.2, false);
 
 -- ── ingredient unit overrides ────────────────────────────────────────────
 -- Only for COUNT units, which have no universal weight the way volume

@@ -112,7 +112,9 @@ The variety guard is a floor: every recipe added must bring at least N ingredien
 
 **Finding: the curve is flat from floor 0 to floor 2, then falls off a cliff.** Floor 2 captures essentially the entire overlap benefit while still guaranteeing every meal brings something new; floor 3 gives up 9 points of savings for one extra novel ingredient per recipe. **Set the variety floor at 2.**
 
-Two caveats: this models dinners only (where overlap matters most) — adding breakfast/lunch dilutes the effect, expect closer to **30% on a full week's list**. And the result only materialises if the corpus actually clusters ingredients — see the corpus-authoring note in the `calisthenics-recipe-corpus` memory (build in ~10–15 ingredient families, not 200 independent recipes spanning every cuisine).
+Two caveats: this models dinners only (where overlap matters most) — adding breakfast/lunch dilutes the effect. And the result only materialises if the corpus actually clusters ingredients — see the corpus-authoring note in the `calisthenics-recipe-corpus` memory (build in ~10–15 ingredient families, not 200 independent recipes spanning every cuisine).
+
+**Re-measured against the real 200-recipe corpus once it existed** (`scripts/verify-corpus-overlap.mjs`, 2026-08-28): the actual reduction is **24%** (22.7 → 17.1 distinct ingredients for 7 dinners), not the 39% modeled above. The real corpus's random baseline is already better than the synthetic model assumed — universal aromatics (onion, garlic) appear in nearly every recipe regardless of family, which helps *even random* selection and leaves less headroom for deliberate optimisation to improve on. Still a real, meaningful reduction; the synthetic figure was directionally right (clustering helps) but should not be quoted as the expected number — use 24% as the honest baseline for what this app's actual corpus delivers.
 
 ## 6. Assembly
 
