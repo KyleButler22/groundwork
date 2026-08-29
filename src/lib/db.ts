@@ -22,6 +22,7 @@ import type {
   PlanSession,
   ProgressionEdge,
   ProgressionEdgeKind,
+  Profile,
   Recipe,
   RecipeDietTag,
   RecipeIngredient,
@@ -37,6 +38,7 @@ import type {
   UserLimitation,
   UserPantryRow,
   UserRecipeFeedback,
+  UserTargets,
   WorkoutLog,
   WorkoutPlan,
 } from '@/types/domain'
@@ -50,10 +52,16 @@ import type {
  * memory: this is *why* the client cache is IndexedDB and not SQLite).
  *
  * v1 scope was movement/training only; v2 added food/recipe/meal-plan
- * tables for the meal generator; v3 (below) adds the grocery tables for
- * the grocery generator. Dexie only needs the CHANGED/NEW stores listed
- * on a given version; earlier versions' tables carry forward untouched
- * automatically.
+ * tables for the meal generator; v3 added the grocery tables for the
+ * grocery generator; v4 (below) adds `profiles`/`userTargets` — a real
+ * gap found while wiring the meal generator into the UI: `user_targets`
+ * (the macro targets EVERY meal-generation call needs) and `profiles`
+ * (householdSize) were being written to Supabase by intake's submit()
+ * but never cached locally, so nothing durable could read them back on a
+ * later visit — only the WORKOUT plan happened to survive a reload,
+ * since rendering it needs no macro targets at all. Dexie only needs the
+ * CHANGED/NEW stores listed on a given version; earlier versions' tables
+ * carry forward untouched automatically.
  *
  * Primary keys mostly mirror the Postgres primary key so a synced row can
  * be `.put()` without translation. Pure join/content tables use a Postgres-
@@ -110,6 +118,10 @@ export class GroundworkDB extends Dexie {
   // ── v3: grocery ────────────────────────────────────────────────────────
   groceryLists!: EntityTable<GroceryList, 'id'>
   groceryItems!: EntityTable<GroceryItem, 'id'>
+
+  // ── v4: profile + macro targets ───────────────────────────────────────
+  profiles!: EntityTable<Profile, 'id'>
+  userTargets!: EntityTable<UserTargets, 'userId'>
 
   /** table name -> ISO timestamp of the last successful pull from Supabase. */
   syncMeta!: EntityTable<{ table: string; lastSyncedAt: string }, 'table'>
@@ -175,6 +187,12 @@ export class GroundworkDB extends Dexie {
       // ── per-user state: written offline, synced up when connected ────
       groceryLists: '&id, userId, mealPlanId, status',
       groceryItems: '&id, listId, ingredientId, [listId+sortIndex]',
+    })
+
+    this.version(4).stores({
+      // ── per-user state: written offline, synced up when connected ────
+      profiles: '&id',
+      userTargets: '&userId',
     })
   }
 }

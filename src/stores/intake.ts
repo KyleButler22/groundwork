@@ -16,11 +16,13 @@ import {
 import { resolveMacros, referenceWeightKg } from '@/lib/intake/macros'
 import { computeTestedLevels, resolveStartingLevels, type PlacementTestAnswers } from '@/lib/intake/placement'
 import { ageFromBirthYear, isUnderMinimumAge, isUnderweight, shouldSoftenGoalScreen } from '@/lib/intake/safetyGates'
+import { materializeGroceryList, materializeMealPlan } from '@/lib/materializeMealPlan'
 import { materializePlan } from '@/lib/materializePlan'
 import { supabase } from '@/lib/supabase'
+import { buildGroceryList, buildMealLibrary, generateMealPlan } from '@/generators/meal'
 import { buildLibrary } from '@/generators/workout/library'
 import { generatePlan } from '@/generators/workout'
-import type { Goal, SexAtBirth, UnitPreference } from '@/types/domain'
+import type { Goal, Profile, SexAtBirth, UnitPreference, UserAllergenRow, UserDietTagRow, UserTargets } from '@/types/domain'
 
 export const TOTAL_STEPS = 8
 
@@ -261,12 +263,149 @@ export const useIntakeStore = defineStore('intake', () => {
 
       const { plan: materializedPlan, sessions, items } = materializePlan(plan)
 
-      await db.transaction('rw', [db.workoutPlans, db.planSessions, db.planItems, db.userExerciseLevels], async () => {
-        await db.workoutPlans.add(materializedPlan)
-        await db.planSessions.bulkAdd(sessions)
-        await db.planItems.bulkAdd(items)
-        for (const level of levels) await db.userExerciseLevels.put(level)
-      })
+      // Profile + UserTargets: written to Supabase below too, but ALSO
+      // cached here — the meal generator (src/generators/meal/) needs
+      // these on every visit, not just the one where intake just ran, and
+      // until now nothing durable stored them client-side (see db.ts's v4
+      // comment — a real gap found while wiring the meal generator up).
+      const profile: Profile = {
+        id: userId,
+        displayName: null,
+        birthYear: answers.birthYear,
+        sexAtBirth: answers.sexAtBirth,
+        heightCm: answers.heightCm,
+        units: answers.units,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        householdSize: answers.householdSize,
+      }
+      const targets: UserTargets = {
+        userId,
+        intakeResponseId: null,
+        goal: answers.goal,
+        activityFactor: answers.neatFactor!,
+        tdeeKcal: Math.round(tdeeValue.value!),
+        kcalTarget: Math.round(selectedGoalKcal.value ?? tdeeValue.value!),
+        proteinG: Math.round(macros.value!.proteinG),
+        fatG: Math.round(macros.value!.fatG),
+        carbG: Math.round(macros.value!.carbG),
+        daysPerWeek: answers.daysPerWeek!,
+        sessionMinutes: answers.sessionMinutes!,
+        mealsPerDay: answers.mealsPerDay,
+        cookTimeCeiling: answers.cookTimeCeilingMinutes,
+      }
+
+      // Diet tags/allergens: those content tables ARE seeded for real now
+      // (see calisthenics-recipe-corpus memory) — resolve the slugs
+      // collected in step 7 against them. A slug that doesn't resolve
+      // (e.g. StepKitchen.vue's placeholder 'omnivore' option, which the
+      // real seed calls 'high_protein' instead — see TASKS.md) is simply
+      // skipped rather than failing the whole submit: raw answers already
+      // land safely in answers.dietTagSlugs regardless, and "no matching
+      // diet tag" is equivalent in the generator to "no restriction", the
+      // correct behaviour for that specific option either way.
+      const dietTagIdBySlug = new Map((await db.dietTags.toArray()).map((t) => [t.slug, t.id]))
+      const allergenIdBySlug = new Map((await db.allergens.toArray()).map((a) => [a.slug, a.id]))
+      const userDietTags: UserDietTagRow[] = answers.dietTagSlugs
+        .map((slug) => dietTagIdBySlug.get(slug))
+        .filter((id): id is number => id !== undefined)
+        .map((dietTagId) => ({ userId, dietTagId }))
+      const userAllergens: UserAllergenRow[] = answers.allergenSlugs
+        .map((slug) => allergenIdBySlug.get(slug))
+        .filter((id): id is number => id !== undefined)
+        .map((allergenId) => ({ userId, allergenId }))
+
+      await db.transaction(
+        'rw',
+        [db.workoutPlans, db.planSessions, db.planItems, db.userExerciseLevels, db.profiles, db.userTargets, db.userDietTags, db.userAllergens],
+        async () => {
+          await db.workoutPlans.add(materializedPlan)
+          await db.planSessions.bulkAdd(sessions)
+          await db.planItems.bulkAdd(items)
+          for (const level of levels) await db.userExerciseLevels.put(level)
+
+          await db.profiles.put(profile)
+          await db.userTargets.put(targets)
+          await db.userDietTags.where('userId').equals(userId).delete()
+          await db.userDietTags.bulkAdd(userDietTags)
+          await db.userAllergens.where('userId').equals(userId).delete()
+          await db.userAllergens.bulkAdd(userAllergens)
+        },
+      )
+
+      // The original pitch (see calisthenics-app memory): the SAME
+      // questionnaire generates weekly meal plans too, not just a workout
+      // plan. Best-effort and SEPARATE from the transaction above on
+      // purpose — the recipe library seeds asynchronously and isn't
+      // awaited before this runs (see main.ts), so someone racing through
+      // intake fast enough could hit an empty db.recipes here. That must
+      // never cost them the workout plan that already succeeded; it's
+      // surfaced as a warning, and src/views/MealsView.vue has its own
+      // "generate" fallback for exactly this case.
+      try {
+        const [recipes, ingredients, recipeIngredients, recipeMealSlots, recipeDietTags, ingredientAllergens, units, ingredientUnits, aisles] =
+          await Promise.all([
+            db.recipes.toArray(),
+            db.ingredients.toArray(),
+            db.recipeIngredients.toArray(),
+            db.recipeMealSlots.toArray(),
+            db.recipeDietTags.toArray(),
+            db.ingredientAllergens.toArray(),
+            db.units.toArray(),
+            db.ingredientUnits.toArray(),
+            db.aisles.toArray(),
+          ])
+
+        if (recipes.length === 0) {
+          submitWarnings.value = [...submitWarnings.value, 'The recipe library has not loaded yet — your meal plan will be generated the first time you open Meals.']
+        } else {
+          const mealLibrary = buildMealLibrary({ recipes, ingredients, recipeIngredients, recipeMealSlots, recipeDietTags, ingredientAllergens })
+          const mealSeed = Math.floor(Math.random() * 0xffffffff)
+          const weekStartsOn = new Date().toISOString().slice(0, 10)
+
+          const mealPlanResult = generateMealPlan({
+            userId,
+            weekStartsOn,
+            dailyTargets: { kcalTarget: targets.kcalTarget, proteinG: targets.proteinG, carbG: targets.carbG, fatG: targets.fatG },
+            mealsPerDay: targets.mealsPerDay,
+            householdSize: profile.householdSize,
+            cookTimeCeilingMinutes: targets.cookTimeCeiling,
+            userAllergenIds: new Set(userAllergens.map((a) => a.allergenId)),
+            userDietTagIds: new Set(userDietTags.map((t) => t.dietTagId)),
+            dislikedIngredientIds: new Set(), // not collected by intake yet — see TASKS.md
+            feedbackByRecipeId: new Map(), // brand-new user, nothing to read yet
+            library: mealLibrary,
+            seed: mealSeed,
+            generatorVersion: '2026-08-29.1',
+            now: new Date().toISOString(),
+          })
+          submitWarnings.value = [...submitWarnings.value, ...mealPlanResult.warnings]
+
+          const { plan: materializedMealPlan, entries: materializedMealEntries } = materializeMealPlan(mealPlanResult)
+
+          const groceryResult = buildGroceryList({
+            mealPlanId: materializedMealPlan.id,
+            userId,
+            title: `Week of ${weekStartsOn}`,
+            entries: materializedMealEntries,
+            library: mealLibrary,
+            units,
+            ingredientUnits,
+            aisles,
+            now: new Date().toISOString(),
+          })
+          submitWarnings.value = [...submitWarnings.value, ...groceryResult.warnings]
+          const { list: materializedGroceryList, items: materializedGroceryItems } = materializeGroceryList(groceryResult)
+
+          await db.transaction('rw', [db.mealPlans, db.mealPlanEntries, db.groceryLists, db.groceryItems], async () => {
+            await db.mealPlans.add(materializedMealPlan)
+            await db.mealPlanEntries.bulkAdd(materializedMealEntries)
+            await db.groceryLists.add(materializedGroceryList)
+            await db.groceryItems.bulkAdd(materializedGroceryItems)
+          })
+        }
+      } catch (err) {
+        submitWarnings.value = [...submitWarnings.value, `Workout plan saved, but generating your meal plan failed: ${(err as Error).message}`]
+      }
 
       // Best-effort Supabase write — expected to fail against the
       // placeholder client until a real project exists (see

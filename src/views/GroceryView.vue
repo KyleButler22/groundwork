@@ -1,11 +1,58 @@
 <script setup lang="ts">
-// The offline-first checklist — this screen must render and stay checkable
-// with zero network. See calisthenics-app-stack memory / AGENTS.md.
+import { onMounted } from 'vue'
+
+import { useMealPlanStore } from '@/stores/mealPlan'
+import type { GroceryItem } from '@/types/domain'
+
+// Derived from the current meal plan (docs/mealgen.md §8) — this view only
+// renders and checks off a GroceryList, it never computes one. The list
+// is kept in sync automatically: generating, regenerating, or swapping a
+// meal all rebuild it as part of the same store action.
+const store = useMealPlanStore()
+onMounted(() => store.loadActivePlan())
+
+function itemLabel(item: GroceryItem): string {
+  return item.manualLabel ?? store.ingredientName(item.ingredientId)
+}
 </script>
 
 <template>
-  <div class="p-4">
-    <h1 class="text-2xl font-semibold text-ink">Grocery list</h1>
-    <p class="mt-2 text-sm text-muted">Generate a meal plan to build a grocery list.</p>
+  <div class="p-4 pb-8">
+    <h1 class="text-2xl font-semibold text-ink">Grocery</h1>
+
+    <p v-if="store.loading" class="mt-2 text-sm text-muted">Loading…</p>
+
+    <template v-else-if="!store.hasPlan">
+      <p class="mt-2 text-sm text-muted">Generate a meal plan first — your grocery list is built from it.</p>
+      <RouterLink to="/meals" class="mt-4 inline-flex min-h-11 items-center rounded-md bg-nutri px-4 text-sm font-medium text-white"> Go to Meals </RouterLink>
+    </template>
+
+    <template v-else-if="store.sortedGroceryItems.length === 0">
+      <p class="mt-2 text-sm text-muted">Nothing to buy — every ingredient this week is either a pantry staple or already in your pantry.</p>
+    </template>
+
+    <template v-else>
+      <p class="mt-1 text-sm text-muted">{{ store.groceryList?.title }}</p>
+
+      <div class="mt-4 space-y-5">
+        <section v-for="group in store.groceryGroups" :key="group.aisleId ?? 'other'">
+          <h2 class="text-xs font-semibold uppercase tracking-wide text-muted">{{ group.aisleName }}</h2>
+          <ul class="mt-2 space-y-1">
+            <li v-for="item in group.items" :key="item.id">
+              <label class="flex min-h-11 cursor-pointer items-center gap-3 rounded-md border border-rule bg-surface px-4 py-2">
+                <input
+                  type="checkbox"
+                  class="h-5 w-5 shrink-0 accent-nutri"
+                  :checked="item.isChecked"
+                  @change="store.toggleGroceryItemChecked(item.id)"
+                />
+                <span class="flex-1 text-sm text-ink" :class="{ 'text-muted line-through': item.isChecked }">{{ itemLabel(item) }}</span>
+                <span class="shrink-0 font-mono text-sm tabular-nums text-muted"> {{ item.displayQuantity }} {{ store.unitLabel(item.displayUnitId) }} </span>
+              </label>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </template>
   </div>
 </template>
