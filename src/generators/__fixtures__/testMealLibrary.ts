@@ -1,4 +1,4 @@
-import type { Ingredient, IngredientAllergen, Recipe, RecipeDietTag, RecipeIngredient, RecipeMealSlot } from '@/types/domain'
+import type { Aisle, Ingredient, IngredientAllergen, IngredientUnit, Recipe, RecipeDietTag, RecipeIngredient, RecipeMealSlot, Unit } from '@/types/domain'
 import { buildMealLibrary, type MealLibrary } from '@/generators/meal/library'
 
 /**
@@ -152,3 +152,26 @@ export const testMealLibrary: MealLibrary = buildMealLibrary({
   recipeDietTags: testRecipeDietTags,
   ingredientAllergens: testIngredientAllergens,
 })
+
+/**
+ * For groceryList.spec.ts. Every testRecipeIngredients line above uses
+ * unitId 1 — defined here as grams (baseFactor 1) so every existing
+ * quantity (all literally 100) already means "100 g of X" with zero
+ * changes to the fixture above. Deliberately covers only the mass
+ * dimension: unitResolution.spec.ts exercises volume/count/override
+ * resolution directly with its own hand-built Ingredient/Unit objects,
+ * which is a cleaner separation than threading every dimension through
+ * this shared recipe fixture too.
+ */
+export const testAisles: Aisle[] = [
+  { id: 1, slug: 'meat_seafood', name: 'Meat & Seafood', sortOrder: 1 },
+  { id: 2, slug: 'produce', name: 'Produce', sortOrder: 2 },
+  { id: 3, slug: 'dairy_eggs', name: 'Dairy & Eggs', sortOrder: 3 },
+  { id: 5, slug: 'dry_goods', name: 'Rice, Pasta & Grains', sortOrder: 5 },
+  { id: 7, slug: 'condiments', name: 'Condiments & Sauces', sortOrder: 7 },
+  { id: 8, slug: 'spices', name: 'Spices & Seasonings', sortOrder: 8 },
+]
+
+export const testUnits: Unit[] = [{ id: 1, slug: 'g', name: 'gram', dimension: 'mass', baseFactor: 1 }]
+
+export const testIngredientUnits: IngredientUnit[] = []

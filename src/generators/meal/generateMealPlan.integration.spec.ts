@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { loadRealFoodSeed } from '@/generators/__fixtures__/loadRealFoodSeed'
 import type { UserRecipeFeedback } from '@/types/domain'
 
+import { buildGroceryList } from './groceryList'
 import { generateMealPlan, regenerateWeek, swapOneMeal, type GenerateMealPlanInput } from './generateMealPlan'
 import { buildMealLibrary } from './library'
 import { validateMealPlan } from './validate'
@@ -199,5 +200,81 @@ describe('generateMealPlan against the real corpus', () => {
     const otherDaysAfter = swapped.entries.filter((e) => e.serveOn !== targetDay).map((e) => ({ serveOn: e.serveOn, slot: e.slot, recipeId: e.recipeId }))
     const otherDaysBefore = first.entries.filter((e) => e.serveOn !== targetDay).map((e) => ({ serveOn: e.serveOn, slot: e.slot, recipeId: e.recipeId }))
     expect(otherDaysAfter).toEqual(otherDaysBefore)
+  })
+})
+
+describe('buildGroceryList against the real corpus', () => {
+  it('resolves every real recipe_ingredients line with zero warnings', () => {
+    // The strongest possible confidence check for a ported implementation:
+    // scripts/lib/ingredientIndex.mjs's resolveGrams already succeeded for
+    // every line in the real corpus once, at authoring time (verify-
+    // recipes.mjs's macro-cache cross-check couldn't have passed
+    // otherwise) — so this client-side port succeeding with NO caught
+    // warnings across a real, full week is real evidence the two
+    // implementations agree, not just that neither happens to crash.
+    const { entries } = generateMealPlan(baseInput({ seed: 3 }))
+    const { warnings } = buildGroceryList({
+      mealPlanId: 'plan-1',
+      userId: 'u1',
+      title: 'This week',
+      entries,
+      library,
+      units: seed.foodReference.units,
+      ingredientUnits: seed.foodReference.ingredientUnits,
+      aisles: seed.foodReference.aisles,
+      now: '2026-08-31T12:00:00.000Z',
+    })
+    expect(warnings).toEqual([])
+  })
+
+  it('never lists a pantry-staple ingredient (onion, garlic, oil, spices)', () => {
+    const { entries } = generateMealPlan(baseInput({ seed: 3 }))
+    const { items } = buildGroceryList({
+      mealPlanId: 'plan-1',
+      userId: 'u1',
+      title: 'This week',
+      entries,
+      library,
+      units: seed.foodReference.units,
+      ingredientUnits: seed.foodReference.ingredientUnits,
+      aisles: seed.foodReference.aisles,
+      now: '2026-08-31T12:00:00.000Z',
+    })
+    for (const item of items) {
+      const ingredient = library.ingredientById.get(item.ingredientId!)!
+      expect(ingredient.isPantryStaple).toBe(false)
+    }
+  })
+
+  it('a leftover entry never appears as its own line item source — its food was bought for the parent cook', () => {
+    // docs/mealgen.md §8: "Step 1 is the one that bites... a leftover
+    // entry must contribute zero ingredients." Checked directly against
+    // sourceEntryIds rather than a before/after total-mass comparison:
+    // with MealPlanEntry.servings always meaning "eaten in this entry"
+    // (see that field's own comment in domain.ts), scaling a fresh entry
+    // by its OWN servings plus every leftover's servings and scaling each
+    // entry independently by its own servings happen to sum to the exact
+    // same total mass — so a mass comparison wouldn't actually distinguish
+    // "correct" from "wrong" here. What DOES distinguish them is which
+    // entries the quantity gets ATTRIBUTED to, which is what a shopper-
+    // facing "why do I need this" explanation would show.
+    const { entries } = generateMealPlan(baseInput({ seed: 3 }))
+    const leftoverIds = new Set(entries.filter((e) => e.leftoverOfId).map((e) => e.id))
+    expect(leftoverIds.size).toBeGreaterThan(0) // otherwise this test isn't checking anything real
+
+    const { items } = buildGroceryList({
+      mealPlanId: 'plan-1',
+      userId: 'u1',
+      title: 'This week',
+      entries,
+      library,
+      units: seed.foodReference.units,
+      ingredientUnits: seed.foodReference.ingredientUnits,
+      aisles: seed.foodReference.aisles,
+      now: '2026-08-31T12:00:00.000Z',
+    })
+    for (const item of items) {
+      for (const sourceId of item.sourceEntryIds) expect(leftoverIds.has(sourceId)).toBe(false)
+    }
   })
 })

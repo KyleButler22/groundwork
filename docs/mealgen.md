@@ -4,7 +4,7 @@ Selecting a week of meals from the recipe corpus that hits macro targets, respec
 
 Full design version: https://claude.ai/code/artifact/a8d9c20e-4edb-406b-a2f7-9f2316728c70 (private link — this file is the source of truth if it's unreachable).
 
-**Implemented (2026-08-28)** in `src/generators/meal/` — pure TS, mirroring `src/generators/workout/`'s shape: one file per pipeline stage (`filter.ts`, `grid.ts`, `allocate.ts`, `scoring.ts`, `assemble.ts`, `repair.ts`, `validate.ts`), a `MealLibrary` index (`library.ts`) mirroring the workout generator's `MovementLibrary`, and `generateMealPlan.ts` as the orchestrator plus the `regenerateWeek`/`swapOneMeal` entry points from §9. 102 tests (unit fixtures in `__fixtures__/testMealLibrary.ts`, integration tests against the real 200-recipe corpus in `generateMealPlan.integration.spec.ts`), ~96% statement coverage. Grocery-list generation (§8 below) is NOT built yet — see TASKS.md.
+**Implemented** in `src/generators/meal/` — pure TS, mirroring `src/generators/workout/`'s shape: one file per pipeline stage (`filter.ts`, `grid.ts`, `allocate.ts`, `scoring.ts`, `assemble.ts`, `repair.ts`, `validate.ts`, and — as of 2026-08-29 — `groceryList.ts`/`unitResolution.ts` for §8), a `MealLibrary` index (`library.ts`) mirroring the workout generator's `MovementLibrary`, and `generateMealPlan.ts` as the orchestrator plus the `regenerateWeek`/`swapOneMeal` entry points from §9. Every section below (§1-§9) is implemented; nothing in this doc is still spec-only.
 
 **Where this doc left real numbers unspecified, the code had to choose some — recorded here so they read as decisions, not omissions:**
 
@@ -17,7 +17,7 @@ Full design version: https://claude.ai/code/artifact/a8d9c20e-4edb-406b-a2f7-9f2
 - **Leftover placement** picks a valid parent day 1-3 days back via a seeded shuffle, since nothing in the schema/intake has a "day marked busy" concept yet for the doc's stated preference.
 - **Household scaling**: resolves the "leaning toward" open question below — targets are computed for the primary user, and every slot's chosen servings are `scale × household_size`.
 
-Below, §1-§7 describe the implemented pipeline as designed; §8 (grocery list) and §9 (regenerate/swap) describe what the code targets — §9 is implemented, §8 is not yet.
+Below, §1-§9 describe the implemented pipeline as built.
 
 ## The shape of the problem
 
@@ -166,7 +166,7 @@ Greedy assembly drifts. After the grid is full, check each day against tolerance
 
 ## 8. The grocery list
 
-Derived from the plan, then independent (a table, not a view — people edit it).
+Derived from the plan, then independent (a table, not a view — people edit it). **Implemented** in `src/generators/meal/groceryList.ts` (plus `unitResolution.ts` for step 3 — a typed client-side port of `scripts/lib/ingredientIndex.mjs`'s gram resolution).
 
 ```
 1. take fresh-cook entries only        // leftovers contribute nothing
@@ -178,9 +178,11 @@ Derived from the plan, then independent (a table, not a view — people edit it)
 7. group by aisle.sort_order
 ```
 
-**Step 1 is the one that bites.** A leftover entry must contribute zero ingredients — its food was already bought for the parent cook. Summing across all entries double-counts every leftover and inflates the list with numbers that still look plausible — exactly the kind of bug that ships. Related: shop for what you *cook*, not what you eat — a 4-serving recipe for a household of 2 still means buying 4 servings of ingredients.
+**Step 1 is the one that bites.** A leftover entry must contribute zero ingredients — its food was already bought for the parent cook. Related: shop for what you *cook*, not what you eat — a 4-serving recipe for a household of 2 still means buying 4 servings of ingredients.
 
-Deliberately simple for v1: **no rounding to purchasable pack sizes.** Modelling "you can't buy 137g of chicken" needs a per-region product database — large effort, modest benefit. Display what the recipes need; people round in the shop, as they already do.
+Found during implementation, worth recording since it's not obvious: with `MealPlanEntry.servings` always meaning "eaten in this entry" (§6/§9's own note on why — a fresh dinner with a leftover stores ONE night's portion, never the doubled batch), summing every entry's ingredients independently by its own `servings ÷ recipe.servings` — leftovers included — produces the exact same TOTAL MASS as correctly excluding leftovers and folding their servings into their parent's scale. `Q×fresh/R + Q×leftover/R` is just `Q×(fresh+leftover)/R` written two ways. So step 1 doesn't actually prevent the list from being too large the way "summing across all entries double-counts every leftover and inflates the list" originally suggested — with this servings convention, it can't; the two approaches agree on quantity. What step 1 actually protects is ATTRIBUTION: `grocery_items.source_entry_ids` should point at the entry that caused the shopping trip (the cook), not at every night the food gets eaten. Still worth getting right — a "why do I need this" explanation built on the wrong attribution would point at the wrong meal — just not for the double-counting reason originally assumed.
+
+Deliberately simple for v1: **no rounding to purchasable pack sizes.** Modelling "you can't buy 137g of chicken" needs a per-region product database — large effort, modest benefit. Display what the recipes need; people round in the shop, as they already do. The "friendliest display unit" step is similarly simple: a `grams_per_each` ingredient displays as a whole count, everything else as g/kg by magnitude — no attempt to reverse a count-based `ingredient_units` override (e.g. showing "2 cloves" instead of "6 g" for garlic) back out of a gram total.
 
 ## 9. Regeneration
 

@@ -9,6 +9,8 @@ import type {
   Exercise,
   ExerciseContraindication,
   ExerciseEquipment,
+  GroceryItem,
+  GroceryList,
   Ingredient,
   IngredientAllergen,
   IngredientUnit,
@@ -47,11 +49,11 @@ import type {
  * — nothing to swap when that port happens (see calisthenics-app-stack
  * memory: this is *why* the client cache is IndexedDB and not SQLite).
  *
- * v1 scope was movement/training only; v2 (below) adds food/recipe/
- * meal-plan tables for the meal generator. Grocery tables (docs/schema.md
- * §7) are still deferred to a v3 bump — that feature isn't built yet
- * (TASKS.md). Dexie only needs the CHANGED/NEW stores listed on a given
- * version; v1's tables carry forward untouched automatically.
+ * v1 scope was movement/training only; v2 added food/recipe/meal-plan
+ * tables for the meal generator; v3 (below) adds the grocery tables for
+ * the grocery generator. Dexie only needs the CHANGED/NEW stores listed
+ * on a given version; earlier versions' tables carry forward untouched
+ * automatically.
  *
  * Primary keys mostly mirror the Postgres primary key so a synced row can
  * be `.put()` without translation. Pure join/content tables use a Postgres-
@@ -104,6 +106,10 @@ export class GroundworkDB extends Dexie {
   mealPlans!: EntityTable<MealPlan, 'id'>
   mealPlanEntries!: EntityTable<MealPlanEntry, 'id'>
   userRecipeFeedback!: Table<UserRecipeFeedback, [string, string]>
+
+  // ── v3: grocery ────────────────────────────────────────────────────────
+  groceryLists!: EntityTable<GroceryList, 'id'>
+  groceryItems!: EntityTable<GroceryItem, 'id'>
 
   /** table name -> ISO timestamp of the last successful pull from Supabase. */
   syncMeta!: EntityTable<{ table: string; lastSyncedAt: string }, 'table'>
@@ -163,6 +169,12 @@ export class GroundworkDB extends Dexie {
       mealPlans: '&id, userId, status, [userId+weekStartsOn]',
       mealPlanEntries: '&id, mealPlanId, [mealPlanId+serveOn], leftoverOfId',
       userRecipeFeedback: '[userId+recipeId], userId, recipeId',
+    })
+
+    this.version(3).stores({
+      // ── per-user state: written offline, synced up when connected ────
+      groceryLists: '&id, userId, mealPlanId, status',
+      groceryItems: '&id, listId, ingredientId, [listId+sortIndex]',
     })
   }
 }

@@ -23,3 +23,9 @@ export type { ScoringWeights } from './scoring'
 
 export { validateMealPlan } from './validate'
 export type { ValidationInput, Violation } from './validate'
+
+export { buildGroceryList, friendliestDisplay } from './groceryList'
+export type { BuildGroceryListInput, BuildGroceryListResult } from './groceryList'
+
+export { buildUnitResolutionIndex, resolveGrams } from './unitResolution'
+export type { UnitResolutionIndex } from './unitResolution'

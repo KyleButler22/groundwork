@@ -1,18 +1,16 @@
 /**
  * Hand-authored domain types for the movement/training side of the schema
- * (docs/schema.md sections 1-3, docs/generator.md), plus the food/recipe/
+ * (docs/schema.md sections 1-3, docs/generator.md), the food/recipe/
  * meal-plan side added for the meal generator (docs/schema.md sections
- * 4-6, docs/mealgen.md). These are what the generators and UI actually
- * import — not the Supabase-generated `Database` type (see database.ts),
- * which is wider, snake_case, and churns every time a migration changes.
+ * 4-6, docs/mealgen.md §1-7,9), and the grocery-list side added for the
+ * grocery generator (docs/schema.md section 7, docs/mealgen.md §8). These
+ * are what the generators and UI actually import — not the Supabase-
+ * generated `Database` type (see database.ts), which is wider,
+ * snake_case, and churns every time a migration changes.
  *
  * Source of truth for the shape itself is supabase/migrations/*.sql. If
  * you change a column there, update the matching type here by hand; there
  * is no live Supabase project yet to run `supabase gen types` against.
- *
- * Grocery-list types (docs/schema.md section 7) are intentionally not
- * modelled yet — the meal generator's output (MealPlan/MealPlanEntry) is
- * enough to derive one later; that's its own follow-up (see TASKS.md).
  */
 
 // ── identity & intake ───────────────────────────────────────────────────
@@ -432,4 +430,46 @@ export interface UserRecipeFeedback {
   lastServedOn: string | null // date, ISO yyyy-mm-dd
   serveCount: number
   updatedAt: string
+}
+
+// ── grocery (docs/schema.md §7, docs/mealgen.md §8) ──────────────────────
+
+export type GroceryListStatus = 'active' | 'done' | 'archived'
+
+export interface GroceryList {
+  id: string
+  userId: string
+  mealPlanId: string | null
+  title: string
+  status: GroceryListStatus
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
+}
+
+/**
+ * Its own table, not a view (docs/schema.md §7) — people edit it (check
+ * things off, add a manual item) independently of the plan it came from.
+ * Exactly one of `ingredientId`/`manualLabel` is set, matching the
+ * migration's own check constraint — the generator (src/generators/meal/
+ * groceryList.ts) only ever produces the `ingredientId` kind; a
+ * `manualLabel` row is something a user adds by hand later.
+ */
+export interface GroceryItem {
+  id: string
+  listId: string
+  ingredientId: string | null
+  manualLabel: string | null
+  totalGrams: number | null
+  displayQuantity: number | null
+  displayUnitId: number | null
+  aisleId: number | null
+  isChecked: boolean
+  checkedAt: string | null
+  /** Which MealPlanEntry row(s) this quantity was aggregated from — a
+   *  fresh entry only, never a leftover (see groceryList.ts §8 step 1). */
+  sourceEntryIds: string[]
+  sortIndex: number
+  updatedAt: string
+  deletedAt: string | null
 }
