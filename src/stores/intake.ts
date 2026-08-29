@@ -295,14 +295,12 @@ export const useIntakeStore = defineStore('intake', () => {
       }
 
       // Diet tags/allergens: those content tables ARE seeded for real now
-      // (see calisthenics-recipe-corpus memory) — resolve the slugs
-      // collected in step 7 against them. A slug that doesn't resolve
-      // (e.g. StepKitchen.vue's placeholder 'omnivore' option, which the
-      // real seed calls 'high_protein' instead — see TASKS.md) is simply
-      // skipped rather than failing the whole submit: raw answers already
-      // land safely in answers.dietTagSlugs regardless, and "no matching
-      // diet tag" is equivalent in the generator to "no restriction", the
-      // correct behaviour for that specific option either way.
+      // (see calisthenics-recipe-corpus memory), and StepKitchen.vue's
+      // options come from them directly, so every slug here should always
+      // resolve. The `undefined`-filtering below is defensive rather than
+      // a known gap — a slug that somehow doesn't resolve is simply
+      // skipped rather than failing the whole submit, since "no matching
+      // diet tag" is equivalent in the generator to "no restriction" anyway.
       const dietTagIdBySlug = new Map((await db.dietTags.toArray()).map((t) => [t.slug, t.id]))
       const allergenIdBySlug = new Map((await db.allergens.toArray()).map((a) => [a.slug, a.id]))
       const userDietTags: UserDietTagRow[] = answers.dietTagSlugs
@@ -318,6 +316,14 @@ export const useIntakeStore = defineStore('intake', () => {
         'rw',
         [db.workoutPlans, db.planSessions, db.planItems, db.userExerciseLevels, db.profiles, db.userTargets, db.userDietTags, db.userAllergens],
         async () => {
+          // Archive whatever was active before adding the new one — a
+          // real, pre-existing gap found while testing this session's
+          // work: `.add()` alone leaves the OLD active row active too,
+          // so a re-run of intake (a normal thing to do — goals change)
+          // accumulates more than one workoutPlans row with
+          // status='active', and which one plan.ts's `.first()` query
+          // then returns is arbitrary, not "the newest."
+          await db.workoutPlans.where('status').equals('active').modify({ status: 'archived' })
           await db.workoutPlans.add(materializedPlan)
           await db.planSessions.bulkAdd(sessions)
           await db.planItems.bulkAdd(items)
@@ -397,6 +403,8 @@ export const useIntakeStore = defineStore('intake', () => {
           const { list: materializedGroceryList, items: materializedGroceryItems } = materializeGroceryList(groceryResult)
 
           await db.transaction('rw', [db.mealPlans, db.mealPlanEntries, db.groceryLists, db.groceryItems], async () => {
+            // Same archive-before-add reasoning as the workout plan above.
+            await db.mealPlans.where('status').equals('active').modify({ status: 'archived' })
             await db.mealPlans.add(materializedMealPlan)
             await db.mealPlanEntries.bulkAdd(materializedMealEntries)
             await db.groceryLists.add(materializedGroceryList)

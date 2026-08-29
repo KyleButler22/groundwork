@@ -178,6 +178,11 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
         await db.mealPlans.put(materializedPlan)
         await db.mealPlanEntries.where('mealPlanId').equals(existingPlanId).delete()
       } else {
+        // Same reasoning as intake.ts's submit(): archive whatever was
+        // active before adding a new one, so a stray already-active row
+        // (e.g. left over from before that archive-on-generate existed)
+        // can never make loadActivePlan()'s `.first()` query ambiguous.
+        await db.mealPlans.where('status').equals('active').modify({ status: 'archived' })
         await db.mealPlans.add(materializedPlan)
       }
       await db.mealPlanEntries.bulkAdd(materializedEntries)
