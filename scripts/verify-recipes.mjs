@@ -78,6 +78,12 @@ for (const file of recipeFiles) {
 
   const dietRe = /\(\(select id from recipes where slug = '([\w-]+)'\), \(select id from diet_tags where slug = '([\w-]+)'\)\)/g
   while ((m = dietRe.exec(sql))) recipes.get(m[1])?.dietTags.push(m[2])
+
+  const stepRe2 = /\(\(select id from recipes where slug = '([\w-]+)'\), \d+, '((?:[^']|'')*)'\)/g
+  while ((m = stepRe2.exec(sql))) {
+    const r = recipes.get(m[1])
+    if (r) r.stepText = (r.stepText ?? '') + ' ' + unquote(`'${m[2]}'`)
+  }
 }
 
 console.log(`parsed ${totalRecipes} recipes across ${recipeFiles.length} file(s)\n`)
@@ -120,6 +126,31 @@ for (const [slug, r] of recipes) {
   }
 }
 if (macroMismatches === 0) ok(`every recipe's stored per-serving macros exactly match a fresh recomputation from its recipe_ingredients (${recipes.size} recipes)`)
+
+// ---- steps mentioning an ingredient not in the structured list -----------
+// Caught for real while authoring the oats family: two recipes' step text
+// said "top with sliced banana" / "add diced apple" but never listed
+// banana/apple as an ingredient — meaning the grocery list would silently
+// omit something the recipe actually needs. A curated watchlist of
+// easy-to-forget garnish/topping produce, not a check against all 150
+// ingredients (most food words in step text are already correctly listed
+// under an exact ingredient name, and a blanket check would be mostly
+// false positives from that).
+const GARNISH_WATCHLIST = ['banana', 'apple', 'avocado', 'lime', 'lemon', 'cilantro', 'parsley', 'basil']
+let garnishMismatches = 0
+for (const [slug, r] of recipes) {
+  const stepText = (r.stepText ?? '').toLowerCase()
+  const listedSlugs = new Set(r.ingredientLines.map((l) => l.slug))
+  for (const word of GARNISH_WATCHLIST) {
+    if (!stepText.includes(word)) continue
+    const alreadyListed = [...listedSlugs].some((s) => s.includes(word))
+    if (!alreadyListed) {
+      fail(`${slug}: step text mentions "${word}" but no ingredient line uses it — the grocery list would silently omit it`)
+      garnishMismatches++
+    }
+  }
+}
+if (garnishMismatches === 0) ok(`no recipe's steps mention a watchlisted ingredient (${GARNISH_WATCHLIST.join(', ')}) that is missing from its ingredient list`)
 
 // ---- structural sanity ---------------------------------------------------
 let noSteps = 0, noMealSlot = 0, tooFewIngredients = 0

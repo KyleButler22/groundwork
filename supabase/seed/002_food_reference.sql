@@ -250,7 +250,10 @@ values
   ('corn',             'Corn kernels',       (select id from aisles where slug='frozen'),  null, 96,  3.4, 21,  1.5, 2.4, false),
   ('peas',             'Green peas',         (select id from aisles where slug='frozen'),  null, 81,  5.4, 14,  0.4, 5.7, false),
   ('green_beans',      'Green beans',        (select id from aisles where slug='produce'), null, 31,  1.8, 7,   0.2, 3.4, false),
-  ('asparagus',        'Asparagus',          (select id from aisles where slug='produce'), null, 20,  2.2, 3.9, 0.1, 2.1, false);
+  ('asparagus',        'Asparagus',          (select id from aisles where slug='produce'), null, 20,  2.2, 3.9, 0.1, 2.1, false),
+  ('banana',           'Banana',             (select id from aisles where slug='produce'), 118, 89,  1.1, 23,  0.3, 2.6, false),
+  ('apple',            'Apple',              (select id from aisles where slug='produce'), 182, 52,  0.3, 14,  0.2, 2.4, false),
+  ('bean_sprouts',     'Bean sprouts',       (select id from aisles where slug='produce'), null, 30,  3,   6,   0.2, 1.8, false);
 
 -- Dairy, cheese, and specialty perishables
 insert into ingredients (slug, name, aisle_id, density_g_per_ml, kcal_per_100g, protein_per_100g, carb_per_100g, fat_per_100g, fiber_per_100g, is_pantry_staple)
@@ -326,7 +329,9 @@ insert into ingredient_units (ingredient_id, unit_id, grams) values
   ((select id from ingredients where slug='ginger'), (select id from units where slug='tsp'), 2),
   ((select id from ingredients where slug='cheddar_cheese'), (select id from units where slug='slice'), 21),
   ((select id from ingredients where slug='mozzarella_cheese'), (select id from units where slug='slice'), 28),
-  ((select id from ingredients where slug='lettuce_romaine'), (select id from units where slug='each'), 12);
+  ((select id from ingredients where slug='lettuce_romaine'), (select id from units where slug='each'), 12),
+  ((select id from ingredients where slug='bean_sprouts'), (select id from units where slug='cup'), 104),
+  ((select id from ingredients where slug='parmesan_cheese'), (select id from units where slug='tbsp'), 5);
 
 -- ── allergen derivations ─────────────────────────────────────────────────
 -- Attached to INGREDIENTS only — every recipe using an allergen ingredient
