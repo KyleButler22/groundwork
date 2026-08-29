@@ -74,6 +74,32 @@ export function num(s) {
   return Number.isNaN(n) ? null : n
 }
 
+/** Scans forward from `from` for the `;` that actually terminates the
+ *  statement — quote- and paren-depth-aware, unlike a plain "next literal
+ *  `;`" search. Recipe instructions routinely contain a semicolon of
+ *  their own (e.g. "Heat oil; soften onion..."); a naive scan stops
+ *  there instead of at the statement's real end, silently truncating the
+ *  values list mid-string — which is exactly how 78 of 200 recipes ended
+ *  up with zero recipe_steps rows client-side despite every one of them
+ *  being fully authored in this file (verify-recipes.mjs's own
+ *  stepCounts check never caught it: it scans raw text for the
+ *  recipe_steps row shape directly, without going through
+ *  parseInsertRows at all). Returns -1 if there's no top-level `;` left
+ *  (a malformed/incomplete statement — callers treat that as "no more
+ *  matches" rather than guessing). */
+function findStatementEnd(sql, from) {
+  let depth = 0, inStr = false
+  for (let i = from; i < sql.length; i++) {
+    const c = sql[i]
+    if (c === "'") { inStr = !inStr; continue }
+    if (inStr) continue
+    if (c === '(') depth++
+    else if (c === ')') depth--
+    else if (c === ';' && depth === 0) return i
+  }
+  return -1
+}
+
 /** Parses every `insert into <table> (<cols>) values (...), (...);`
  *  statement for a given table name, across possibly-different column
  *  lists (the food reference seed uses 3 different shapes for
@@ -82,17 +108,26 @@ export function num(s) {
  *  column list actually used for that particular statement. */
 export function parseInsertRows(sql, tableName) {
   const results = []
-  const re = new RegExp(`insert into ${tableName}\\s*\\(([^)]+)\\)\\s*values\\s*([\\s\\S]*?);`, 'g')
-  let m
-  while ((m = re.exec(sql))) {
-    const cols = m[1].split(',').map((c) => c.trim())
-    const rows = splitTopLevelRows(m[2])
+  const needle = `insert into ${tableName}`
+  let searchFrom = 0
+  for (;;) {
+    const start = sql.indexOf(needle, searchFrom)
+    if (start === -1) break
+    const colStart = sql.indexOf('(', start)
+    const colEnd = colStart === -1 ? -1 : sql.indexOf(')', colStart)
+    const valuesIdx = colEnd === -1 ? -1 : sql.indexOf('values', colEnd)
+    const stmtEnd = valuesIdx === -1 ? -1 : findStatementEnd(sql, valuesIdx + 'values'.length)
+    if (colStart === -1 || colEnd === -1 || valuesIdx === -1 || stmtEnd === -1) break
+
+    const cols = sql.slice(colStart + 1, colEnd).split(',').map((c) => c.trim())
+    const rows = splitTopLevelRows(sql.slice(valuesIdx + 'values'.length, stmtEnd))
     for (const row of rows) {
       const cells = splitRowCells(row)
       const rec = {}
       cols.forEach((col, i) => { rec[col] = cells[i] })
       results.push(rec)
     }
+    searchFrom = stmtEnd + 1
   }
   return results
 }

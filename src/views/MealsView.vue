@@ -26,6 +26,14 @@ function dayLabel(serveOn: string): string {
 function canSwap(entry: MealPlanEntry): boolean {
   return !entry.leftoverOfId // swapping a leftover is refused by the generator — see swapOneMeal's own note
 }
+
+// ?servings= carries "how many servings does THIS entry actually eat" into
+// RecipeView, so a leftover's smaller portion scales the ingredient list
+// correctly too — see that view's own note on why no special-casing is
+// needed for leftovers here.
+function recipeLink(entry: MealPlanEntry) {
+  return { name: 'recipe', params: { recipeId: entry.recipeId }, query: { servings: String(entry.servings) } }
+}
 </script>
 
 <template>
@@ -82,17 +90,20 @@ function canSwap(entry: MealPlanEntry): boolean {
           <ul class="mt-2 space-y-2">
             <li v-for="entry in store.entriesByDay.get(day)" :key="entry.id" class="rounded-md border border-rule bg-surface px-4 py-3">
               <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                  <span class="text-xs font-medium uppercase tracking-wide text-muted">{{ SLOT_LABEL[entry.slot] }}</span>
-                  <p class="truncate text-sm font-medium text-ink">
-                    {{ store.recipeTitle(entry.recipeId) }}
-                    <span v-if="entry.leftoverOfId" class="ml-1 rounded-full bg-nutri-wash px-2 py-0.5 text-xs font-normal text-nutri">leftover</span>
-                  </p>
-                  <p class="font-mono text-xs tabular-nums text-muted">
-                    {{ entry.servings }} serving{{ entry.servings === 1 ? '' : 's' }}
-                    <template v-if="store.entryMacros(entry)"> · {{ Math.round(store.entryMacros(entry)!.kcal) }} kcal · {{ Math.round(store.entryMacros(entry)!.proteinG) }}g protein </template>
-                  </p>
-                </div>
+                <RouterLink :to="recipeLink(entry)" class="flex min-w-0 flex-1 items-start gap-1">
+                  <span class="min-w-0 flex-1">
+                    <span class="block text-xs font-medium uppercase tracking-wide text-muted">{{ SLOT_LABEL[entry.slot] }}</span>
+                    <span class="block truncate text-sm font-medium text-ink">
+                      {{ store.recipeTitle(entry.recipeId) }}
+                      <span v-if="entry.leftoverOfId" class="ml-1 rounded-full bg-nutri-wash px-2 py-0.5 text-xs font-normal text-nutri">leftover</span>
+                    </span>
+                    <span class="block font-mono text-xs tabular-nums text-muted">
+                      {{ entry.servings }} serving{{ entry.servings === 1 ? '' : 's' }}
+                      <template v-if="store.entryMacros(entry)"> · {{ Math.round(store.entryMacros(entry)!.kcal) }} kcal · {{ Math.round(store.entryMacros(entry)!.proteinG) }}g protein </template>
+                    </span>
+                  </span>
+                  <span class="shrink-0 pt-4 text-muted" aria-hidden="true">›</span>
+                </RouterLink>
                 <div class="flex shrink-0 items-center gap-1">
                   <button
                     type="button"

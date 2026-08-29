@@ -14,7 +14,20 @@ import {
   type GenerateMealPlanInput,
   type GenerateMealPlanResult,
 } from '@/generators/meal'
-import type { Aisle, GroceryItem, GroceryList, Ingredient, MealPlan, MealPlanEntry, MealSlot, Recipe, Unit, UserRecipeFeedback } from '@/types/domain'
+import type {
+  Aisle,
+  GroceryItem,
+  GroceryList,
+  Ingredient,
+  MealPlan,
+  MealPlanEntry,
+  MealSlot,
+  Recipe,
+  RecipeIngredient,
+  RecipeStep,
+  Unit,
+  UserRecipeFeedback,
+} from '@/types/domain'
 
 const GENERATOR_VERSION = '2026-08-29.1'
 
@@ -40,6 +53,13 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
   const ingredientsById = ref<Map<string, Ingredient>>(new Map())
   const unitsById = ref<Map<number, Unit>>(new Map())
   const aislesById = ref<Map<number, Aisle>>(new Map())
+  // Keyed by recipeId, each list pre-sorted (orderIndex / stepNumber) so
+  // RecipeView can render them directly — see recipeIngredientsFor/
+  // recipeStepsFor below. Loaded in full alongside recipes/ingredients
+  // rather than fetched per-recipe on demand: same "corpus is small enough
+  // to just load all of it" call already made for recipesById above.
+  const recipeIngredientsByRecipeId = ref<Map<string, RecipeIngredient[]>>(new Map())
+  const recipeStepsByRecipeId = ref<Map<string, RecipeStep[]>>(new Map())
 
   const loading = ref(true)
   const generating = ref(false)
@@ -107,6 +127,12 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     if (aisleId === null) return 'Other'
     return aislesById.value.get(aisleId)?.name ?? 'Other'
   }
+  function recipeIngredientsFor(recipeId: string): RecipeIngredient[] {
+    return recipeIngredientsByRecipeId.value.get(recipeId) ?? []
+  }
+  function recipeStepsFor(recipeId: string): RecipeStep[] {
+    return recipeStepsByRecipeId.value.get(recipeId) ?? []
+  }
 
   async function loadActivePlan() {
     loading.value = true
@@ -126,11 +152,36 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
       groceryItems.value = []
     }
 
-    const [recipes, ingredients, units, aisles] = await Promise.all([db.recipes.toArray(), db.ingredients.toArray(), db.units.toArray(), db.aisles.toArray()])
+    const [recipes, ingredients, units, aisles, recipeIngredients, recipeSteps] = await Promise.all([
+      db.recipes.toArray(),
+      db.ingredients.toArray(),
+      db.units.toArray(),
+      db.aisles.toArray(),
+      db.recipeIngredients.toArray(),
+      db.recipeSteps.toArray(),
+    ])
     recipesById.value = new Map(recipes.map((r) => [r.id, r]))
     ingredientsById.value = new Map(ingredients.map((i) => [i.id, i]))
     unitsById.value = new Map(units.map((u) => [u.id, u]))
     aislesById.value = new Map(aisles.map((a) => [a.id, a]))
+
+    const ingredientsByRecipe = new Map<string, RecipeIngredient[]>()
+    for (const ri of recipeIngredients) {
+      const list = ingredientsByRecipe.get(ri.recipeId)
+      if (list) list.push(ri)
+      else ingredientsByRecipe.set(ri.recipeId, [ri])
+    }
+    for (const list of ingredientsByRecipe.values()) list.sort((a, b) => a.orderIndex - b.orderIndex)
+    recipeIngredientsByRecipeId.value = ingredientsByRecipe
+
+    const stepsByRecipe = new Map<string, RecipeStep[]>()
+    for (const step of recipeSteps) {
+      const list = stepsByRecipe.get(step.recipeId)
+      if (list) list.push(step)
+      else stepsByRecipe.set(step.recipeId, [step])
+    }
+    for (const list of stepsByRecipe.values()) list.sort((a, b) => a.stepNumber - b.stepNumber)
+    recipeStepsByRecipeId.value = stepsByRecipe
 
     loading.value = false
   }
@@ -399,6 +450,8 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     ingredientName,
     unitLabel,
     aisleName,
+    recipeIngredientsFor,
+    recipeStepsFor,
     loadActivePlan,
     generateFreshPlan,
     advanceToNextWeek,

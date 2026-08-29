@@ -35,6 +35,11 @@ export const router = createRouter({
       component: () => import('@/views/GroceryView.vue'),
     },
     {
+      path: '/recipes/:recipeId',
+      name: 'recipe',
+      component: () => import('@/views/RecipeView.vue'),
+    },
+    {
       path: '/profile',
       name: 'profile',
       component: () => import('@/views/ProfileView.vue'),

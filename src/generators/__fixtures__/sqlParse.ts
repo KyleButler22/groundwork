@@ -148,6 +148,31 @@ export function slugFromRef(cell: string | undefined): string | null {
 
 export type InsertRow = Record<string, string | undefined>
 
+/** Scans forward from `from` for the `;` that actually terminates the
+ *  statement — quote- and paren-depth-aware, unlike a plain "next literal
+ *  `;`" search. Recipe instructions routinely contain a semicolon of their
+ *  own (e.g. "Heat oil; soften onion..."); a naive scan stops there
+ *  instead of at the statement's real end, silently truncating the values
+ *  list mid-string. Returns -1 if the string has no top-level `;` at all
+ *  (a malformed/incomplete statement — callers treat that as "no more
+ *  matches" rather than guessing). */
+function findStatementEnd(sql: string, from: number): number {
+  let depth = 0
+  let inStr = false
+  for (let i = from; i < sql.length; i++) {
+    const c = sql[i]
+    if (c === "'") {
+      inStr = !inStr
+      continue
+    }
+    if (inStr) continue
+    if (c === '(') depth++
+    else if (c === ')') depth--
+    else if (c === ';' && depth === 0) return i
+  }
+  return -1
+}
+
 /** Parses every `insert into <table> (<cols>) values (...), (...);`
  *  statement for a given table name, across possibly-different column
  *  lists (see this file's header). Returns one plain object per row,
@@ -157,11 +182,19 @@ export type InsertRow = Record<string, string | undefined>
  *  rather than misaligned with the wrong value. */
 export function parseInsertRows(sql: string, tableName: string): InsertRow[] {
   const results: InsertRow[] = []
-  const re = new RegExp(`insert into ${tableName}\\s*\\(([^)]+)\\)\\s*values\\s*([\\s\\S]*?);`, 'g')
-  let m: RegExpExecArray | null
-  while ((m = re.exec(sql))) {
-    const cols = m[1].split(',').map((c) => c.trim())
-    const rows = splitTopLevelRows(m[2])
+  const needle = `insert into ${tableName}`
+  let searchFrom = 0
+  for (;;) {
+    const start = sql.indexOf(needle, searchFrom)
+    if (start === -1) break
+    const colStart = sql.indexOf('(', start)
+    const colEnd = colStart === -1 ? -1 : sql.indexOf(')', colStart)
+    const valuesIdx = colEnd === -1 ? -1 : sql.indexOf('values', colEnd)
+    const stmtEnd = valuesIdx === -1 ? -1 : findStatementEnd(sql, valuesIdx + 'values'.length)
+    if (colStart === -1 || colEnd === -1 || valuesIdx === -1 || stmtEnd === -1) break
+
+    const cols = sql.slice(colStart + 1, colEnd).split(',').map((c) => c.trim())
+    const rows = splitTopLevelRows(sql.slice(valuesIdx + 'values'.length, stmtEnd))
     for (const row of rows) {
       const cells = splitRowCells(row)
       const rec: InsertRow = {}
@@ -170,6 +203,7 @@ export function parseInsertRows(sql: string, tableName: string): InsertRow[] {
       })
       results.push(rec)
     }
+    searchFrom = stmtEnd + 1
   }
   return results
 }

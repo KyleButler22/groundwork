@@ -70,15 +70,20 @@ const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'L
         <li
           v-for="entry in todayMeals"
           :key="entry.id"
-          class="flex items-center justify-between rounded-md border border-rule bg-surface px-4 py-3"
+          class="rounded-md border border-rule bg-surface px-4 py-3"
         >
-          <span class="min-w-0">
-            <span class="block text-xs font-medium uppercase tracking-wide text-muted">{{ SLOT_LABEL[entry.slot] }}</span>
-            <span class="truncate text-sm font-medium text-ink">{{ mealStore.recipeTitle(entry.recipeId) }}</span>
-          </span>
-          <span v-if="mealStore.entryMacros(entry)" class="shrink-0 font-mono text-sm tabular-nums text-muted">
-            {{ Math.round(mealStore.entryMacros(entry)!.kcal) }} kcal
-          </span>
+          <RouterLink
+            :to="{ name: 'recipe', params: { recipeId: entry.recipeId }, query: { servings: String(entry.servings) } }"
+            class="flex items-center justify-between gap-3"
+          >
+            <span class="min-w-0">
+              <span class="block text-xs font-medium uppercase tracking-wide text-muted">{{ SLOT_LABEL[entry.slot] }}</span>
+              <span class="truncate text-sm font-medium text-ink">{{ mealStore.recipeTitle(entry.recipeId) }}</span>
+            </span>
+            <span v-if="mealStore.entryMacros(entry)" class="shrink-0 font-mono text-sm tabular-nums text-muted">
+              {{ Math.round(mealStore.entryMacros(entry)!.kcal) }} kcal
+            </span>
+          </RouterLink>
         </li>
       </ul>
 
