@@ -95,6 +95,7 @@ function recipeLink(entry: MealPlanEntry) {
                     <span class="block text-xs font-medium uppercase tracking-wide text-muted">{{ SLOT_LABEL[entry.slot] }}</span>
                     <span class="block truncate text-sm font-medium text-ink">
                       {{ store.recipeTitle(entry.recipeId) }}
+                      <span v-if="store.ratingFor(entry.recipeId) === 'loved'" aria-label="Loved">❤️</span>
                       <span v-if="entry.leftoverOfId" class="ml-1 rounded-full bg-nutri-wash px-2 py-0.5 text-xs font-normal text-nutri">leftover</span>
                     </span>
                     <span class="block font-mono text-xs tabular-nums text-muted">

@@ -24,6 +24,7 @@ import type {
   MealSlot,
   Recipe,
   RecipeIngredient,
+  RecipeRating,
   RecipeStep,
   Unit,
   UserRecipeFeedback,
@@ -60,6 +61,14 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
   // to just load all of it" call already made for recipesById above.
   const recipeIngredientsByRecipeId = ref<Map<string, RecipeIngredient[]>>(new Map())
   const recipeStepsByRecipeId = ref<Map<string, RecipeStep[]>>(new Map())
+  // Keyed by recipeId, not the table's real [userId, recipeId] key — same
+  // "single device, no multi-profile support" simplification as every
+  // other query in this store (recipesById etc. aren't userId-scoped
+  // either). Loaded for DISPLAY (ratingFor, below); rateRecipe itself
+  // always re-reads Dexie fresh rather than trusting this cache, so a
+  // stale read here can never clobber a serveCount/lastServedOn written
+  // by advanceToNextWeek since this was last loaded.
+  const feedbackByRecipeId = ref<Map<string, UserRecipeFeedback>>(new Map())
 
   const loading = ref(true)
   const generating = ref(false)
@@ -133,6 +142,39 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
   function recipeStepsFor(recipeId: string): RecipeStep[] {
     return recipeStepsByRecipeId.value.get(recipeId) ?? []
   }
+  function ratingFor(recipeId: string): RecipeRating | null {
+    return feedbackByRecipeId.value.get(recipeId)?.rating ?? null
+  }
+
+  /**
+   * Sets (or, tapping an already-selected rating again, clears back to
+   * unrated — the same toggle convention as StepKitchen.vue's diet/
+   * allergen pills) a recipe's rating. 'never' is a hard exclusion the
+   * next time this recipe is even considered (filter.ts); 'loved' is a
+   * scoring nudge (scoring.ts's preferenceScore); 'ok' is not currently
+   * distinguished from unrated by the generator, but still a real signal
+   * worth recording for the person doing the rating.
+   *
+   * Reads the PREVIOUS row straight from Dexie rather than
+   * feedbackByRecipeId (which could be stale — advanceToNextWeek writes
+   * lastServedOn/serveCount without going through this store's cache) so
+   * a rating action can never accidentally revert those fields to an
+   * older value it happened to have cached.
+   */
+  async function rateRecipe(userId: string, recipeId: string, rating: RecipeRating): Promise<void> {
+    const previous = await db.userRecipeFeedback.get([userId, recipeId])
+    const nextRating: RecipeRating | null = previous?.rating === rating ? null : rating
+    const updated: UserRecipeFeedback = {
+      userId,
+      recipeId,
+      rating: nextRating,
+      lastServedOn: previous?.lastServedOn ?? null,
+      serveCount: previous?.serveCount ?? 0,
+      updatedAt: new Date().toISOString(),
+    }
+    await db.userRecipeFeedback.put(updated)
+    feedbackByRecipeId.value = new Map(feedbackByRecipeId.value).set(recipeId, updated)
+  }
 
   async function loadActivePlan() {
     loading.value = true
@@ -152,18 +194,20 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
       groceryItems.value = []
     }
 
-    const [recipes, ingredients, units, aisles, recipeIngredients, recipeSteps] = await Promise.all([
+    const [recipes, ingredients, units, aisles, recipeIngredients, recipeSteps, feedback] = await Promise.all([
       db.recipes.toArray(),
       db.ingredients.toArray(),
       db.units.toArray(),
       db.aisles.toArray(),
       db.recipeIngredients.toArray(),
       db.recipeSteps.toArray(),
+      db.userRecipeFeedback.toArray(),
     ])
     recipesById.value = new Map(recipes.map((r) => [r.id, r]))
     ingredientsById.value = new Map(ingredients.map((i) => [i.id, i]))
     unitsById.value = new Map(units.map((u) => [u.id, u]))
     aislesById.value = new Map(aisles.map((a) => [a.id, a]))
+    feedbackByRecipeId.value = new Map(feedback.map((f) => [f.recipeId, f]))
 
     const ingredientsByRecipe = new Map<string, RecipeIngredient[]>()
     for (const ri of recipeIngredients) {
@@ -330,6 +374,14 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
               updatedAt: new Date().toISOString(),
             }
             await db.userRecipeFeedback.put(updated)
+            // Keep the in-memory cache (ratingFor/rateRecipe) from going
+            // stale relative to what was just written — otherwise a
+            // recipe rated after this point would read a rating that's
+            // correct, but overwrite a serveCount/lastServedOn this loop
+            // just updated with the OLDER cached value (rateRecipe reads
+            // Dexie fresh precisely to avoid that, but there's no reason
+            // to leave the cache wrong in the meantime).
+            feedbackByRecipeId.value.set(recipeId, updated)
           }
         })
       } catch (err) {
@@ -452,6 +504,8 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     aisleName,
     recipeIngredientsFor,
     recipeStepsFor,
+    ratingFor,
+    rateRecipe,
     loadActivePlan,
     generateFreshPlan,
     advanceToNextWeek,

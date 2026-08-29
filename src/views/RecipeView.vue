@@ -3,6 +3,8 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { useMealPlanStore } from '@/stores/mealPlan'
+import { useSessionStore } from '@/stores/session'
+import type { RecipeRating } from '@/types/domain'
 
 // Full recipe detail: scaled ingredient list + numbered method. Reached by
 // tapping a meal in MealsView or DashboardView's "today's meals" — this
@@ -13,13 +15,33 @@ import { useMealPlanStore } from '@/stores/mealPlan'
 const route = useRoute()
 const router = useRouter()
 const store = useMealPlanStore()
+const session = useSessionStore()
 onMounted(() => store.loadActivePlan()) // covers a direct link / page refresh landing here first
+
+// No real auth yet (see TASKS.md) — same fallback every other write path uses.
+const userId = computed(() => session.session?.user.id ?? 'local-dev-user')
 
 const recipeId = computed(() => {
   const raw = route.params.recipeId
   return Array.isArray(raw) ? raw[0] : raw
 })
 const recipe = computed(() => store.recipe(recipeId.value))
+const rating = computed(() => store.ratingFor(recipeId.value))
+
+const RATING_OPTIONS: { value: RecipeRating; label: string }[] = [
+  { value: 'loved', label: 'Loved' },
+  { value: 'ok', label: 'OK' },
+  { value: 'never', label: 'Never again' },
+]
+// 'never' hard-excludes this recipe from every future generated week
+// (filter.ts) and 'loved' nudges scoring toward it (scoring.ts) — both
+// take effect starting with the next plan generated, not retroactively
+// on the one already on screen. Tapping the already-selected option
+// clears back to unrated, same toggle convention as StepKitchen.vue's
+// diet/allergen pills — rateRecipe itself decides that, this just calls it.
+function setRating(value: RecipeRating): void {
+  store.rateRecipe(userId.value, recipeId.value, value)
+}
 
 // The linking view passes ?servings= for "how many servings does THIS
 // meal-plan entry actually eat" (see MealsView's recipeLink) — same
@@ -89,6 +111,24 @@ function recipeStepKey(step: { recipeId: string; stepNumber: number }): string {
         <span v-if="recipe.cookMinutes">Cook {{ recipe.cookMinutes }} min</span>
         <span>{{ DIFFICULTY_LABEL[recipe.difficulty] }}</span>
         <span v-if="recipe.cuisine">{{ recipe.cuisine }}</span>
+      </div>
+
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button
+          v-for="option in RATING_OPTIONS"
+          :key="option.value"
+          type="button"
+          class="min-h-11 rounded-md border px-3 text-sm"
+          :class="{
+            'border-nutri bg-nutri-wash text-nutri': rating === option.value && option.value === 'loved',
+            'border-ink bg-surface font-semibold text-ink': rating === option.value && option.value === 'ok',
+            'border-warn bg-warn-wash text-warn': rating === option.value && option.value === 'never',
+            'border-rule text-muted': rating !== option.value,
+          }"
+          @click="setRating(option.value)"
+        >
+          {{ option.label }}
+        </button>
       </div>
 
       <div class="mt-4 flex items-center justify-between rounded-md border border-rule bg-surface px-4 py-3">
