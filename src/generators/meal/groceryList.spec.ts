@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
 import { testAisles, testIngredientUnits, testMealLibrary, testUnits } from '@/generators/__fixtures__/testMealLibrary'
-import type { Ingredient, MealPlanEntry } from '@/types/domain'
+import type { GroceryItem, Ingredient, MealPlanEntry } from '@/types/domain'
 
-import { buildGroceryList, friendliestDisplay, type BuildGroceryListInput } from './groceryList'
+import { buildGroceryList, carryOverCheckedState, friendliestDisplay, type BuildGroceryListInput } from './groceryList'
 
 function entry(overrides: Partial<MealPlanEntry> & Pick<MealPlanEntry, 'id' | 'recipeId' | 'servings'>): MealPlanEntry {
   return {
@@ -156,5 +156,72 @@ describe('friendliestDisplay', () => {
 
   it('falls back to a null unit id when the reference unit list lacks the needed slug', () => {
     expect(friendliestDisplay(450, ing(), new Map())).toEqual({ quantity: 450, unitId: null })
+  })
+})
+
+describe('carryOverCheckedState', () => {
+  function item(overrides: Partial<GroceryItem> & Pick<GroceryItem, 'id'>): GroceryItem {
+    return {
+      listId: 'list-1',
+      ingredientId: 'chicken',
+      manualLabel: null,
+      totalGrams: 100,
+      displayQuantity: 100,
+      displayUnitId: 1,
+      aisleId: 1,
+      isChecked: false,
+      checkedAt: null,
+      sourceEntryIds: [],
+      sortIndex: 0,
+      updatedAt: '2026-08-31T00:00:00.000Z',
+      deletedAt: null,
+      ...overrides,
+    }
+  }
+
+  it('carries isChecked/checkedAt onto a fresh item sharing the same ingredient id', () => {
+    const previous = [item({ id: 'old-1', ingredientId: 'chicken', isChecked: true, checkedAt: '2026-08-31T09:00:00.000Z' })]
+    const fresh = [item({ id: 'new-1', ingredientId: 'chicken', isChecked: false, checkedAt: null })]
+    const result = carryOverCheckedState(previous, fresh)
+    expect(result[0].isChecked).toBe(true)
+    expect(result[0].checkedAt).toBe('2026-08-31T09:00:00.000Z')
+    expect(result[0].id).toBe('new-1') // still the fresh item's own identity, not the old one's
+  })
+
+  it('leaves an ingredient that was never checked alone', () => {
+    const previous = [item({ id: 'old-1', ingredientId: 'chicken', isChecked: false })]
+    const fresh = [item({ id: 'new-1', ingredientId: 'chicken', isChecked: false })]
+    expect(carryOverCheckedState(previous, fresh)[0].isChecked).toBe(false)
+  })
+
+  it('does not carry a checked state onto an ingredient that is new this time (no match to carry from)', () => {
+    const previous = [item({ id: 'old-1', ingredientId: 'chicken', isChecked: true, checkedAt: '2026-08-31T09:00:00.000Z' })]
+    const fresh = [item({ id: 'new-1', ingredientId: 'broccoli', isChecked: false })]
+    expect(carryOverCheckedState(previous, fresh)[0].isChecked).toBe(false)
+  })
+
+  it('drops a checked ingredient that no longer appears at all (nothing to carry it onto)', () => {
+    const previous = [item({ id: 'old-1', ingredientId: 'chicken', isChecked: true, checkedAt: '2026-08-31T09:00:00.000Z' })]
+    const fresh = [item({ id: 'new-1', ingredientId: 'broccoli' })]
+    const result = carryOverCheckedState(previous, fresh)
+    expect(result).toHaveLength(1)
+    expect(result.map((i) => i.ingredientId)).toEqual(['broccoli'])
+  })
+
+  it('is a no-op when nothing was previously checked', () => {
+    const previous = [item({ id: 'old-1', isChecked: false })]
+    const fresh = [item({ id: 'new-1' })]
+    expect(carryOverCheckedState(previous, fresh)).toEqual(fresh)
+  })
+
+  it('is a no-op with no previous items at all (first-ever generation)', () => {
+    const fresh = [item({ id: 'new-1' })]
+    expect(carryOverCheckedState([], fresh)).toEqual(fresh)
+  })
+
+  it('ignores a manual item (no ingredientId) — nothing to key it by', () => {
+    const previous = [item({ id: 'old-1', ingredientId: null, manualLabel: 'Paper towels', isChecked: true, checkedAt: '2026-08-31T09:00:00.000Z' })]
+    const fresh = [item({ id: 'new-1', ingredientId: 'chicken' })]
+    expect(carryOverCheckedState(previous, fresh)[0].isChecked).toBe(false)
   })
 })

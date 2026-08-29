@@ -4,7 +4,15 @@ import { defineStore } from 'pinia'
 import { db } from '@/lib/db'
 import { loadMealGenerationContext, type MealGenerationContext } from '@/lib/mealGenerationContext'
 import { materializeGroceryList, materializeMealPlan } from '@/lib/materializeMealPlan'
-import { buildGroceryList, generateMealPlan, regenerateWeek, swapOneMeal, type GenerateMealPlanInput, type GenerateMealPlanResult } from '@/generators/meal'
+import {
+  buildGroceryList,
+  carryOverCheckedState,
+  generateMealPlan,
+  regenerateWeek,
+  swapOneMeal,
+  type GenerateMealPlanInput,
+  type GenerateMealPlanResult,
+} from '@/generators/meal'
 import type { Aisle, GroceryItem, GroceryList, Ingredient, MealPlan, MealPlanEntry, MealSlot, Recipe, Unit } from '@/types/domain'
 
 const GENERATOR_VERSION = '2026-08-29.1'
@@ -171,7 +179,13 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     })
     warnings.value = [...warnings.value, ...groceryResult.warnings]
     const existingListId = groceryList.value?.id
-    const { list: materializedList, items: materializedItems } = materializeGroceryList(groceryResult, { existingListId })
+    const { list: materializedList, items: rebuiltItems } = materializeGroceryList(groceryResult, { existingListId })
+
+    // carryOverCheckedState only ever reads primitive fields (ingredientId,
+    // isChecked, checkedAt — all strings/booleans) out of the reactive
+    // groceryItems.value here, never a whole item object, so there's no
+    // toRaw() concern the way toggleGroceryItemChecked has.
+    const materializedItems = carryOverCheckedState(groceryItems.value, rebuiltItems)
 
     await db.transaction('rw', [db.mealPlans, db.mealPlanEntries, db.groceryLists, db.groceryItems], async () => {
       if (existingPlanId) {

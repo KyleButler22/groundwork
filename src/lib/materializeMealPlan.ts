@@ -42,8 +42,12 @@ export function materializeMealPlan(
 /**
  * Grocery items have no "keep some, regenerate others" concept the way
  * meal entries do (no per-item locking exists in the schema) — every call
- * replaces the list's items wholesale. `is_checked` state is deliberately
- * NOT preserved across a regenerate in this v1; see TASKS.md.
+ * replaces the list's items wholesale, so this function itself has no
+ * idea whether an item existed before. `is_checked`/`checked_at` still
+ * survive a regenerate/swap in practice: src/stores/mealPlan.ts's
+ * `applyGeneratedResult` carries them over by matching `ingredientId`
+ * across the old and new item lists BEFORE calling this function, since
+ * that's the one place that actually has both lists in hand to compare.
  */
 export function materializeGroceryList(
   draft: Pick<BuildGroceryListResult, 'list' | 'items'>,

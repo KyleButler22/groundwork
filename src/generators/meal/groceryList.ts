@@ -189,3 +189,26 @@ export function friendliestDisplay(totalGrams: number, ingredient: Ingredient, u
   }
   return { quantity: Math.round(totalGrams), unitId: unitIdBySlug.get('g') ?? null }
 }
+
+/**
+ * `buildGroceryList` has no memory of a previous list — every call derives
+ * one from scratch, which would otherwise silently un-check everything a
+ * user already checked off across a regenerate/swap-triggered rebuild (a
+ * real UX rough edge, since that rebuild happens on every meal-plan
+ * change, not just ones the user would expect to reset their list).
+ * Ingredient id is the natural stable key across two different weeks'
+ * generations — a manually-added item (`manualLabel`, no `ingredientId`)
+ * has no such key and isn't carried over, but nothing can create one yet
+ * (no UI for it), so that's not a real gap today.
+ */
+export function carryOverCheckedState(previousItems: readonly GroceryItem[], freshItems: readonly GroceryItem[]): GroceryItem[] {
+  const checkedAtByIngredientId = new Map(
+    previousItems.filter((item) => item.isChecked && item.ingredientId).map((item) => [item.ingredientId as string, item.checkedAt]),
+  )
+  if (checkedAtByIngredientId.size === 0) return [...freshItems]
+
+  return freshItems.map((item) => {
+    const checkedAt = item.ingredientId ? checkedAtByIngredientId.get(item.ingredientId) : undefined
+    return checkedAt === undefined ? item : { ...item, isChecked: true, checkedAt }
+  })
+}
