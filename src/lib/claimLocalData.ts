@@ -15,25 +15,27 @@ import { pushRow, pushRows, pushUserTargets, replaceSet } from '@/lib/sync'
  * real history with stale local-dev-user content just because THIS
  * browser happens to have some sitting in Dexie.
  *
- * The trickiest part isn't the user_id re-keying itself, it's that
- * ingredients/recipes need a real content pull as part of the same
- * operation, and their ids are NOT stable across that pull: a locally-
- * seeded Ingredient/Recipe uses its own slug as `id` (no way to predict
- * a real uuid client-side — see Ingredient's doc comment in
- * types/domain.ts), while the real Supabase rows carry a server-assigned
- * `gen_random_uuid()` with no relationship to the slug at all. Every
- * local row that references a recipe/ingredient id has to be remapped
- * through the one thing that's identical on both sides — the slug — or
- * every meal plan/grocery list claimed here would silently point at
- * nothing the moment real content replaces the local-file version.
- *
- * Movement-library ids (exercises, movement_patterns, equipment,
- * body_regions — all plain integers) do NOT have this problem and need no
- * remap: both the local parser (parseMovementLibrarySeed.ts) and
- * Postgres's own `serial`/`smallserial` sequence assign ids by strict
- * insertion order through the exact same seed file, so on a freshly-
- * seeded project (nothing else ever inserted into these tables first)
- * the two sides coincidentally, but reliably, agree.
+ * The trickiest part isn't the user_id re-keying itself, it's that ALL SIX
+ * content tables (ingredients, recipes, exercises, movement_patterns,
+ * equipment, body_regions) need a real content pull as part of the same
+ * operation, and NONE of their ids can be trusted to survive it unchanged.
+ * ingredients/recipes use their own slug as `id` when locally-seeded (no
+ * way to predict a real uuid client-side — see Ingredient's doc comment in
+ * types/domain.ts) against a server-assigned `gen_random_uuid()` with no
+ * relationship to the slug at all — that mismatch was always expected.
+ * The integer-keyed ones (exercises etc.) were originally assumed safe —
+ * both the local parser and Postgres's own `serial` sequence assign ids by
+ * strict file-order insertion, so on a truly fresh project the two sides
+ * happen to agree — but that assumption broke in practice the first time
+ * this ran for real: this project's `exercises_id_seq` had already been
+ * advanced by 240 from earlier failed seed-loading attempts (a Postgres
+ * sequence does NOT roll back just because the transaction that called
+ * nextval() on it did), so every real exercise id came back offset by a
+ * constant +240 from what the local parser had assigned, and an already-
+ * generated workout plan's `plan_items.exercise_id` pointed at nothing.
+ * Lesson: don't trust ANY content table's id to survive a real pull
+ * unchanged just because it "should" line up — remap all six through the
+ * one thing every one of them shares with its real counterpart: the slug.
  */
 export async function claimLocalDataIfNeeded(realUserId: string): Promise<string[]> {
   const warnings: string[] = []
@@ -49,26 +51,39 @@ export async function claimLocalDataIfNeeded(realUserId: string): Promise<string
 
   console.info('[claimLocalData] Claiming existing local-dev-user data for the newly signed-in account.')
 
-  // 1. Snapshot the OLD (local-file, slug-keyed) content ids before they
-  //    get replaced by the real pull.
+  // 1. Snapshot the OLD (local-file-seeded) content ids before they get
+  //    replaced by the real pull — all six content tables, not just the
+  //    two uuid-keyed ones (see this module's own header comment for why).
   const oldIngredientIdBySlug = new Map((await db.ingredients.toArray()).map((i) => [i.slug, i.id]))
   const oldRecipeIdBySlug = new Map((await db.recipes.toArray()).map((r) => [r.slug, r.id]))
+  const oldPatternIdBySlug = new Map((await db.movementPatterns.toArray()).map((p) => [p.slug, p.id]))
+  const oldExerciseIdBySlug = new Map((await db.exercises.toArray()).map((e) => [e.slug, e.id]))
+  const oldEquipmentIdBySlug = new Map((await db.equipment.toArray()).map((e) => [e.slug, e.id]))
+  const oldRegionIdBySlug = new Map((await db.bodyRegions.toArray()).map((r) => [r.slug, r.id]))
 
   // 2. Force the real content pull now, not waiting for the next reload.
   await pullRealContent()
 
-  // 3. Build old-id -> new-id maps via the one thing both sides share:
-  //    the slug. A slug present locally but missing from the real pull
-  //    (shouldn't happen against a correctly-seeded project, but content
-  //    drift is exactly the kind of thing to fail soft, not throw, on)
-  //    leaves that id unmapped — remapId falls back to the original id
-  //    rather than nulling out a reference outright.
-  const newIngredients = await db.ingredients.toArray()
-  const newRecipes = await db.recipes.toArray()
-  const ingredientIdRemap = buildRemap(oldIngredientIdBySlug, newIngredients)
-  const recipeIdRemap = buildRemap(oldRecipeIdBySlug, newRecipes)
+  // 3. Build old-id -> new-id maps via the one thing every content row
+  //    shares with its real counterpart regardless of id type: the slug.
+  //    A slug present locally but missing from the real pull (shouldn't
+  //    happen against a correctly-seeded project, but content drift is
+  //    exactly the kind of thing to fail soft, not throw, on) leaves that
+  //    id unmapped — every remap* function below falls back to the
+  //    original id rather than nulling out a reference outright.
+  const ingredientIdRemap = buildRemap(oldIngredientIdBySlug, await db.ingredients.toArray())
+  const recipeIdRemap = buildRemap(oldRecipeIdBySlug, await db.recipes.toArray())
+  const patternIdRemap = buildRemap(oldPatternIdBySlug, await db.movementPatterns.toArray())
+  const exerciseIdRemap = buildRemap(oldExerciseIdBySlug, await db.exercises.toArray())
+  const equipmentIdRemap = buildRemap(oldEquipmentIdBySlug, await db.equipment.toArray())
+  const regionIdRemap = buildRemap(oldRegionIdBySlug, await db.bodyRegions.toArray())
+
   const remapIngredientId = (id: string | null): string | null => (id === null ? null : (ingredientIdRemap.get(id) ?? id))
   const remapRecipeId = (id: string): string => recipeIdRemap.get(id) ?? id
+  const remapPatternId = (id: number): number => patternIdRemap.get(id) ?? id
+  const remapExerciseId = (id: number): number => exerciseIdRemap.get(id) ?? id
+  const remapEquipmentId = (id: number): number => equipmentIdRemap.get(id) ?? id
+  const remapRegionId = (id: number): number => regionIdRemap.get(id) ?? id
 
   // 4. Re-key every user-owned table. Two shapes, matching db.ts's own
   //    split: a plain FK column can be updated in place (`.modify()`); a
@@ -81,7 +96,10 @@ export async function claimLocalDataIfNeeded(realUserId: string): Promise<string
       db.profiles,
       db.userTargets,
       db.workoutPlans,
+      db.planSessions,
+      db.planItems,
       db.workoutLogs,
+      db.setLogs,
       db.mealPlans,
       db.groceryLists,
       db.userExerciseLevels,
@@ -114,7 +132,7 @@ export async function claimLocalDataIfNeeded(realUserId: string): Promise<string
 
       for (const row of await db.userExerciseLevels.where('userId').equals(LOCAL_DEV_USER_ID).toArray()) {
         await db.userExerciseLevels.delete([LOCAL_DEV_USER_ID, row.patternId])
-        await db.userExerciseLevels.add({ ...row, userId: realUserId })
+        await db.userExerciseLevels.add({ ...row, userId: realUserId, patternId: remapPatternId(row.patternId), exerciseId: remapExerciseId(row.exerciseId) })
       }
       for (const row of await db.userRecipeFeedback.where('userId').equals(LOCAL_DEV_USER_ID).toArray()) {
         await db.userRecipeFeedback.delete([LOCAL_DEV_USER_ID, row.recipeId])
@@ -130,11 +148,11 @@ export async function claimLocalDataIfNeeded(realUserId: string): Promise<string
       }
       for (const row of await db.userLimitations.where('userId').equals(LOCAL_DEV_USER_ID).toArray()) {
         await db.userLimitations.delete([LOCAL_DEV_USER_ID, row.regionId])
-        await db.userLimitations.add({ ...row, userId: realUserId })
+        await db.userLimitations.add({ ...row, userId: realUserId, regionId: remapRegionId(row.regionId) })
       }
       for (const row of await db.userEquipment.where('userId').equals(LOCAL_DEV_USER_ID).toArray()) {
         await db.userEquipment.delete([LOCAL_DEV_USER_ID, row.equipmentId])
-        await db.userEquipment.add({ ...row, userId: realUserId })
+        await db.userEquipment.add({ ...row, userId: realUserId, equipmentId: remapEquipmentId(row.equipmentId) })
       }
       for (const row of await db.userDislikedIngredients.where('userId').equals(LOCAL_DEV_USER_ID).toArray()) {
         await db.userDislikedIngredients.delete([LOCAL_DEV_USER_ID, row.ingredientId])
@@ -145,16 +163,31 @@ export async function claimLocalDataIfNeeded(realUserId: string): Promise<string
         await db.userPantry.add({ ...row, userId: realUserId, ingredientId: remapIngredientId(row.ingredientId) as string })
       }
 
-      // mealPlanEntries/groceryItems carry no userId of their own (owned
-      // via mealPlanId/listId, already re-keyed above) but DO reference
-      // the just-replaced content tables. Scoped to the plans/lists that
-      // were actually just claimed, not the whole table — this browser's
-      // cache is expected to only ever hold one user's data at a time,
-      // but there's no reason to rely on that when the ids to scope by
-      // are already sitting right here.
+      // Child tables with no userId of their own (owned via a parent id,
+      // already re-keyed above) but that DO reference the just-replaced
+      // content tables. Scoped to the plans/logs/lists actually just
+      // claimed, not the whole table — this browser's cache is expected
+      // to only ever hold one user's data at a time, but there's no
+      // reason to rely on that when the ids to scope by are already
+      // sitting right here.
+      const claimedWorkoutPlanIds = (await db.workoutPlans.where('userId').equals(realUserId).toArray()).map((p) => p.id)
+      const claimedSessionIds = (await db.planSessions.where('planId').anyOf(claimedWorkoutPlanIds).toArray()).map((s) => s.id)
+      const claimedWorkoutLogIds = (await db.workoutLogs.where('userId').equals(realUserId).toArray()).map((l) => l.id)
       const claimedMealPlanIds = (await db.mealPlans.where('userId').equals(realUserId).toArray()).map((p) => p.id)
       const claimedGroceryListIds = (await db.groceryLists.where('userId').equals(realUserId).toArray()).map((l) => l.id)
 
+      await db.planItems
+        .where('sessionId')
+        .anyOf(claimedSessionIds)
+        .modify((item) => {
+          item.exerciseId = remapExerciseId(item.exerciseId)
+        })
+      await db.setLogs
+        .where('workoutLogId')
+        .anyOf(claimedWorkoutLogIds)
+        .modify((log) => {
+          log.exerciseId = remapExerciseId(log.exerciseId)
+        })
       await db.mealPlanEntries
         .where('mealPlanId')
         .anyOf(claimedMealPlanIds)
@@ -176,12 +209,12 @@ export async function claimLocalDataIfNeeded(realUserId: string): Promise<string
   return warnings
 }
 
-function buildRemap<T extends { slug: string; id: string }>(oldIdBySlug: Map<string, string>, newRows: T[]): Map<string, string> {
+function buildRemap<TId, T extends { slug: string; id: TId }>(oldIdBySlug: Map<string, TId>, newRows: T[]): Map<TId, TId> {
   const newIdBySlug = new Map(newRows.map((r) => [r.slug, r.id]))
-  const remap = new Map<string, string>()
+  const remap = new Map<TId, TId>()
   for (const [slug, oldId] of oldIdBySlug) {
     const newId = newIdBySlug.get(slug)
-    if (newId) remap.set(oldId, newId)
+    if (newId !== undefined) remap.set(oldId, newId)
   }
   return remap
 }

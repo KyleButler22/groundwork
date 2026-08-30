@@ -328,6 +328,8 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     // toRaw() concern the way toggleGroceryItemChecked has.
     const materializedItems = carryOverCheckedState(groceryItems.value, rebuiltItems)
 
+    const archivedAt = new Date().toISOString()
+    let previousActivePlan: MealPlan | null = null
     await db.transaction('rw', [db.mealPlans, db.mealPlanEntries, db.groceryLists, db.groceryItems], async () => {
       if (existingPlanId) {
         await db.mealPlans.put(materializedPlan)
@@ -337,7 +339,14 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
         // active before adding a new one, so a stray already-active row
         // (e.g. left over from before that archive-on-generate existed)
         // can never make loadActivePlan()'s `.first()` query ambiguous.
-        await db.mealPlans.where('status').equals('active').modify({ status: 'archived' })
+        // Captured before the archive so the push below (a second, real
+        // gap — archiving locally never used to reach Supabase at all,
+        // so the old plan stayed 'active' remotely forever) has a row to
+        // push; a real fresh generate/advanceToNextWeek has one, a
+        // regenerate/swap doesn't (existingPlanId is set, this branch
+        // never runs, nothing to archive).
+        previousActivePlan = (await db.mealPlans.where('status').equals('active').first()) ?? null
+        await db.mealPlans.where('status').equals('active').modify({ status: 'archived', updatedAt: archivedAt })
         await db.mealPlans.add(materializedPlan)
       }
       await db.mealPlanEntries.bulkAdd(materializedEntries)
@@ -357,6 +366,14 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     groceryItems.value = materializedItems
 
     if (userId !== LOCAL_DEV_USER_ID) {
+      // Object.assign, not a spread literal: TS won't narrow a `let`
+      // assigned inside the transaction's closure back to non-null out
+      // here even via a fresh const (tried; still rejected the spread),
+      // and Object.assign's looser signature sidesteps that entirely.
+      if (previousActivePlan) {
+        const archived: MealPlan = Object.assign({}, previousActivePlan, { status: 'archived' as const, updatedAt: archivedAt })
+        await pushRow('meal_plans', archived, warnings.value)
+      }
       await pushRow('meal_plans', materializedPlan, warnings.value)
       await pushRows('meal_plan_entries', materializedEntries, warnings.value)
       await pushRow('grocery_lists', materializedList, warnings.value)

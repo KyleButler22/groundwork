@@ -100,9 +100,23 @@ export async function pullRealContent(): Promise<void> {
       console.warn(`[devContentSeed] Failed to pull ${pgTable} from Supabase — leaving Dexie's existing ${dexieTable} untouched.`)
       continue
     }
-    const table = db[dexieTable] as unknown as { clear: () => Promise<void>; bulkAdd: (rows: unknown[]) => Promise<unknown> }
-    await table.clear()
-    await table.bulkAdd(rows.map((r) => fromRow(r)))
+    // Each table's clear+bulkAdd is isolated in its own try/catch —
+    // without this, a bad row (a shape mismatch, an unexpected null)
+    // throwing from ONE table's bulkAdd would propagate straight out of
+    // this whole function: every table already `.clear()`'d stays
+    // correctly repopulated, but the throw would also abort the loop
+    // entirely, silently skipping every table still queued after it
+    // (which, for a table that failed early in CONTENT_TABLES' order,
+    // could mean the whole rest of the pull never even attempted). Found
+    // by exactly this happening live: exercises came back cleared-but-
+    // empty and nothing after it in the array ever ran.
+    try {
+      const table = db[dexieTable] as unknown as { clear: () => Promise<void>; bulkAdd: (rows: unknown[]) => Promise<unknown> }
+      await table.clear()
+      await table.bulkAdd(rows.map((r) => fromRow(r)))
+    } catch (err) {
+      console.error(`[devContentSeed] Failed to write ${pgTable} into Dexie's ${dexieTable} — that table may now be empty. Cause:`, err)
+    }
   }
 }
 

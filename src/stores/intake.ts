@@ -24,7 +24,7 @@ import { pushRow, pushRows, pushUserTargets, replaceSet } from '@/lib/sync'
 import { buildGroceryList, buildMealLibrary, generateMealPlan } from '@/generators/meal'
 import { buildLibrary } from '@/generators/workout/library'
 import { generatePlan } from '@/generators/workout'
-import type { Goal, MealSlot, Profile, SexAtBirth, UnitPreference, UserAllergenRow, UserDietTagRow, UserTargets } from '@/types/domain'
+import type { Goal, MealPlan, MealSlot, Profile, SexAtBirth, UnitPreference, UserAllergenRow, UserDietTagRow, UserTargets, WorkoutPlan } from '@/types/domain'
 
 export const TOTAL_STEPS = 8
 
@@ -344,6 +344,8 @@ export const useIntakeStore = defineStore('intake', () => {
         .filter((id): id is number => id !== undefined)
         .map((allergenId) => ({ userId, allergenId }))
 
+      const archivedAt = new Date().toISOString()
+      let previousActivePlan: WorkoutPlan | null = null
       await db.transaction(
         'rw',
         [db.workoutPlans, db.planSessions, db.planItems, db.userExerciseLevels, db.profiles, db.userTargets, db.userDietTags, db.userAllergens],
@@ -354,8 +356,12 @@ export const useIntakeStore = defineStore('intake', () => {
           // so a re-run of intake (a normal thing to do — goals change)
           // accumulates more than one workoutPlans row with
           // status='active', and which one plan.ts's `.first()` query
-          // then returns is arbitrary, not "the newest."
-          await db.workoutPlans.where('status').equals('active').modify({ status: 'archived' })
+          // then returns is arbitrary, not "the newest." Captured before
+          // the archive so the push below (a second, real gap found the
+          // same way — archiving locally never used to reach Supabase at
+          // all) has something to push.
+          previousActivePlan = (await db.workoutPlans.where('status').equals('active').first()) ?? null
+          await db.workoutPlans.where('status').equals('active').modify({ status: 'archived', updatedAt: archivedAt })
           await db.workoutPlans.add(materializedPlan)
           await db.planSessions.bulkAdd(sessions)
           await db.planItems.bulkAdd(items)
@@ -434,9 +440,13 @@ export const useIntakeStore = defineStore('intake', () => {
           submitWarnings.value = [...submitWarnings.value, ...groceryResult.warnings]
           const { list: materializedGroceryList, items: materializedGroceryItems } = materializeGroceryList(groceryResult)
 
+          const mealArchivedAt = new Date().toISOString()
+          let previousActiveMealPlan: MealPlan | null = null
           await db.transaction('rw', [db.mealPlans, db.mealPlanEntries, db.groceryLists, db.groceryItems], async () => {
-            // Same archive-before-add reasoning as the workout plan above.
-            await db.mealPlans.where('status').equals('active').modify({ status: 'archived' })
+            // Same archive-before-add reasoning as the workout plan above,
+            // including the same "push the archived one too" fix.
+            previousActiveMealPlan = (await db.mealPlans.where('status').equals('active').first()) ?? null
+            await db.mealPlans.where('status').equals('active').modify({ status: 'archived', updatedAt: mealArchivedAt })
             await db.mealPlans.add(materializedMealPlan)
             await db.mealPlanEntries.bulkAdd(materializedMealEntries)
             await db.groceryLists.add(materializedGroceryList)
@@ -444,6 +454,14 @@ export const useIntakeStore = defineStore('intake', () => {
           })
 
           if (userId !== LOCAL_DEV_USER_ID) {
+            // Object.assign, not a spread literal — see mealPlan.ts's
+            // applyGeneratedResult for why (TS won't narrow a `let`
+            // assigned inside the transaction's closure back to non-null
+            // out here for a spread, even via a fresh const).
+            if (previousActiveMealPlan) {
+              const archived: MealPlan = Object.assign({}, previousActiveMealPlan, { status: 'archived' as const, updatedAt: mealArchivedAt })
+              await pushRow('meal_plans', archived, submitWarnings.value)
+            }
             await pushRow('meal_plans', materializedMealPlan, submitWarnings.value)
             await pushRows('meal_plan_entries', materializedMealEntries, submitWarnings.value)
             await pushRow('grocery_lists', materializedGroceryList, submitWarnings.value)
@@ -478,6 +496,17 @@ export const useIntakeStore = defineStore('intake', () => {
         }
         await pushUserTargets(targets, submitWarnings.value)
 
+        // The just-archived previous plan (if any) needs pushing too, not
+        // just the new one — otherwise it stays 'active' in Supabase
+        // forever, and a future pull's last-write-wins merge could even
+        // resurrect it as active locally once its updatedAt stops being
+        // provably older than a remote copy that was never told it changed.
+        // Object.assign, not a spread literal — see mealPlan.ts's
+        // applyGeneratedResult for why.
+        if (previousActivePlan) {
+          const archived: WorkoutPlan = Object.assign({}, previousActivePlan, { status: 'archived' as const, updatedAt: archivedAt })
+          await pushRow('workout_plans', archived, submitWarnings.value)
+        }
         await pushRows('workout_plans', [materializedPlan], submitWarnings.value)
         await pushRows('plan_sessions', sessions, submitWarnings.value)
         await pushRows('plan_items', items, submitWarnings.value)
