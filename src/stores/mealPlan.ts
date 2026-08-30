@@ -2,8 +2,10 @@ import { computed, ref, toRaw } from 'vue'
 import { defineStore } from 'pinia'
 
 import { db } from '@/lib/db'
+import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { loadMealGenerationContext, type MealGenerationContext } from '@/lib/mealGenerationContext'
 import { materializeGroceryList, materializeMealPlan } from '@/lib/materializeMealPlan'
+import { fromRow, mergeByUpdatedAt, mergeByUpdatedAtKeyed, pullEntityRows, pullOwnedRows, pushRow, pushRows } from '@/lib/sync'
 import {
   aggregateServedRecipes,
   buildGroceryList,
@@ -174,11 +176,54 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     }
     await db.userRecipeFeedback.put(updated)
     feedbackByRecipeId.value = new Map(feedbackByRecipeId.value).set(recipeId, updated)
+    if (userId !== LOCAL_DEV_USER_ID) await pushRow('user_recipe_feedback', updated, warnings.value)
   }
 
-  async function loadActivePlan() {
+  /**
+   * Pulls this user's meal_plans/meal_plan_entries/user_recipe_feedback
+   * from Supabase and merges them into Dexie before the rest of
+   * loadActivePlan reads it — last-write-wins on updatedAt
+   * (mergeByUpdatedAt/mergeByUpdatedAtKeyed), per docs/schema.md's
+   * documented sync rule. No stored watermark: a full per-table fetch is
+   * simple, correct, and fast enough at this app's actual data volume (a
+   * handful of plans, at most a few hundred entries) — see the sync plan
+   * this implements for why that tradeoff was made deliberately rather
+   * than wiring up Dexie's existing (otherwise-unused) syncMeta table.
+   * Skipped entirely for the local-dev-user fallback — RLS requires
+   * `authenticated`, so pulling with a fake id could only ever fail.
+   */
+  async function pullMealData(userId: string): Promise<void> {
+    const [remotePlans, remoteFeedback] = await Promise.all([
+      pullEntityRows('meal_plans', userId, null, null),
+      pullEntityRows('user_recipe_feedback', userId, null, null),
+    ])
+
+    if (remotePlans) {
+      const local = await db.mealPlans.toArray()
+      const merged = mergeByUpdatedAt(local, remotePlans.map((r) => fromRow<MealPlan>(r)), 'id', 'updatedAt')
+      await db.mealPlans.bulkPut(merged)
+
+      const planIds = merged.map((p) => p.id)
+      const remoteEntries = await pullOwnedRows('meal_plan_entries')
+      if (remoteEntries && planIds.length > 0) {
+        const localEntries = await db.mealPlanEntries.where('mealPlanId').anyOf(planIds).toArray()
+        const remoteMapped = remoteEntries.map((r) => fromRow<MealPlanEntry>(r)).filter((e) => planIds.includes(e.mealPlanId))
+        await db.mealPlanEntries.bulkPut(mergeByUpdatedAt(localEntries, remoteMapped, 'id', 'updatedAt'))
+      }
+    }
+
+    if (remoteFeedback) {
+      const local = await db.userRecipeFeedback.toArray()
+      const merged = mergeByUpdatedAtKeyed(local, remoteFeedback.map((r) => fromRow<UserRecipeFeedback>(r)), (f) => `${f.userId}|${f.recipeId}`, 'updatedAt')
+      await db.userRecipeFeedback.bulkPut(merged)
+    }
+  }
+
+  async function loadActivePlan(userId: string) {
     loading.value = true
     error.value = null
+
+    if (userId !== LOCAL_DEV_USER_ID) await pullMealData(userId)
 
     const active = await db.mealPlans.where('status').equals('active').first()
     plan.value = active ?? null
@@ -310,6 +355,13 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     entries.value = materializedEntries
     groceryList.value = materializedList
     groceryItems.value = materializedItems
+
+    if (userId !== LOCAL_DEV_USER_ID) {
+      await pushRow('meal_plans', materializedPlan, warnings.value)
+      await pushRows('meal_plan_entries', materializedEntries, warnings.value)
+      await pushRow('grocery_lists', materializedList, warnings.value)
+      await pushRows('grocery_items', materializedItems, warnings.value)
+    }
   }
 
   /** Manual fallback for the rare case intake-time generation didn't
@@ -361,6 +413,7 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     if (plan.value && entries.value.length > 0) {
       try {
         const servedByRecipe = aggregateServedRecipes(entries.value)
+        const updatedRows: UserRecipeFeedback[] = []
 
         await db.transaction('rw', [db.userRecipeFeedback], async () => {
           for (const [recipeId, served] of servedByRecipe) {
@@ -382,8 +435,15 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
             // Dexie fresh precisely to avoid that, but there's no reason
             // to leave the cache wrong in the meantime).
             feedbackByRecipeId.value.set(recipeId, updated)
+            updatedRows.push(updated)
           }
         })
+
+        if (userId !== LOCAL_DEV_USER_ID) {
+          const pushWarnings: string[] = []
+          await pushRows('user_recipe_feedback', updatedRows, pushWarnings)
+          if (pushWarnings.length > 0) feedbackWarning = pushWarnings.join(' ')
+        }
       } catch (err) {
         feedbackWarning = `Couldn't record what you served this week: ${(err as Error).message}`
       }
@@ -452,7 +512,7 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     }
   }
 
-  async function toggleLock(entryId: string): Promise<void> {
+  async function toggleLock(entryId: string, userId: string): Promise<void> {
     const target = entries.value.find((e) => e.id === entryId)
     if (!target) return
     // toRaw(): target comes from a reactive ref — spreading it directly
@@ -461,12 +521,13 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     // (DataCloneError) rather than silently stripping the reactivity.
     // MealPlanEntry has no array/object fields today, but see
     // toggleGroceryItemChecked below for where this bit for real.
-    const updated: MealPlanEntry = { ...toRaw(target), isLocked: !target.isLocked }
+    const updated: MealPlanEntry = { ...toRaw(target), isLocked: !target.isLocked, updatedAt: new Date().toISOString() }
     await db.mealPlanEntries.put(updated)
     entries.value = entries.value.map((e) => (e.id === entryId ? updated : e))
+    if (userId !== LOCAL_DEV_USER_ID) await pushRow('meal_plan_entries', updated, warnings.value)
   }
 
-  async function toggleGroceryItemChecked(itemId: string): Promise<void> {
+  async function toggleGroceryItemChecked(itemId: string, userId: string): Promise<void> {
     const target = groceryItems.value.find((i) => i.id === itemId)
     if (!target) return
     // toRaw() is load-bearing here, not defensive: sourceEntryIds is a
@@ -477,9 +538,15 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     // array as a plain `string[]` without complaint. IndexedDB's
     // structured-clone algorithm is the thing that actually rejects it,
     // at write time, in the browser only.
-    const updated: GroceryItem = { ...toRaw(target), isChecked: !target.isChecked, checkedAt: !target.isChecked ? new Date().toISOString() : null }
+    const updated: GroceryItem = {
+      ...toRaw(target),
+      isChecked: !target.isChecked,
+      checkedAt: !target.isChecked ? new Date().toISOString() : null,
+      updatedAt: new Date().toISOString(),
+    }
     await db.groceryItems.put(updated)
     groceryItems.value = groceryItems.value.map((i) => (i.id === itemId ? updated : i))
+    if (userId !== LOCAL_DEV_USER_ID) await pushRow('grocery_items', updated, warnings.value)
   }
 
   return {

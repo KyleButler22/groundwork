@@ -30,6 +30,7 @@ function levelAt(patternId: number, exerciseId: number, overrides: Partial<UserE
     consecutiveSuccess: 0,
     consecutiveFailure: 0,
     lastEvaluatedAt: null,
+    updatedAt: '',
     ...overrides,
   }
 }
@@ -73,6 +74,7 @@ function setLog(planItemId: string, exerciseId: number, overrides: Partial<SetLo
     addedWeightKg: null,
     assistBand: null,
     rpe: null,
+    updatedAt: '',
     ...overrides,
   }
 }

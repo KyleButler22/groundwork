@@ -185,7 +185,7 @@ describe('swapOneMeal', () => {
 
 describe('aggregateServedRecipes', () => {
   function dinnerEntry(overrides: Partial<MealPlanEntry> & Pick<MealPlanEntry, 'id' | 'recipeId' | 'serveOn'>): MealPlanEntry {
-    return { mealPlanId: 'plan-1', slot: 'dinner', servings: 1, isLocked: false, leftoverOfId: null, ...overrides }
+    return { mealPlanId: 'plan-1', slot: 'dinner', servings: 1, isLocked: false, leftoverOfId: null, updatedAt: '', ...overrides }
   }
 
   it('counts one serving per entry, including leftovers — a leftover meal is still really eaten', () => {

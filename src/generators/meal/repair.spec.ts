@@ -23,6 +23,7 @@ function entry(overrides: Partial<MealPlanEntry> & Pick<MealPlanEntry, 'slot' | 
     serveOn: WEEK_STARTS_ON,
     isLocked: false,
     leftoverOfId: null,
+    updatedAt: '',
     ...overrides,
   }
 }

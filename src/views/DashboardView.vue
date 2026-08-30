@@ -3,6 +3,7 @@ import { ChevronRight, X } from '@lucide/vue'
 import { computed, onMounted, ref, watch } from 'vue'
 
 import SetLogEditor from '@/components/workout/SetLogEditor.vue'
+import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useMealPlanStore } from '@/stores/mealPlan'
 import { usePlanStore } from '@/stores/plan'
 import { useSessionStore } from '@/stores/session'
@@ -13,13 +14,14 @@ import type { MealSlot, PlanItem } from '@/types/domain'
 const planStore = usePlanStore()
 const mealStore = useMealPlanStore()
 const session = useSessionStore()
-onMounted(() => {
-  planStore.loadActivePlan()
-  mealStore.loadActivePlan()
-})
 
 // No real auth yet (see TASKS.md) — same fallback IntakeView.vue/MealsView.vue use.
-const userId = computed(() => session.session?.user.id ?? 'local-dev-user')
+const userId = computed(() => session.session?.user.id ?? LOCAL_DEV_USER_ID)
+
+onMounted(() => {
+  planStore.loadActivePlan(userId.value)
+  mealStore.loadActivePlan(userId.value)
+})
 
 // planStore.nextSession is LIVE — it recomputes the instant the session
 // being shown becomes fully checked off, immediately swapping to whatever
@@ -145,7 +147,7 @@ const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'L
                   {{ item.targetSeconds !== null ? `${item.targetSeconds}s` : `${item.targetRepMin}-${item.targetRepMax}` }}
                 </span>
               </div>
-              <SetLogEditor v-if="expandedItemId === item.id" :item="item" />
+              <SetLogEditor v-if="expandedItemId === item.id" :item="item" :user-id="userId" />
             </li>
           </ul>
 

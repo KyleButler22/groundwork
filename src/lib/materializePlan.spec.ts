@@ -15,6 +15,7 @@ function draftPlan(): WorkoutPlan {
     status: 'active',
     generatorVersion: 'test',
     seed: 1,
+    updatedAt: '',
   }
 }
 

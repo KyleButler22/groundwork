@@ -11,7 +11,7 @@ import type { PlanItem } from '@/types/domain'
  * this behind their own expand/collapse state — nothing here decides
  * whether it's visible, only what it does once it is.
  */
-const props = defineProps<{ item: PlanItem }>()
+const props = defineProps<{ item: PlanItem; userId: string }>()
 const store = usePlanStore()
 
 function parseOptionalNumber(raw: string): number | null {
@@ -23,13 +23,13 @@ function parseOptionalNumber(raw: string): number | null {
 function onRepsOrSecondsChange(setLogId: string, event: Event): void {
   const raw = (event.target as HTMLInputElement).value
   const value = parseOptionalNumber(raw)
-  if (props.item.targetSeconds !== null) store.updateSetLog(setLogId, { seconds: value })
-  else store.updateSetLog(setLogId, { reps: value })
+  if (props.item.targetSeconds !== null) store.updateSetLog(setLogId, { seconds: value }, props.userId)
+  else store.updateSetLog(setLogId, { reps: value }, props.userId)
 }
 
 function onWeightChange(setLogId: string, event: Event): void {
   const value = parseOptionalNumber((event.target as HTMLInputElement).value)
-  store.updateSetLog(setLogId, { addedWeightKg: value })
+  store.updateSetLog(setLogId, { addedWeightKg: value }, props.userId)
 }
 </script>
 

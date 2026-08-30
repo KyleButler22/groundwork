@@ -4,7 +4,9 @@ import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import PatternIcon from '@/components/workout/PatternIcon.vue'
+import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { usePlanStore } from '@/stores/plan'
+import { useSessionStore } from '@/stores/session'
 
 // How to do one exercise: pattern + a generic movement icon, the real
 // per-exercise coaching cue authored with the movement library, its
@@ -15,7 +17,12 @@ import { usePlanStore } from '@/stores/plan'
 const route = useRoute()
 const router = useRouter()
 const store = usePlanStore()
-onMounted(() => store.loadActivePlan()) // covers a direct link / page refresh landing here first
+const session = useSessionStore()
+
+// No real auth yet (see TASKS.md) — same fallback every other write path uses.
+const userId = computed(() => session.session?.user.id ?? LOCAL_DEV_USER_ID)
+
+onMounted(() => store.loadActivePlan(userId.value)) // covers a direct link / page refresh landing here first
 
 const exerciseId = computed(() => {
   const raw = route.params.exerciseId

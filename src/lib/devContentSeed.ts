@@ -1,35 +1,22 @@
 import { db } from '@/lib/db'
+import { fromRow, pullContentTable } from '@/lib/sync'
 import { isConfigured } from '@/lib/supabase'
 
 /**
- * Temporary bridge until the real Supabase → Dexie content sync exists
- * (see TASKS.md: "Wire IntakeView → generator → Supabase write → Dexie
- * cache"). Without it, the intake flow's ladder-placement step and both
- * generators have no content to read from on a machine that hasn't set up
- * a Supabase project yet — which, per README.md, is every fresh checkout
- * of this repo.
+ * Two content sources, chosen per caller: real Supabase content (once
+ * signed in — content tables are `to authenticated` per RLS, see
+ * 0009_rls.sql, so an unauthenticated read can never work regardless of
+ * whether a project is configured) or the local seed files (dev only,
+ * signed out, or no project configured at all).
  *
- * Dev-mode only, and never bundled into a production build: every seed SQL
- * file is loaded via a DYNAMIC import gated behind `import.meta.env.DEV`,
- * which Vite inlines as a literal `false` in production and dead-code-
- * eliminates the whole branch — including the dynamic imports and the
- * `import.meta.glob` below — out of the bundle. This is exactly the
- * "content tables never ship in the app bundle" rule from docs/schema.md;
- * it doesn't get suspended just because the content is arriving from a
- * local file instead of Supabase during development.
- *
- * Replace this file's body with a real `supabase.from('exercises').select()`
- * sync (still writing into the same Dexie tables) once that sync exists —
- * every caller here reads through db.ts either way, so nothing above this
- * module needs to change.
- *
- * isConfigured only gates the *warning wording* below, never whether local
- * seeding happens in dev — a configured project doesn't itself populate
- * Dexie, only a real sync implementation would, and until that exists a
- * configured project's local cache needs this same fallback an
- * unconfigured one does. Only `import.meta.env.DEV` gates whether the
- * fallback runs at all, since that's the flag that controls whether the
- * seed SQL dynamic imports get dead-code-eliminated out of the bundle.
+ * Local-file loading is dev-mode only, and never bundled into a
+ * production build: every seed SQL file is loaded via a DYNAMIC import
+ * gated behind `import.meta.env.DEV`, which Vite inlines as a literal
+ * `false` in production and dead-code-eliminates the whole branch —
+ * including the dynamic imports and the `import.meta.glob` below — out of
+ * the bundle. This is exactly the "content tables never ship in the app
+ * bundle" rule from docs/schema.md; it doesn't get suspended just because
+ * the content is arriving from a local file instead of Supabase.
  *
  * The two content domains (movement library, food/recipes) are seeded
  * independently, each gated on its OWN table being empty — not one shared
@@ -38,26 +25,85 @@ import { isConfigured } from '@/lib/supabase'
  * otherwise never pick up this seeding, since movementPatterns.count()
  * would already be > 0 and short-circuit the whole function.
  */
-export async function ensureContentSeeded(): Promise<void> {
+export async function ensureContentSeeded(userId: string | null): Promise<void> {
   if (!import.meta.env.DEV) {
-    if (!isConfigured) {
+    if (isConfigured && userId) {
+      if ((await db.movementPatterns.count()) === 0) await pullRealContent()
+    } else if (!isConfigured) {
       console.warn('[devContentSeed] No Supabase project and this is a production build — movement and food content is empty.')
     }
-    // TODO(TASKS.md): real Supabase → Dexie sync goes here for production.
+    // A production build with a configured project but nobody signed in
+    // yet has no content until they do — there's no local-file fallback
+    // to fall through to here, by design (see the module comment above).
     return
   }
 
-  if (isConfigured) {
-    // TODO(TASKS.md): real Supabase → Dexie sync goes here. Until it's
-    // built, fall through to the same local-seed-file path used when no
-    // project is configured at all — see the isConfigured note above.
+  if (isConfigured && userId) {
+    if ((await db.movementPatterns.count()) === 0) await pullRealContent()
+    return
+  }
+
+  if (isConfigured && !userId) {
     console.warn(
-      '[devContentSeed] Supabase is configured but the real sync is not built yet (see TASKS.md) — ' +
-        'falling back to local seed files for dev content in the meantime, same as an unconfigured project.',
+      '[devContentSeed] Supabase is configured but nobody is signed in yet — using local seed files for dev content ' +
+        '(real content requires an authenticated read, per RLS). Signing in will pull the real thing.',
     )
   }
 
   await Promise.all([ensureMovementLibrarySeeded(), ensureFoodAndRecipesSeeded()])
+}
+
+/** Postgres table name -> the Dexie table it lands in. Order doesn't
+ *  matter for the write (IndexedDB has no FK enforcement to satisfy,
+ *  unlike Postgres), only for readability here. */
+const CONTENT_TABLES = [
+  ['movement_patterns', 'movementPatterns'],
+  ['exercises', 'exercises'],
+  ['progression_edges', 'progressionEdges'],
+  ['equipment', 'equipment'],
+  ['exercise_equipment', 'exerciseEquipment'],
+  ['body_regions', 'bodyRegions'],
+  ['exercise_contraindications', 'exerciseContraindications'],
+  ['aisles', 'aisles'],
+  ['units', 'units'],
+  ['ingredients', 'ingredients'],
+  ['ingredient_units', 'ingredientUnits'],
+  ['allergens', 'allergens'],
+  ['ingredient_allergens', 'ingredientAllergens'],
+  ['diet_tags', 'dietTags'],
+  ['recipes', 'recipes'],
+  ['recipe_ingredients', 'recipeIngredients'],
+  ['recipe_steps', 'recipeSteps'],
+  ['recipe_meal_slots', 'recipeMealSlots'],
+  ['recipe_diet_tags', 'recipeDietTags'],
+] as const satisfies readonly [string, keyof typeof db][]
+
+/**
+ * Pulls every content table from Supabase and replaces Dexie's copy
+ * wholesale (clear + bulkAdd, not bulkPut on top of whatever's already
+ * there) — the safe way to handle ingredients/recipes specifically, whose
+ * real `id` is a server-assigned UUID with no relationship at all to the
+ * slug-as-id scheme the local-file fallback uses (see Ingredient's own
+ * doc comment in types/domain.ts). A table whose pull fails is left
+ * untouched rather than cleared-then-empty — exported (not gated behind
+ * the usual "only if empty" check) so claimLocalData.ts can force a real
+ * pull at the exact moment someone first signs in, even though Dexie
+ * already has (stale, local-file) content from before that point.
+ */
+export async function pullRealContent(): Promise<void> {
+  const pulls = await Promise.all(CONTENT_TABLES.map(([pgTable]) => pullContentTable(pgTable)))
+
+  for (let i = 0; i < CONTENT_TABLES.length; i++) {
+    const [pgTable, dexieTable] = CONTENT_TABLES[i]
+    const rows = pulls[i]
+    if (rows === null) {
+      console.warn(`[devContentSeed] Failed to pull ${pgTable} from Supabase — leaving Dexie's existing ${dexieTable} untouched.`)
+      continue
+    }
+    const table = db[dexieTable] as unknown as { clear: () => Promise<void>; bulkAdd: (rows: unknown[]) => Promise<unknown> }
+    await table.clear()
+    await table.bulkAdd(rows.map((r) => fromRow(r)))
+  }
 }
 
 async function ensureMovementLibrarySeeded(): Promise<void> {

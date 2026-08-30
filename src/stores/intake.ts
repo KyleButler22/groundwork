@@ -16,9 +16,11 @@ import {
 import { resolveMacros, referenceWeightKg } from '@/lib/intake/macros'
 import { computeTestedLevels, resolveStartingLevels, type PlacementTestAnswers } from '@/lib/intake/placement'
 import { ageFromBirthYear, isUnderMinimumAge, isUnderweight, shouldSoftenGoalScreen } from '@/lib/intake/safetyGates'
+import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { materializeGroceryList, materializeMealPlan } from '@/lib/materializeMealPlan'
 import { materializePlan } from '@/lib/materializePlan'
 import { supabase } from '@/lib/supabase'
+import { pushRow, pushRows, pushUserTargets, replaceSet } from '@/lib/sync'
 import { buildGroceryList, buildMealLibrary, generateMealPlan } from '@/generators/meal'
 import { buildLibrary } from '@/generators/workout/library'
 import { generatePlan } from '@/generators/workout'
@@ -321,6 +323,7 @@ export const useIntakeStore = defineStore('intake', () => {
         sessionMinutes: answers.sessionMinutes!,
         activeMealSlots: toActiveMealSlots(answers),
         cookTimeCeiling: answers.cookTimeCeilingMinutes,
+        updatedAt: new Date().toISOString(),
       }
 
       // Diet tags/allergens: those content tables ARE seeded for real now
@@ -439,47 +442,48 @@ export const useIntakeStore = defineStore('intake', () => {
             await db.groceryLists.add(materializedGroceryList)
             await db.groceryItems.bulkAdd(materializedGroceryItems)
           })
+
+          if (userId !== LOCAL_DEV_USER_ID) {
+            await pushRow('meal_plans', materializedMealPlan, submitWarnings.value)
+            await pushRows('meal_plan_entries', materializedMealEntries, submitWarnings.value)
+            await pushRow('grocery_lists', materializedGroceryList, submitWarnings.value)
+            await pushRows('grocery_items', materializedGroceryItems, submitWarnings.value)
+          }
         }
       } catch (err) {
         submitWarnings.value = [...submitWarnings.value, `Workout plan saved, but generating your meal plan failed: ${(err as Error).message}`]
       }
 
-      // Best-effort Supabase write — expected to fail against the
-      // placeholder client until a real project exists (see
-      // src/lib/supabase.ts). The plan is already usable locally either
-      // way; this never blocks on it.
-      try {
-        await supabase.from('profiles').upsert({
-          id: userId,
-          birth_year: answers.birthYear,
-          sex_at_birth: answers.sexAtBirth,
-          height_cm: answers.heightCm,
-          household_size: answers.householdSize,
-        })
-        await supabase.from('intake_responses').insert({
-          user_id: userId,
-          schema_version: 1,
-          answers: answers as unknown as Record<string, unknown>,
-        })
-        await supabase.from('user_targets').upsert({
-          user_id: userId,
-          goal: answers.goal,
-          activity_factor: answers.neatFactor,
-          tdee_kcal: Math.round(tdeeValue.value),
-          kcal_target: Math.round(selectedGoalKcal.value ?? tdeeValue.value),
-          protein_g: Math.round(macros.value.proteinG),
-          fat_g: Math.round(macros.value.fatG),
-          carb_g: Math.round(macros.value.carbG),
-          days_per_week: answers.daysPerWeek,
-          session_minutes: answers.sessionMinutes,
-          wants_breakfast: answers.wantsBreakfast,
-          wants_lunch: answers.wantsLunch,
-          wants_dinner: answers.wantsDinner,
-          wants_snack: answers.wantsSnack,
-          cook_time_ceiling: answers.cookTimeCeilingMinutes,
-        })
-      } catch (err) {
-        submitWarnings.value = [...submitWarnings.value, `Saved locally, but syncing to your account failed: ${(err as Error).message}`]
+      // Best-effort Supabase sync — every pushRow/pushRows/replaceSet call
+      // below is itself try/catch'd (see sync.ts) and only ever appends to
+      // submitWarnings, never throws, so nothing here blocks on it: the
+      // plan is already fully usable locally either way. Skipped entirely
+      // for the local-dev-user fallback — RLS requires `authenticated`, so
+      // this could only ever fail for that id.
+      if (userId !== LOCAL_DEV_USER_ID) {
+        await pushRow('profiles', profile, submitWarnings.value)
+        // intake_responses is append-only (see 0002_identity.sql's own
+        // comment) and isn't cached in Dexie at all — nothing to route
+        // through pushRow's domain-object shape, so this stays a direct,
+        // already-snake_case call, same as it's always been.
+        try {
+          const { error } = await supabase.from('intake_responses').insert({
+            user_id: userId,
+            schema_version: 1,
+            answers: answers as unknown as Record<string, unknown>,
+          })
+          if (error) submitWarnings.value = [...submitWarnings.value, `Sync to intake_responses failed: ${error.message}`]
+        } catch (err) {
+          submitWarnings.value = [...submitWarnings.value, `Sync to intake_responses failed: ${(err as Error).message}`]
+        }
+        await pushUserTargets(targets, submitWarnings.value)
+
+        await pushRows('workout_plans', [materializedPlan], submitWarnings.value)
+        await pushRows('plan_sessions', sessions, submitWarnings.value)
+        await pushRows('plan_items', items, submitWarnings.value)
+        await pushRows('user_exercise_levels', levels, submitWarnings.value)
+        await replaceSet('user_diet_tags', userId, userDietTags, submitWarnings.value)
+        await replaceSet('user_allergens', userId, userAllergens, submitWarnings.value)
       }
 
       return { planId: materializedPlan.id }

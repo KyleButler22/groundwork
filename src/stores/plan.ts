@@ -2,6 +2,8 @@ import { computed, ref, toRaw } from 'vue'
 import { defineStore } from 'pinia'
 
 import { db } from '@/lib/db'
+import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
+import { deleteRows, fromRow, mergeByUpdatedAt, mergeByUpdatedAtKeyed, pullEntityRows, pullOwnedRows, pushRow, pushRows } from '@/lib/sync'
 import { buildSetLogsForItem, selectNextSession, sessionStatusFor } from '@/lib/workoutLogging'
 import { applyWorkoutLog, buildLibrary, type MovementLibrary, type PromotionEvent } from '@/generators/workout'
 import type { Equipment, ExerciseEquipment, Exercise, PlanItem, PlanSession, SetLog, UserExerciseLevel, WorkoutLog, WorkoutPlan } from '@/types/domain'
@@ -28,6 +30,12 @@ export const usePlanStore = defineStore('plan', () => {
   const levels = ref<UserExerciseLevel[]>([])
   const library = ref<MovementLibrary | null>(null)
   const loading = ref(true)
+  // Best-effort sync failures (see sync.ts) — not currently rendered by
+  // any view, same "data exists, UI catches up later" spirit as several
+  // other things this session shipped without a display yet (see
+  // TASKS.md). Never blocks anything; the Dexie write these follow has
+  // already succeeded by the time one of these gets pushed.
+  const warnings = ref<string[]>([])
 
   // Transient — the events applyWorkoutLog returned from the most recent
   // session completion, so any view can show "🎉 Promoted" etc. regardless
@@ -156,8 +164,67 @@ export const usePlanStore = defineStore('plan', () => {
    *  means every session in the plan has been completed. */
   const nextSession = computed(() => selectNextSession(sessions.value, completedSessionIds.value))
 
-  async function loadActivePlan() {
+  /**
+   * Pulls this user's workout_plans/workout_logs/set_logs/
+   * user_exercise_levels from Supabase and merges into Dexie before the
+   * rest of loadActivePlan reads it — same last-write-wins-on-updatedAt
+   * design as mealPlan.ts's pullMealData, see that function's own
+   * comment for why there's no stored watermark. plan_sessions/plan_items
+   * have no updatedAt (generated once, never updated after — see
+   * docs/schema.md section 3) so those two are a plain upsert, not a
+   * merge — there's no possible conflict to resolve for a row that never
+   * changes once created.
+   */
+  async function pullWorkoutData(userId: string): Promise<void> {
+    const [remotePlans, remoteLogs, remoteLevels] = await Promise.all([
+      pullEntityRows('workout_plans', userId, null, null),
+      pullEntityRows('workout_logs', userId, null, null),
+      pullEntityRows('user_exercise_levels', userId, null, null),
+    ])
+
+    if (remotePlans) {
+      const local = await db.workoutPlans.toArray()
+      const merged = mergeByUpdatedAt(local, remotePlans.map((r) => fromRow<WorkoutPlan>(r)), 'id', 'updatedAt')
+      await db.workoutPlans.bulkPut(merged)
+
+      const planIds = merged.map((p) => p.id)
+      const remoteSessions = await pullOwnedRows('plan_sessions')
+      if (remoteSessions && planIds.length > 0) {
+        const sessions = remoteSessions.map((r) => fromRow<PlanSession>(r)).filter((s) => planIds.includes(s.planId))
+        await db.planSessions.bulkPut(sessions)
+
+        const sessionIds = sessions.map((s) => s.id)
+        const remoteItems = await pullOwnedRows('plan_items')
+        if (remoteItems && sessionIds.length > 0) {
+          await db.planItems.bulkPut(remoteItems.map((r) => fromRow<PlanItem>(r)).filter((i) => sessionIds.includes(i.sessionId)))
+        }
+      }
+    }
+
+    if (remoteLogs) {
+      const local = await db.workoutLogs.toArray()
+      const merged = mergeByUpdatedAt(local, remoteLogs.map((r) => fromRow<WorkoutLog>(r)), 'id', 'updatedAt')
+      await db.workoutLogs.bulkPut(merged)
+
+      const logIds = merged.map((l) => l.id)
+      const remoteSetLogs = await pullOwnedRows('set_logs')
+      if (remoteSetLogs && logIds.length > 0) {
+        const localSetLogs = await db.setLogs.where('workoutLogId').anyOf(logIds).toArray()
+        const remoteMapped = remoteSetLogs.map((r) => fromRow<SetLog>(r)).filter((s) => logIds.includes(s.workoutLogId))
+        await db.setLogs.bulkPut(mergeByUpdatedAt(localSetLogs, remoteMapped, 'id', 'updatedAt'))
+      }
+    }
+
+    if (remoteLevels) {
+      const local = await db.userExerciseLevels.toArray()
+      const merged = mergeByUpdatedAtKeyed(local, remoteLevels.map((r) => fromRow<UserExerciseLevel>(r)), (l) => `${l.userId}|${l.patternId}`, 'updatedAt')
+      await db.userExerciseLevels.bulkPut(merged)
+    }
+  }
+
+  async function loadActivePlan(userId: string) {
     loading.value = true
+    if (userId !== LOCAL_DEV_USER_ID) await pullWorkoutData(userId)
     const active = await db.workoutPlans.where('status').equals('active').first()
     plan.value = active ?? null
 
@@ -255,41 +322,58 @@ export const usePlanStore = defineStore('plan', () => {
     const currentlyChecked = isItemChecked(item.id)
     let log = workoutLogBySessionId.value.get(session.id) ?? null
 
+    const sync = userId !== LOCAL_DEV_USER_ID
+
     if (currentlyChecked) {
       const [keep, drop] = partition(setLogs.value, (l) => !(l.planItemId === item.id && l.workoutLogId === log?.id))
       await db.setLogs.bulkDelete(drop.map((l) => l.id))
       setLogs.value = keep
+      if (sync) await deleteRows('set_logs', drop.map((l) => l.id), warnings.value)
 
       const remainingForLog = log ? keep.filter((l) => l.workoutLogId === log!.id) : []
       if (log && remainingForLog.length === 0) {
         await db.workoutLogs.delete(log.id)
         workoutLogs.value = workoutLogs.value.filter((l) => l.id !== log!.id)
+        if (sync) await deleteRows('workout_logs', [log.id], warnings.value)
       } else if (log) {
         const { done, total } = sessionProgressFor(session, keep)
-        const updated: WorkoutLog = { ...log, status: sessionStatusFor(done, total) }
+        const updated: WorkoutLog = { ...log, status: sessionStatusFor(done, total), updatedAt: new Date().toISOString() }
         await db.workoutLogs.put(updated)
         workoutLogs.value = workoutLogs.value.map((l) => (l.id === updated.id ? updated : l))
+        if (sync) await pushRow('workout_logs', updated, warnings.value)
       }
       return
     }
 
     if (!log) {
-      log = { id: crypto.randomUUID(), userId, planSessionId: session.id, performedAt: new Date().toISOString(), durationMinutes: null, sessionRpe: null, status: 'partial', note: null }
+      log = {
+        id: crypto.randomUUID(),
+        userId,
+        planSessionId: session.id,
+        performedAt: new Date().toISOString(),
+        durationMinutes: null,
+        sessionRpe: null,
+        status: 'partial',
+        note: null,
+        updatedAt: new Date().toISOString(),
+      }
       await db.workoutLogs.add(log)
       workoutLogs.value = [...workoutLogs.value, log]
     }
 
     const newLogs = buildSetLogsForItem(item, log.id)
     await db.setLogs.bulkAdd(newLogs)
+    if (sync) await pushRows('set_logs', newLogs, warnings.value)
     const allSetLogs = [...setLogs.value, ...newLogs]
     setLogs.value = allSetLogs
 
     const { done, total } = sessionProgressFor(session, allSetLogs)
     const status = sessionStatusFor(done, total)
     const wasComplete = log.status === 'completed'
-    const updatedLog: WorkoutLog = { ...log, status }
+    const updatedLog: WorkoutLog = { ...log, status, updatedAt: new Date().toISOString() }
     await db.workoutLogs.put(updatedLog)
     workoutLogs.value = workoutLogs.value.map((l) => (l.id === updatedLog.id ? updatedLog : l))
+    if (sync) await pushRow('workout_logs', updatedLog, warnings.value)
 
     if (status === 'completed' && !wasComplete && library.value) {
       const sessionSetLogs = allSetLogs.filter((l) => l.workoutLogId === updatedLog.id)
@@ -318,6 +402,7 @@ export const usePlanStore = defineStore('plan', () => {
         now: new Date().toISOString(),
       })
       await db.userExerciseLevels.bulkPut(outcome.levels)
+      if (sync) await pushRows('user_exercise_levels', outcome.levels, warnings.value)
       // outcome.levels is always a subset of levels.value that already
       // existed — applyWorkoutLog silently skips any pattern with no
       // prior placement row (see its own "no placement recorded yet"
@@ -375,18 +460,23 @@ export const usePlanStore = defineStore('plan', () => {
    * quickly between two fields on the same set is an entirely ordinary
    * way to trigger this.
    */
-  function updateSetLog(setLogId: string, changes: Partial<Pick<SetLog, 'reps' | 'seconds' | 'addedWeightKg' | 'rpe'>>): Promise<void> {
-    const run = mutationQueue.then(() => updateSetLogNow(setLogId, changes))
+  function updateSetLog(setLogId: string, changes: Partial<Pick<SetLog, 'reps' | 'seconds' | 'addedWeightKg' | 'rpe'>>, userId: string): Promise<void> {
+    const run = mutationQueue.then(() => updateSetLogNow(setLogId, changes, userId))
     mutationQueue = run.catch(() => {})
     return run
   }
 
-  async function updateSetLogNow(setLogId: string, changes: Partial<Pick<SetLog, 'reps' | 'seconds' | 'addedWeightKg' | 'rpe'>>): Promise<void> {
+  async function updateSetLogNow(
+    setLogId: string,
+    changes: Partial<Pick<SetLog, 'reps' | 'seconds' | 'addedWeightKg' | 'rpe'>>,
+    userId: string,
+  ): Promise<void> {
     const existing = setLogs.value.find((l) => l.id === setLogId)
     if (!existing) return
-    const updated: SetLog = { ...existing, ...changes }
+    const updated: SetLog = { ...existing, ...changes, updatedAt: new Date().toISOString() }
     await db.setLogs.put(updated)
     setLogs.value = setLogs.value.map((l) => (l.id === setLogId ? updated : l))
+    if (userId !== LOCAL_DEV_USER_ID) await pushRow('set_logs', updated, warnings.value)
   }
 
   function partition<T>(arr: readonly T[], predicate: (item: T) => boolean): [T[], T[]] {
@@ -401,6 +491,7 @@ export const usePlanStore = defineStore('plan', () => {
     sessions,
     items,
     loading,
+    warnings,
     hasPlan,
     sessionsByWeek,
     nextSession,

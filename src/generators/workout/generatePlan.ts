@@ -329,6 +329,11 @@ function buildAttempt(
   const plan: WorkoutPlan = {
     id: 'draft-plan',
     userId: input.userId,
+    // Placeholder — this generator is pure/deterministic on purpose (a
+    // fixed seed must always produce the exact same output), so it never
+    // calls Date.now() itself; materializePlan.ts stamps the real value
+    // right before this ever reaches Dexie/Supabase.
+    updatedAt: '',
     name: `${input.goal.replace('_', ' ')} plan`,
     splitType: split.splitType,
     daysPerWeek: split.cycle.length,

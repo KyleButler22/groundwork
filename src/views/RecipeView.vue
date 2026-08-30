@@ -3,6 +3,7 @@ import { ArrowLeft, Minus, Plus } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useMealPlanStore } from '@/stores/mealPlan'
 import { useSessionStore } from '@/stores/session'
 import type { RecipeRating } from '@/types/domain'
@@ -17,10 +18,11 @@ const route = useRoute()
 const router = useRouter()
 const store = useMealPlanStore()
 const session = useSessionStore()
-onMounted(() => store.loadActivePlan()) // covers a direct link / page refresh landing here first
 
 // No real auth yet (see TASKS.md) — same fallback every other write path uses.
-const userId = computed(() => session.session?.user.id ?? 'local-dev-user')
+const userId = computed(() => session.session?.user.id ?? LOCAL_DEV_USER_ID)
+
+onMounted(() => store.loadActivePlan(userId.value)) // covers a direct link / page refresh landing here first
 
 const recipeId = computed(() => {
   const raw = route.params.recipeId

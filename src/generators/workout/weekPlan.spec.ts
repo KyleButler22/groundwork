@@ -38,7 +38,7 @@ describe('anyPatternAtOrAboveLevel', () => {
   })
 
   function levelAt(exerciseId: number): UserExerciseLevel[] {
-    return [{ userId: 'u', patternId: 1, exerciseId, consecutiveSuccess: 0, consecutiveFailure: 0, lastEvaluatedAt: null }]
+    return [{ userId: 'u', patternId: 1, exerciseId, consecutiveSuccess: 0, consecutiveFailure: 0, lastEvaluatedAt: null, updatedAt: '' }]
   }
 
   it('is true when a level meets the threshold', () => {

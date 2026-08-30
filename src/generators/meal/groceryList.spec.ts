@@ -12,6 +12,7 @@ function entry(overrides: Partial<MealPlanEntry> & Pick<MealPlanEntry, 'id' | 'r
     slot: 'dinner',
     isLocked: false,
     leftoverOfId: null,
+    updatedAt: '',
     ...overrides,
   }
 }

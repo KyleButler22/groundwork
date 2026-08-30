@@ -14,6 +14,7 @@ import type { PlanItem, PlanSession, SetLog, WorkoutLogStatus } from '@/types/do
  * built here.
  */
 export function buildSetLogsForItem(item: PlanItem, workoutLogId: string): SetLog[] {
+  const updatedAt = new Date().toISOString()
   return Array.from({ length: item.sets }, (_, i) => ({
     id: crypto.randomUUID(),
     workoutLogId,
@@ -25,6 +26,7 @@ export function buildSetLogsForItem(item: PlanItem, workoutLogId: string): SetLo
     addedWeightKg: null,
     assistBand: null,
     rpe: null,
+    updatedAt,
   }))
 }
 

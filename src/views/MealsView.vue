@@ -2,6 +2,7 @@
 import { ChevronRight, Lock, LockOpen } from '@lucide/vue'
 import { computed, onMounted } from 'vue'
 
+import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useMealPlanStore } from '@/stores/mealPlan'
 import { useSessionStore } from '@/stores/session'
 import type { MealPlanEntry } from '@/types/domain'
@@ -12,11 +13,12 @@ import type { MealPlanEntry } from '@/types/domain'
 // never computes one itself.
 const store = useMealPlanStore()
 const session = useSessionStore()
-onMounted(() => store.loadActivePlan())
 
 // No real auth yet (see TASKS.md) — same fallback IntakeView.vue uses, so
 // a plan generated here lands under the same id intake's submit() wrote.
-const userId = computed(() => session.session?.user.id ?? 'local-dev-user')
+const userId = computed(() => session.session?.user.id ?? LOCAL_DEV_USER_ID)
+
+onMounted(() => store.loadActivePlan(userId.value))
 
 const SLOT_LABEL: Record<string, string> = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' }
 
@@ -117,7 +119,7 @@ function recipeLink(entry: MealPlanEntry) {
                     :class="entry.isLocked ? 'text-nutri' : 'text-muted hover:text-ink'"
                     :aria-label="entry.isLocked ? 'Unlock this meal' : 'Lock this meal so regenerating leaves it alone'"
                     :disabled="store.generating"
-                    @click="store.toggleLock(entry.id)"
+                    @click="store.toggleLock(entry.id, userId)"
                   >
                     <Lock v-if="entry.isLocked" :size="18" :stroke-width="1.75" aria-hidden="true" />
                     <LockOpen v-else :size="18" :stroke-width="1.75" aria-hidden="true" />

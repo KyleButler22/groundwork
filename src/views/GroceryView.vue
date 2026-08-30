@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 
+import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useMealPlanStore } from '@/stores/mealPlan'
+import { useSessionStore } from '@/stores/session'
 import type { GroceryItem } from '@/types/domain'
 
 // Derived from the current meal plan (docs/mealgen.md §8) — this view only
@@ -9,7 +11,12 @@ import type { GroceryItem } from '@/types/domain'
 // is kept in sync automatically: generating, regenerating, or swapping a
 // meal all rebuild it as part of the same store action.
 const store = useMealPlanStore()
-onMounted(() => store.loadActivePlan())
+const session = useSessionStore()
+
+// No real auth yet (see TASKS.md) — same fallback every other write path uses.
+const userId = computed(() => session.session?.user.id ?? LOCAL_DEV_USER_ID)
+
+onMounted(() => store.loadActivePlan(userId.value))
 
 function itemLabel(item: GroceryItem): string {
   return item.manualLabel ?? store.ingredientName(item.ingredientId)
@@ -51,7 +58,7 @@ function itemLabel(item: GroceryItem): string {
                   type="checkbox"
                   class="h-5 w-5 shrink-0 accent-nutri"
                   :checked="item.isChecked"
-                  @change="store.toggleGroceryItemChecked(item.id)"
+                  @change="store.toggleGroceryItemChecked(item.id, userId)"
                 />
                 <span class="flex-1 text-sm text-ink" :class="{ 'text-muted line-through': item.isChecked }">{{ itemLabel(item) }}</span>
                 <span class="shrink-0 font-mono text-sm tabular-nums text-muted"> {{ item.displayQuantity }} {{ store.unitLabel(item.displayUnitId) }} </span>

@@ -33,5 +33,5 @@ export function materializePlan(
     return { ...item, id: crypto.randomUUID(), sessionId: newSessionId }
   })
 
-  return { plan: { ...draft.plan, id: planId }, sessions, items }
+  return { plan: { ...draft.plan, id: planId, updatedAt: new Date().toISOString() }, sessions, items }
 }

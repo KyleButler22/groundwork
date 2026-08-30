@@ -3,6 +3,7 @@ import { ChevronRight, X } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 
 import SetLogEditor from '@/components/workout/SetLogEditor.vue'
+import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { usePlanStore } from '@/stores/plan'
 import { useSessionStore } from '@/stores/session'
 import type { PlanItem, PlanSession } from '@/types/domain'
@@ -13,11 +14,11 @@ const planStore = usePlanStore()
 const session = useSessionStore()
 
 // No real auth yet (see TASKS.md) — same fallback IntakeView.vue/MealsView.vue use.
-const userId = computed(() => session.session?.user.id ?? 'local-dev-user')
+const userId = computed(() => session.session?.user.id ?? LOCAL_DEV_USER_ID)
 
 const openWeek = ref(1)
 onMounted(async () => {
-  await planStore.loadActivePlan()
+  await planStore.loadActivePlan(userId.value)
   // Land on whatever week is actually next, not always week 1 — the
   // whole point of tracking completion is that "today" moves forward.
   if (planStore.nextSession) openWeek.value = planStore.nextSession.weekNumber
@@ -152,7 +153,7 @@ function toggleExpanded(itemId: string): void {
                   {{ item.targetSeconds !== null ? `${item.targetSeconds}s` : `${item.targetRepMin}-${item.targetRepMax}` }}
                 </span>
               </div>
-              <SetLogEditor v-if="expandedItemId === item.id" :item="item" />
+              <SetLogEditor v-if="expandedItemId === item.id" :item="item" :user-id="userId" />
             </li>
           </ul>
         </section>

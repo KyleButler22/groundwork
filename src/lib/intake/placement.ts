@@ -203,6 +203,7 @@ export function resolveStartingLevels(
       consecutiveSuccess: 0,
       consecutiveFailure: 0,
       lastEvaluatedAt: now,
+      updatedAt: now,
     })
   }
 

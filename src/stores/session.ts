@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { Session } from '@supabase/supabase-js'
 
+import { claimLocalDataIfNeeded } from '@/lib/claimLocalData'
 import { supabase } from '@/lib/supabase'
 
 /**
@@ -22,8 +23,20 @@ export const useSessionStore = defineStore('session', () => {
     session.value = data.session
     isReady.value = true
 
-    supabase.auth.onAuthStateChange((_event, next) => {
+    supabase.auth.onAuthStateChange((event, next) => {
       session.value = next
+      // Fire-and-forget on purpose — claiming shouldn't hold up the auth
+      // state update itself, same "don't block on a best-effort sync"
+      // rule every other write path in this app already follows. Only a
+      // genuine new sign-in (not the initial "here's your existing
+      // session" event on page load, not a token refresh) should ever
+      // trigger this; claimLocalDataIfNeeded's own eligibility check
+      // (does this account already have real data?) is the real
+      // safety net either way, so a spurious extra call here is a wasted
+      // no-op query, never a correctness risk.
+      if (event === 'SIGNED_IN' && next) {
+        claimLocalDataIfNeeded(next.user.id).catch((err) => console.error('[claimLocalData] failed:', err))
+      }
     })
   }
 

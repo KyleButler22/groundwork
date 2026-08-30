@@ -33,6 +33,7 @@ function draftEntry(overrides: Partial<MealPlanEntry> & Pick<MealPlanEntry, 'id'
     servings: 2,
     isLocked: false,
     leftoverOfId: null,
+    updatedAt: '',
     ...overrides,
   }
 }

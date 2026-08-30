@@ -28,7 +28,7 @@ const regionIdBySlug = new Map(seed.bodyRegions.map((r) => [r.slug, r.id]))
 function floorLevels(): UserExerciseLevel[] {
   return seed.patterns.map((pattern) => {
     const floor = library.exercisesByPattern.get(pattern.id)![0]
-    return { userId: 'u1', patternId: pattern.id, exerciseId: floor.id, consecutiveSuccess: 0, consecutiveFailure: 0, lastEvaluatedAt: null }
+    return { userId: 'u1', patternId: pattern.id, exerciseId: floor.id, consecutiveSuccess: 0, consecutiveFailure: 0, lastEvaluatedAt: null, updatedAt: '' }
   })
 }
 

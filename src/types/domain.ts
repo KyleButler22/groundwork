@@ -51,6 +51,13 @@ export interface UserTargets {
    *  falls back to `['dinner']` defensively if it ever somehow isn't. */
   activeMealSlots: MealSlot[]
   cookTimeCeiling: number | null
+  /** Added by migration 0010 — see that migration's own comment for why
+   *  this table (like workout_plans/set_logs/meal_plan_entries) needed it
+   *  added rather than already having it: it's genuinely updated in place
+   *  (re-computed on a later intake run) but had never carried the column
+   *  every OTHER syncable table already does. Trigger-managed, never set
+   *  by application code — see 0010_sync_columns.sql. */
+  updatedAt: string
 }
 
 // ── movement library ─────────────────────────────────────────────────────
@@ -157,6 +164,10 @@ export interface WorkoutPlan {
   status: PlanStatus
   generatorVersion: string
   seed: number
+  /** Added by migration 0010, trigger-managed — see UserTargets.updatedAt's
+   *  comment. Genuinely updated in place: archive-before-add sets
+   *  `status: 'archived'` on the previous active row. */
+  updatedAt: string
 }
 
 /**
@@ -203,6 +214,13 @@ export interface WorkoutLog {
   sessionRpe: number | null
   status: WorkoutLogStatus
   note: string | null
+  /** Already existed in 0004_training.sql from the original scaffold —
+   *  genuinely missing from this hand-authored type until the sync work
+   *  needed to read/write it for real (see docs/schema.md's "update this
+   *  type by hand" rule at the top of this file, and migration 0010's own
+   *  comment for the OTHER 4 tables that needed the column itself added,
+   *  not just the type). */
+  updatedAt: string
 }
 
 export interface SetLog {
@@ -216,6 +234,10 @@ export interface SetLog {
   addedWeightKg: number | null
   assistBand: string | null
   rpe: number | null
+  /** Added by migration 0010, trigger-managed — see UserTargets.updatedAt's
+   *  comment. Genuinely updated in place: updateSetLog (stores/plan.ts)
+   *  edits reps/seconds/addedWeightKg/rpe after the initial log. */
+  updatedAt: string
 }
 
 /** The promotion engine's state — one row per pattern per user. */
@@ -226,6 +248,9 @@ export interface UserExerciseLevel {
   consecutiveSuccess: number
   consecutiveFailure: number
   lastEvaluatedAt: string | null
+  /** Already existed in 0004_training.sql — see WorkoutLog.updatedAt's
+   *  comment for why this was missing from the type until now. */
+  updatedAt: string
 }
 
 // ── food reference (docs/schema.md §4) ──────────────────────────────────
@@ -423,6 +448,10 @@ export interface MealPlanEntry {
   servings: number
   isLocked: boolean
   leftoverOfId: string | null
+  /** Added by migration 0010, trigger-managed — see UserTargets.updatedAt's
+   *  comment. Genuinely updated in place: toggleLock and swapMeal both
+   *  edit an existing entry rather than replacing it. */
+  updatedAt: string
 }
 
 export type RecipeRating = 'loved' | 'ok' | 'never'

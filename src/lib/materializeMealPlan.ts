@@ -33,7 +33,7 @@ export function materializeMealPlan(
       if (!mapped) throw new Error(`materializeMealPlan: entry ${entry.id} references leftoverOfId ${entry.leftoverOfId}, which is not in draft.entries`)
       leftoverOfId = mapped
     }
-    return { ...entry, id: entryIdMap.get(entry.id)!, mealPlanId: planId, leftoverOfId }
+    return { ...entry, id: entryIdMap.get(entry.id)!, mealPlanId: planId, leftoverOfId, updatedAt: new Date().toISOString() }
   })
 
   return { plan: { ...draft.plan, id: planId }, entries }

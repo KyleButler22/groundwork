@@ -123,6 +123,7 @@ describe('assembleWeek', () => {
     const locked: MealPlanEntry = {
       id: 'locked-1',
       mealPlanId: 'draft-plan',
+      updatedAt: '',
       serveOn: WEEK_STARTS_ON,
       slot: 'dinner',
       recipeId: 'chicken-stir-fry',

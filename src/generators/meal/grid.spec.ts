@@ -84,7 +84,7 @@ describe('planDinnerLeftovers', () => {
 const WEEK_STARTS_ON = '2026-08-31'
 
 function dinnerEntry(overrides: Partial<MealPlanEntry> & Pick<MealPlanEntry, 'id' | 'serveOn'>): MealPlanEntry {
-  return { mealPlanId: 'plan-1', slot: 'dinner', recipeId: 'x', servings: 1, isLocked: false, leftoverOfId: null, ...overrides }
+  return { mealPlanId: 'plan-1', slot: 'dinner', recipeId: 'x', servings: 1, isLocked: false, leftoverOfId: null, updatedAt: '', ...overrides }
 }
 
 describe('reconstructDinnerDayPlanFromEntries', () => {

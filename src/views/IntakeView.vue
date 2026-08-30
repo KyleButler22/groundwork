@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useIntakeStore, TOTAL_STEPS } from '@/stores/intake'
 import { useSessionStore } from '@/stores/session'
 import IntakeProgress from '@/components/intake/IntakeProgress.vue'
@@ -38,7 +39,7 @@ async function handlePrimaryAction() {
   }
   // No real auth yet (see TASKS.md) — a stable local id keeps the plan
   // usable end to end without blocking on sign-in being built.
-  const userId = session.session?.user.id ?? 'local-dev-user'
+  const userId = session.session?.user.id ?? LOCAL_DEV_USER_ID
   const result = await store.submit(userId)
   if (result) router.push('/')
 }

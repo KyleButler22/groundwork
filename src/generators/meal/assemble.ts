@@ -118,6 +118,11 @@ export function assembleWeek(input: AssembleInput): AssembleResult {
     const entry: MealPlanEntry = {
       id: `draft-meal-d${dayIndex}-${slot}`,
       mealPlanId: 'draft-plan',
+      // Placeholder, same spirit as the 'draft-...' ids above — this
+      // generator is pure/deterministic on purpose (see its own module
+      // doc), so it doesn't call Date.now() itself; materializeMealPlan.ts
+      // stamps the real value right before this ever reaches Dexie/Supabase.
+      updatedAt: '',
       serveOn: addDays(input.weekStartsOn, dayIndex),
       slot,
       recipeId: recipe.id,
@@ -234,6 +239,7 @@ export function assembleWeek(input: AssembleInput): AssembleResult {
         const entry: MealPlanEntry = {
           id: `draft-meal-d${dayIndex}-breakfast`,
           mealPlanId: 'draft-plan',
+          updatedAt: '', // see commit()'s own comment on this same placeholder
           serveOn: addDays(input.weekStartsOn, dayIndex),
           slot: 'breakfast',
           recipeId: chosen.id,
