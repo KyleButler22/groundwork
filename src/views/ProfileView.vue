@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CircleUser, Eye, EyeOff, Lock, LogOut, Mail, MailCheck } from '@lucide/vue'
+import { CircleUser, Eye, EyeOff, ListChecks, Lock, LogOut, Mail, MailCheck } from '@lucide/vue'
 import { computed, ref } from 'vue'
 
 import { useSessionStore } from '@/stores/session'
@@ -83,7 +83,18 @@ async function handleSignOut(): Promise<void> {
         </button>
       </div>
 
-      <p class="mt-4 text-sm text-muted">Targets, equipment, and dietary preferences are coming soon.</p>
+      <RouterLink
+        to="/intake"
+        class="mt-4 flex min-h-11 items-center gap-2 rounded-xl border border-rule bg-surface px-4 py-3 text-sm font-medium text-ink shadow-card transition-shadow hover:shadow-none lg:max-w-sm"
+      >
+        <ListChecks :size="18" :stroke-width="1.75" class="shrink-0 text-train" aria-hidden="true" />
+        Retake the intake questionnaire
+      </RouterLink>
+      <p class="mt-2 text-xs text-muted lg:max-w-sm">
+        No dedicated settings screen yet for editing targets, equipment, or dietary preferences one at a time — going through the
+        full questionnaire again is how to update any of them for now. It replaces your current plan, archiving the old one rather
+        than deleting it.
+      </p>
     </template>
 
     <template v-else>
