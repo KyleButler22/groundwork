@@ -41,9 +41,20 @@ Runs against a placeholder Supabase client until you configure a real project (s
 ## Supabase setup
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. Run every file in [`supabase/migrations/`](supabase/migrations) against it, in order (via the SQL editor, or `supabase db push` with the CLI once you've linked the project).
-3. Run [`supabase/seed/001_movement_library.sql`](supabase/seed/001_movement_library.sql) once, after the migrations — it's not idempotent by design (a second run should fail loudly on the unique slug constraints, not silently duplicate content).
-4. Copy `.env.example` to `.env.local` and fill in your project's URL and anon key.
+2. Copy `.env.example` to `.env.local` and fill in your project's URL (no `/rest/v1/` suffix — just the bare `https://<ref>.supabase.co` origin) and its **publishable key** (Project Settings → API). Supabase's newer projects split this page into a `sb_publishable_...` key (safe client-side, RLS-protected — this is the one you want) and a `sb_secret_...` key (server-only, bypasses RLS entirely — never put this in a `VITE_*` var, it ships straight into the client bundle). Older projects instead show a JWT-format `anon` key, which works the same way.
+3. Run every file in [`supabase/migrations/`](supabase/migrations) against it, in order.
+4. Run every file in [`supabase/seed/`](supabase/seed) once, after the migrations, **in numeric order** (`001_movement_library.sql` through `016_recipes_yogurt.sql` — the recipe files depend on `002_food_reference.sql`'s ingredients/aisles/units existing first). None of them are idempotent by design — a second run should fail loudly on the unique slug constraints, not silently duplicate content.
+
+   **Use the CLI, not the SQL Editor's paste box, for both of the above.** These files are large and comment-heavy with real em-dashes/accented characters in both comments and actual string literals (recipe instructions, exercise cues); pasting them into Supabase Studio's SQL editor has reliably mangled non-ASCII characters and silently truncated anything past a couple hundred lines, in ways that produce confusing, unrelated-looking syntax errors rather than an obvious "your paste got cut off." The CLI reads the file's bytes straight off disk and sends them over the Management API, sidestepping the browser/clipboard entirely:
+   ```bash
+   npx supabase login   # or: set SUPABASE_ACCESS_TOKEN to a token from
+                         # supabase.com/dashboard/account/tokens — required
+                         # anyway for non-interactive shells (CI, agents)
+   npx supabase link --project-ref <ref>
+   npx supabase db query --linked --file supabase/migrations/0001_extensions.sql
+   # ...repeat in numeric order for every migration, then every seed file
+   ```
+   A single `supabase db push` (once linked) also works for the migrations specifically, since those are tracked; the seed files aren't part of that mechanism and need `db query --file` regardless.
 5. Optional but recommended once the project exists: regenerate `src/types/database.ts` for real Supabase typing —
    ```bash
    npx supabase gen types typescript --project-id <ref> > src/types/database.ts

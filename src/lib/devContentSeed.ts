@@ -19,9 +19,17 @@ import { isConfigured } from '@/lib/supabase'
  * local file instead of Supabase during development.
  *
  * Replace this file's body with a real `supabase.from('exercises').select()`
- * sync (still writing into the same Dexie tables) once a project exists —
+ * sync (still writing into the same Dexie tables) once that sync exists —
  * every caller here reads through db.ts either way, so nothing above this
  * module needs to change.
+ *
+ * isConfigured only gates the *warning wording* below, never whether local
+ * seeding happens in dev — a configured project doesn't itself populate
+ * Dexie, only a real sync implementation would, and until that exists a
+ * configured project's local cache needs this same fallback an
+ * unconfigured one does. Only `import.meta.env.DEV` gates whether the
+ * fallback runs at all, since that's the flag that controls whether the
+ * seed SQL dynamic imports get dead-code-eliminated out of the bundle.
  *
  * The two content domains (movement library, food/recipes) are seeded
  * independently, each gated on its OWN table being empty — not one shared
@@ -31,20 +39,22 @@ import { isConfigured } from '@/lib/supabase'
  * would already be > 0 and short-circuit the whole function.
  */
 export async function ensureContentSeeded(): Promise<void> {
-  if (isConfigured) {
-    // TODO(TASKS.md): real Supabase → Dexie sync goes here. Until it's
-    // built, a configured project with an empty local cache just has no
-    // content client-side yet — loud in the console, not a silent gap.
-    console.warn(
-      '[devContentSeed] Supabase is configured but nothing has synced content into Dexie yet — ' +
-        'that sync is not built (see TASKS.md). Movement and food content is empty.',
-    )
+  if (!import.meta.env.DEV) {
+    if (!isConfigured) {
+      console.warn('[devContentSeed] No Supabase project and this is a production build — movement and food content is empty.')
+    }
+    // TODO(TASKS.md): real Supabase → Dexie sync goes here for production.
     return
   }
 
-  if (!import.meta.env.DEV) {
-    console.warn('[devContentSeed] No Supabase project and this is a production build — movement and food content is empty.')
-    return
+  if (isConfigured) {
+    // TODO(TASKS.md): real Supabase → Dexie sync goes here. Until it's
+    // built, fall through to the same local-seed-file path used when no
+    // project is configured at all — see the isConfigured note above.
+    console.warn(
+      '[devContentSeed] Supabase is configured but the real sync is not built yet (see TASKS.md) — ' +
+        'falling back to local seed files for dev content in the meantime, same as an unconfigured project.',
+    )
   }
 
   await Promise.all([ensureMovementLibrarySeeded(), ensureFoodAndRecipesSeeded()])
