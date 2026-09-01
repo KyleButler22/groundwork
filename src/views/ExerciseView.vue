@@ -3,7 +3,7 @@ import { ArrowLeft } from '@lucide/vue'
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import Spinner from '@/components/shared/Spinner.vue'
+import Skeleton from '@/components/shared/Skeleton.vue'
 import PatternIcon from '@/components/workout/PatternIcon.vue'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { usePlanStore } from '@/stores/plan'
@@ -70,7 +70,12 @@ const equipmentGroups = computed(() => {
       Back
     </button>
 
-    <Spinner v-if="store.loading" class="mt-4" />
+    <div v-if="store.loading" class="mt-4 space-y-3">
+      <Skeleton class="rounded-md" height="1.75rem" width="60%" />
+      <Skeleton class="rounded-2xl" height="9rem" />
+      <Skeleton class="rounded-md" height="1rem" width="80%" />
+      <Skeleton class="rounded-md" height="1rem" width="70%" />
+    </div>
     <p v-else-if="!exercise" class="mt-4 text-sm text-muted">Exercise not found.</p>
 
     <template v-else>
