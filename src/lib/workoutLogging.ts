@@ -61,9 +61,14 @@ export function selectNextSession(sessions: readonly PlanSession[], completedSes
  * are simply not their own PlanSession rows, so consecutive `sessions`
  * entries are already only the scheduled training days regardless of
  * how many calendar days sit between them — no special-casing needed.
- * A session with no log at all is "not yet attempted", not "broken",
- * as long as it's not the most recent one reached (see the "ignores
- * sessions later in the plan" test). The most recently reached session
+ * A session with no log at all only avoids breaking the streak when
+ * it's LATER than the most recently reached session — i.e. genuinely
+ * "not yet gotten to" (see the "ignores sessions later in the plan"
+ * test). A gap sitting BEFORE the most recently reached session was
+ * bypassed rather than pending, and breaks the streak exactly like an
+ * explicit skip does — the same way missing a day breaks a
+ * Duolingo-style streak even if a later day was completed (see the
+ * "skipped over entirely" test). The most recently reached session
  * being only 'partial' (not fully checked off yet) reads as streak 0,
  * matching how Duolingo-style streaks only count once a day/session is
  * actually finished, not while it's still in progress.

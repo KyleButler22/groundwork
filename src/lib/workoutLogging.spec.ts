@@ -169,4 +169,28 @@ describe('computeSessionStreak', () => {
     const sessions = [session({ id: 's1', weekNumber: 1, dayIndex: 0 })]
     expect(computeSessionStreak(sessions, [log('s1', 'completed')])).toBe(1)
   })
+
+  it('sorts sessions by week then day before counting, regardless of input order', () => {
+    const sessions = [
+      session({ id: 's3', weekNumber: 2, dayIndex: 0 }),
+      session({ id: 's1', weekNumber: 1, dayIndex: 0 }),
+      session({ id: 's2', weekNumber: 1, dayIndex: 2 }),
+    ]
+    const logs = [log('s1', 'completed'), log('s2', 'completed'), log('s3', 'completed')]
+    expect(computeSessionStreak(sessions, logs)).toBe(3)
+  })
+
+  it('treats a session skipped over entirely (no log at all) as breaking the streak, same as an explicit skip', () => {
+    const sessions = [
+      session({ id: 's1', weekNumber: 1, dayIndex: 0 }),
+      session({ id: 's2', weekNumber: 1, dayIndex: 2 }),
+      session({ id: 's3', weekNumber: 1, dayIndex: 4 }),
+    ]
+    // s2 has no log at all -- never attempted -- but s3 (later in plan
+    // order) IS logged, meaning s2 was bypassed rather than "not yet
+    // reached". This should break the streak exactly like an explicit
+    // 'skipped' status does.
+    const logs = [log('s1', 'completed'), log('s3', 'completed')]
+    expect(computeSessionStreak(sessions, logs)).toBe(1)
+  })
 })
