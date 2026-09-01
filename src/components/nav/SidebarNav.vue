@@ -6,7 +6,7 @@
  * instead of a row: a phone doesn't have room for a persistent sidebar,
  * a desktop window does.
  */
-import logoMark from '@/assets/logo-mark.png'
+import logoMark from '@/assets/logo-mark-sidebar.png'
 
 import { NAV_ITEMS } from './navItems'
 </script>

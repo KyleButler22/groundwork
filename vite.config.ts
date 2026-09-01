@@ -17,7 +17,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       // Content (recipes, exercises) is never bundled here — it syncs down
       // from Supabase into IndexedDB at runtime. This precache is app shell only.
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'Groundwork',
         short_name: 'Groundwork',
