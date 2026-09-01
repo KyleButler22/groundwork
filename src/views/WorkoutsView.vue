@@ -67,9 +67,12 @@ function toggleExpanded(itemId: string): void {
       </p>
 
       <div class="mt-4 rounded-2xl border border-rule bg-surface p-4 shadow-card lg:mt-6">
-        <div class="flex items-center justify-between text-xs text-muted">
-          <span>Block progress</span>
-          <span class="font-mono tabular-nums">{{ planStore.blockProgress.done }}/{{ planStore.blockProgress.total }} sessions</span>
+        <div class="flex items-end justify-between">
+          <span class="text-xs text-muted">Block progress</span>
+          <span class="text-right">
+            <span class="block font-mono text-xl font-bold tabular-nums text-ink">{{ planStore.blockProgress.done }}/{{ planStore.blockProgress.total }}</span>
+            <span class="block text-[11px] text-muted">sessions</span>
+          </span>
         </div>
         <div class="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-rule">
           <div class="h-full rounded-full bg-train transition-[width] duration-500" :style="{ width: blockPercent() + '%' }"></div>
