@@ -38,12 +38,23 @@ function blockPercent(): number {
 }
 
 function onToggleItem(planSession: PlanSession, item: PlanItem): void {
+  const wasChecked = planStore.isItemChecked(item.id)
   planStore.toggleItemChecked(userId.value, planSession, item)
+  if (!wasChecked) {
+    justCheckedId.value = item.id
+    setTimeout(() => {
+      if (justCheckedId.value === item.id) justCheckedId.value = null
+    }, 500)
+  }
 }
 
 // Collapsed by default, one at a time, across the whole page — same
 // convention as DashboardView.vue's own expandedItemId.
 const expandedItemId = ref<string | null>(null)
+
+// Same brief check-off flash as DashboardView.vue — see that file's
+// own comment on this same pattern for why.
+const justCheckedId = ref<string | null>(null)
 function toggleExpanded(itemId: string): void {
   expandedItemId.value = expandedItemId.value === itemId ? null : itemId
 }
@@ -136,7 +147,8 @@ function toggleExpanded(itemId: string): void {
             <li
               v-for="item in planStore.itemsForSession(s.id)"
               :key="item.id"
-              class="rounded-xl border border-rule bg-surface px-4 py-3 shadow-card transition-shadow lg:hover:shadow-none lg:hover:bg-ground/60"
+              class="rounded-xl border border-rule bg-surface px-4 py-3 shadow-card transition-[background-color,box-shadow] duration-300 lg:hover:shadow-none lg:hover:bg-ground/60"
+              :class="{ 'bg-train-wash': justCheckedId === item.id }"
             >
               <div class="flex items-center gap-3">
                 <label class="flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center">
