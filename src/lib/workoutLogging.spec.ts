@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildSetLogsForItem, selectNextSession, sessionStatusFor } from './workoutLogging'
-import type { PlanItem, PlanSession } from '@/types/domain'
+import { buildSetLogsForItem, computeSessionStreak, selectNextSession, sessionStatusFor } from './workoutLogging'
+import type { PlanItem, PlanSession, WorkoutLog } from '@/types/domain'
 
 function repItem(overrides: Partial<PlanItem> = {}): PlanItem {
   return {
@@ -93,5 +93,80 @@ describe('selectNextSession', () => {
 
   it('returns null for an empty plan', () => {
     expect(selectNextSession([], new Set())).toBeNull()
+  })
+})
+
+describe('computeSessionStreak', () => {
+  function log(planSessionId: string, status: WorkoutLog['status']): WorkoutLog {
+    return {
+      id: `log-${planSessionId}`,
+      userId: 'u1',
+      planSessionId,
+      performedAt: '2026-08-01T00:00:00.000Z',
+      durationMinutes: null,
+      sessionRpe: null,
+      status,
+      note: null,
+      updatedAt: '2026-08-01T00:00:00.000Z',
+    }
+  }
+
+  it('is 0 when there are no sessions at all', () => {
+    expect(computeSessionStreak([], [])).toBe(0)
+  })
+
+  it('is 0 when no session has been logged yet', () => {
+    const sessions = [session({ id: 's1', weekNumber: 1, dayIndex: 0 })]
+    expect(computeSessionStreak(sessions, [])).toBe(0)
+  })
+
+  it('counts every completed session back to the most recent one reached', () => {
+    const sessions = [
+      session({ id: 's1', weekNumber: 1, dayIndex: 0 }),
+      session({ id: 's2', weekNumber: 1, dayIndex: 2 }),
+      session({ id: 's3', weekNumber: 1, dayIndex: 4 }),
+    ]
+    const logs = [log('s1', 'completed'), log('s2', 'completed'), log('s3', 'completed')]
+    expect(computeSessionStreak(sessions, logs)).toBe(3)
+  })
+
+  it('is unaffected by the calendar gap between non-consecutive dayIndex values (rest days are not their own sessions)', () => {
+    const sessions = [
+      session({ id: 's1', weekNumber: 1, dayIndex: 0 }),
+      session({ id: 's2', weekNumber: 3, dayIndex: 5 }), // a big schedule gap, still just "the next session"
+    ]
+    const logs = [log('s1', 'completed'), log('s2', 'completed')]
+    expect(computeSessionStreak(sessions, logs)).toBe(2)
+  })
+
+  it('stops counting at the first skipped session, keeping only what comes after it', () => {
+    const sessions = [
+      session({ id: 's1', weekNumber: 1, dayIndex: 0 }),
+      session({ id: 's2', weekNumber: 1, dayIndex: 2 }),
+      session({ id: 's3', weekNumber: 1, dayIndex: 4 }),
+    ]
+    const logs = [log('s1', 'completed'), log('s2', 'skipped'), log('s3', 'completed')]
+    expect(computeSessionStreak(sessions, logs)).toBe(1)
+  })
+
+  it('is 0 when the most recently reached session is only partial', () => {
+    const sessions = [session({ id: 's1', weekNumber: 1, dayIndex: 0 }), session({ id: 's2', weekNumber: 1, dayIndex: 2 })]
+    const logs = [log('s1', 'completed'), log('s2', 'partial')]
+    expect(computeSessionStreak(sessions, logs)).toBe(0)
+  })
+
+  it('ignores sessions later in the plan that have not been reached yet', () => {
+    const sessions = [
+      session({ id: 's1', weekNumber: 1, dayIndex: 0 }),
+      session({ id: 's2', weekNumber: 1, dayIndex: 2 }),
+      session({ id: 's3', weekNumber: 1, dayIndex: 4 }),
+    ]
+    const logs = [log('s1', 'completed')]
+    expect(computeSessionStreak(sessions, logs)).toBe(1)
+  })
+
+  it('is 1 at the very start of a block after just one completed session', () => {
+    const sessions = [session({ id: 's1', weekNumber: 1, dayIndex: 0 })]
+    expect(computeSessionStreak(sessions, [log('s1', 'completed')])).toBe(1)
   })
 })

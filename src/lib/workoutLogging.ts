@@ -1,4 +1,4 @@
-import type { PlanItem, PlanSession, SetLog, WorkoutLogStatus } from '@/types/domain'
+import type { PlanItem, PlanSession, SetLog, WorkoutLog, WorkoutLogStatus } from '@/types/domain'
 
 /**
  * Turns "the user tapped the checkbox next to this exercise" into the
@@ -49,4 +49,45 @@ export function sessionStatusFor(done: number, total: number): WorkoutLogStatus 
 export function selectNextSession(sessions: readonly PlanSession[], completedSessionIds: ReadonlySet<string>): PlanSession | null {
   const sorted = [...sessions].sort((a, b) => a.weekNumber - b.weekNumber || a.dayIndex - b.dayIndex)
   return sorted.find((s) => !completedSessionIds.has(s.id)) ?? null
+}
+
+/**
+ * How many of the most recently prescribed sessions, counting backward
+ * from the latest one actually reached, were completed with nothing
+ * partial or skipped in between. Deliberately NOT a calendar-day streak
+ * — Strava/Hevy's daily-streak model assumes daily logging, but a
+ * periodized 3-5-day/week plan has programmed rest days that would
+ * break a naive "consecutive days" count for no real reason. Rest days
+ * are simply not their own PlanSession rows, so consecutive `sessions`
+ * entries are already only the scheduled training days regardless of
+ * how many calendar days sit between them — no special-casing needed.
+ * A session with no log at all is "not yet attempted", not "broken",
+ * as long as it's not the most recent one reached (see the "ignores
+ * sessions later in the plan" test). The most recently reached session
+ * being only 'partial' (not fully checked off yet) reads as streak 0,
+ * matching how Duolingo-style streaks only count once a day/session is
+ * actually finished, not while it's still in progress.
+ */
+export function computeSessionStreak(sessions: readonly PlanSession[], logs: readonly WorkoutLog[]): number {
+  const sorted = [...sessions].sort((a, b) => a.weekNumber - b.weekNumber || a.dayIndex - b.dayIndex)
+  const statusBySessionId = new Map<string, WorkoutLogStatus>()
+  for (const log of logs) {
+    if (log.planSessionId) statusBySessionId.set(log.planSessionId, log.status)
+  }
+
+  let lastReachedIndex = -1
+  for (let i = sorted.length - 1; i >= 0; i--) {
+    if (statusBySessionId.has(sorted[i].id)) {
+      lastReachedIndex = i
+      break
+    }
+  }
+  if (lastReachedIndex === -1) return 0
+
+  let streak = 0
+  for (let i = lastReachedIndex; i >= 0; i--) {
+    if (statusBySessionId.get(sorted[i].id) === 'completed') streak++
+    else break
+  }
+  return streak
 }
