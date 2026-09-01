@@ -73,8 +73,9 @@ function toggleExpanded(itemId: string): void {
     <p v-else-if="!planStore.hasPlan" class="mt-2 text-sm text-muted">Your plan will appear here once generated.</p>
 
     <template v-else>
-      <p class="mt-1 text-sm text-muted">
-        {{ planStore.plan?.name }} — {{ planStore.plan?.daysPerWeek }} days/week, {{ planStore.plan?.splitType.replace('_', ' ') }}
+      <p class="mt-1 flex items-center gap-2 text-sm text-muted">
+        <span class="inline-flex shrink-0 items-center rounded-full bg-train-wash px-2.5 py-0.5 text-xs font-medium text-train capitalize">{{ planStore.plan?.name }}</span>
+        {{ planStore.plan?.daysPerWeek }} days/week, {{ planStore.plan?.splitType.replace('_', ' ') }}
       </p>
 
       <div class="mt-4 rounded-2xl border border-rule bg-surface p-4 shadow-card lg:mt-6">
