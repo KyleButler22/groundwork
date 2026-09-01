@@ -19,6 +19,19 @@ const userId = computed(() => session.session?.user.id ?? LOCAL_DEV_USER_ID)
 
 onMounted(() => store.loadActivePlan(userId.value))
 
+// store.groceryList.title is frozen at "Week of {ISO date}" the first time
+// a list is generated (mealPlan.ts only fills in a title when there isn't
+// one yet) and never reformatted on regeneration, so it can't be fixed up
+// at the source without a data migration. Reading the date straight from
+// the always-current MealPlan.weekStartsOn instead sidesteps that — same
+// UTC-noon-safe parsing MealsView.vue's dayLabel already uses, so a date
+// like 2026-09-01 can't shift a day off in a non-UTC timezone.
+const weekLabel = computed(() => {
+  const weekStartsOn = store.plan?.weekStartsOn
+  if (!weekStartsOn) return ''
+  return new Date(`${weekStartsOn}T00:00:00Z`).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })
+})
+
 function itemLabel(item: GroceryItem): string {
   return item.manualLabel ?? store.ingredientName(item.ingredientId)
 }
@@ -59,7 +72,7 @@ function itemQuantity(item: GroceryItem): string {
     </template>
 
     <template v-else>
-      <p class="mt-1 text-sm text-muted">{{ store.groceryList?.title }}</p>
+      <p class="mt-1 text-sm text-muted">Week of {{ weekLabel }}</p>
 
       <div class="mt-4 space-y-5 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-6 lg:space-y-0">
         <section v-for="group in store.groceryGroups" :key="group.aisleId ?? 'other'">
