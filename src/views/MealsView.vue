@@ -67,7 +67,7 @@ function recipeLink(entry: MealPlanEntry) {
     <template v-else>
       <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
         <p class="text-sm text-muted">
-          Week of {{ dayLabel(store.plan!.weekStartsOn) }} — {{ store.plan!.kcalTarget }} kcal / {{ store.plan!.proteinTargetG }}g protein target
+          Week of {{ dayLabel(store.plan!.weekStartsOn) }} · {{ store.plan!.kcalTarget }} kcal / {{ store.plan!.proteinTargetG }}g protein target
         </p>
         <button
           type="button"
@@ -85,7 +85,7 @@ function recipeLink(entry: MealPlanEntry) {
         :disabled="store.generating"
         @click="store.advanceToNextWeek(userId)"
       >
-        {{ store.generating ? 'Working…' : 'Done with this week — plan the next one' }}
+        {{ store.generating ? 'Working…' : 'Done with this week → plan the next one' }}
       </button>
 
       <p v-if="store.error" class="mt-3 rounded-xl border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">{{ store.error }}</p>
