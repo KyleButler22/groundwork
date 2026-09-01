@@ -6,15 +6,19 @@
  * instead of a row: a phone doesn't have room for a persistent sidebar,
  * a desktop window does.
  */
-import logoMark from '@/assets/logo-mark-sidebar.png'
+import logoMarkDark from '@/assets/logo-mark-sidebar.png'
+import logoMarkLight from '@/assets/logo-mark-sidebar-light.png'
+import { useThemeStore } from '@/stores/theme'
 
 import { NAV_ITEMS } from './navItems'
+
+const theme = useThemeStore()
 </script>
 
 <template>
   <nav class="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 border-r border-rule bg-panel px-4 py-8 lg:flex" aria-label="Primary">
     <div class="mb-6 px-3">
-      <img :src="logoMark" alt="Groundwork" width="36" height="36" />
+      <img :src="theme.effectiveTheme === 'light' ? logoMarkLight : logoMarkDark" alt="Groundwork" width="36" height="36" />
     </div>
     <RouterLink
       v-for="item in NAV_ITEMS"

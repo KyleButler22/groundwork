@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, onScopeDispose, ref } from 'vue'
 
 /**
  * 'system' means "no explicit choice" — style.css's own
@@ -54,5 +54,24 @@ export const useThemeStore = defineStore('theme', () => {
     }
   }
 
-  return { choice, setChoice }
+  // Resolves 'system' against the OS's actual current preference, kept
+  // live via a change listener — for anything that needs to know which
+  // theme is genuinely ON SCREEN right now (e.g. picking a light-mode vs.
+  // dark-mode logo image), not just what the user's choice is. CSS
+  // resolves this on its own via prefers-color-scheme; this exists
+  // because choosing an <img> src has no CSS equivalent.
+  const osPrefersLight = ref(matchMedia('(prefers-color-scheme: light)').matches)
+  const media = matchMedia('(prefers-color-scheme: light)')
+  const onOsChange = (e: MediaQueryListEvent): void => {
+    osPrefersLight.value = e.matches
+  }
+  media.addEventListener('change', onOsChange)
+  onScopeDispose(() => media.removeEventListener('change', onOsChange))
+
+  const effectiveTheme = computed<'light' | 'dark'>(() => {
+    if (choice.value === 'system') return osPrefersLight.value ? 'light' : 'dark'
+    return choice.value
+  })
+
+  return { choice, setChoice, effectiveTheme }
 })
