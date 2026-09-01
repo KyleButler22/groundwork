@@ -2,7 +2,7 @@
 import { ChevronRight, X } from '@lucide/vue'
 import { computed, onMounted, ref, watch } from 'vue'
 
-import Spinner from '@/components/shared/Spinner.vue'
+import Skeleton from '@/components/shared/Skeleton.vue'
 import SetLogEditor from '@/components/workout/SetLogEditor.vue'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useMealPlanStore } from '@/stores/mealPlan'
@@ -83,7 +83,19 @@ const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'L
   <div class="p-4 lg:p-0">
     <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Today</h1>
 
-    <Spinner v-if="planStore.loading" class="mt-2" />
+    <div v-if="planStore.loading" class="mt-1 space-y-2 lg:mt-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-10 lg:space-y-0">
+      <section class="space-y-2">
+        <Skeleton class="rounded-md" height="1.25rem" width="60%" />
+        <Skeleton class="rounded-xl" height="4rem" />
+        <Skeleton class="rounded-xl" height="4rem" />
+        <Skeleton class="rounded-xl" height="4rem" />
+      </section>
+      <section class="space-y-2">
+        <Skeleton class="rounded-md" height="1.25rem" width="40%" />
+        <Skeleton class="rounded-xl" height="3.5rem" />
+        <Skeleton class="rounded-xl" height="3.5rem" />
+      </section>
+    </div>
 
     <template v-else-if="!planStore.hasPlan">
       <p class="mt-2 text-sm text-muted">No plan yet — complete the intake questionnaire to generate your first week.</p>
