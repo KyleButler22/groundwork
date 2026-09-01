@@ -174,9 +174,24 @@ function recipeStepKey(step: { recipeId: string; stepNumber: number }): string {
         </div>
       </div>
 
-      <p v-if="macros" class="mt-2 font-mono text-xs tabular-nums text-muted">
-        {{ Math.round(macros.kcal) }} kcal · {{ Math.round(macros.proteinG) }}g protein · {{ Math.round(macros.carbG) }}g carb · {{ Math.round(macros.fatG) }}g fat
-      </p>
+      <dl v-if="macros" class="mt-2 grid grid-cols-4 gap-3 rounded-xl border border-rule bg-surface p-4 text-center shadow-card">
+        <div>
+          <dt class="text-xs text-muted">Calories</dt>
+          <dd class="font-mono text-lg tabular-nums text-ink">{{ Math.round(macros.kcal) }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Protein</dt>
+          <dd class="font-mono text-lg tabular-nums text-ink">{{ Math.round(macros.proteinG) }}g</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Carbs</dt>
+          <dd class="font-mono text-lg tabular-nums text-ink">{{ Math.round(macros.carbG) }}g</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Fat</dt>
+          <dd class="font-mono text-lg tabular-nums text-ink">{{ Math.round(macros.fatG) }}g</dd>
+        </div>
+      </dl>
 
       <h2 class="mt-6 text-sm font-semibold uppercase tracking-wide text-muted">Ingredients</h2>
       <ul v-if="ingredients.length" class="mt-2 space-y-1.5">
