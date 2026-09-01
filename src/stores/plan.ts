@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 import { db } from '@/lib/db'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { deleteRows, fromRow, mergeByUpdatedAt, mergeByUpdatedAtKeyed, pullEntityRows, pullOwnedRows, pushRow, pushRows } from '@/lib/sync'
-import { buildSetLogsForItem, selectNextSession, sessionStatusFor } from '@/lib/workoutLogging'
+import { buildSetLogsForItem, computeSessionStreak, selectNextSession, sessionStatusFor } from '@/lib/workoutLogging'
 import { applyWorkoutLog, buildLibrary, type MovementLibrary, type PromotionEvent } from '@/generators/workout'
 import type { Equipment, ExerciseEquipment, Exercise, PlanItem, PlanSession, SetLog, UserExerciseLevel, WorkoutLog, WorkoutPlan } from '@/types/domain'
 
@@ -163,6 +163,10 @@ export const usePlanStore = defineStore('plan', () => {
   /** "Today's session" — see selectNextSession's own doc comment. null
    *  means every session in the plan has been completed. */
   const nextSession = computed(() => selectNextSession(sessions.value, completedSessionIds.value))
+
+  /** See computeSessionStreak's own doc comment (workoutLogging.ts) for
+   *  why this counts sessions, not calendar days. */
+  const sessionStreak = computed(() => computeSessionStreak(sessions.value, workoutLogs.value))
 
   /**
    * Pulls this user's workout_plans/workout_logs/set_logs/
@@ -495,6 +499,7 @@ export const usePlanStore = defineStore('plan', () => {
     hasPlan,
     sessionsByWeek,
     nextSession,
+    sessionStreak,
     weekProgress,
     blockProgress,
     promotionMessages,
