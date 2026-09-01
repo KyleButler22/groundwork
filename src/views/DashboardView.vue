@@ -81,7 +81,10 @@ const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'L
 
 <template>
   <div class="p-4 lg:p-0">
-    <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Today</h1>
+    <div class="flex items-baseline justify-between gap-3">
+      <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Today</h1>
+      <p v-if="planStore.sessionStreak > 0" class="shrink-0 text-sm font-medium text-train">🔥 {{ planStore.sessionStreak }}-session streak</p>
+    </div>
 
     <div v-if="planStore.loading" class="mt-1 space-y-2 lg:mt-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-10 lg:space-y-0">
       <section class="space-y-2">
