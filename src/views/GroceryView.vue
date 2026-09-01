@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 
-import Spinner from '@/components/shared/Spinner.vue'
+import Skeleton from '@/components/shared/Skeleton.vue'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useMealPlanStore } from '@/stores/mealPlan'
 import { useSessionStore } from '@/stores/session'
@@ -28,7 +28,13 @@ function itemLabel(item: GroceryItem): string {
   <div class="p-4 pb-8 lg:p-0">
     <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Grocery</h1>
 
-    <Spinner v-if="store.loading" class="mt-2" />
+    <div v-if="store.loading" class="mt-4 space-y-5 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-6 lg:space-y-0">
+      <section v-for="n in 3" :key="n" class="space-y-1">
+        <Skeleton class="rounded-md" height="0.75rem" width="35%" />
+        <Skeleton class="rounded-xl" height="2.75rem" />
+        <Skeleton class="rounded-xl" height="2.75rem" />
+      </section>
+    </div>
 
     <template v-else-if="!store.hasPlan">
       <p class="mt-2 text-sm text-muted">Generate a meal plan first — your grocery list is built from it.</p>
