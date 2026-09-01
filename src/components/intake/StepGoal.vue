@@ -73,7 +73,7 @@ function selectGoal(goal: typeof store.answers.goal) {
     </div>
 
     <div v-if="store.macros && store.answers.goal" class="rounded-xl border border-rule bg-surface p-4 shadow-card">
-      <p class="text-sm font-medium text-ink">What that looks like</p>
+      <p class="text-center text-sm font-medium text-ink">What that looks like</p>
       <dl class="mt-2 grid grid-cols-3 gap-3 text-center">
         <div>
           <dt class="text-xs text-muted">Protein</dt>
