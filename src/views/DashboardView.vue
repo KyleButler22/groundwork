@@ -112,8 +112,9 @@ const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'L
         <template v-if="displayedSession">
           <div class="flex items-center justify-between gap-3">
             <p class="text-sm text-muted">{{ planStore.plan?.name }} — {{ displayedSession.name }}</p>
-            <p class="shrink-0 font-mono text-xs tabular-nums text-muted">
-              {{ planStore.sessionProgress(displayedSession.id).done }}/{{ planStore.sessionProgress(displayedSession.id).total }} done
+            <p class="shrink-0 text-right">
+              <span class="block font-mono text-2xl font-bold tabular-nums text-ink">{{ planStore.sessionProgress(displayedSession.id).done }}/{{ planStore.sessionProgress(displayedSession.id).total }}</span>
+              <span class="block text-xs text-muted">done</span>
             </p>
           </div>
 
