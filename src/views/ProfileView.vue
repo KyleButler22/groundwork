@@ -2,6 +2,7 @@
 import { CircleUser, Eye, EyeOff, ListChecks, Lock, LogOut, Mail, MailCheck } from '@lucide/vue'
 import { computed, ref } from 'vue'
 
+import Spinner from '@/components/shared/Spinner.vue'
 import { useSessionStore } from '@/stores/session'
 
 // Account, targets, equipment, dietary preferences, and auth (sign in / out).
@@ -67,7 +68,7 @@ async function handleSignOut(): Promise<void> {
   <div class="p-4 lg:p-0">
     <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Profile</h1>
 
-    <p v-if="!session.isReady" class="mt-2 text-sm text-muted">Loading…</p>
+    <Spinner v-if="!session.isReady" class="mt-2" />
 
     <template v-else-if="session.session">
       <div class="mt-4 flex items-center gap-3 rounded-2xl border border-rule bg-surface p-4 shadow-card lg:max-w-sm">

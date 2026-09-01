@@ -2,6 +2,7 @@
 import { ChevronRight, X } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 
+import Spinner from '@/components/shared/Spinner.vue'
 import SetLogEditor from '@/components/workout/SetLogEditor.vue'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { usePlanStore } from '@/stores/plan'
@@ -52,7 +53,7 @@ function toggleExpanded(itemId: string): void {
   <div class="p-4 pb-8 lg:p-0">
     <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Training</h1>
 
-    <p v-if="planStore.loading" class="mt-2 text-sm text-muted">Loading…</p>
+    <Spinner v-if="planStore.loading" class="mt-2" />
     <p v-else-if="!planStore.hasPlan" class="mt-2 text-sm text-muted">Your plan will appear here once generated.</p>
 
     <template v-else>

@@ -3,6 +3,7 @@ import { ArrowLeft, Minus, Plus } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+import Spinner from '@/components/shared/Spinner.vue'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useMealPlanStore } from '@/stores/mealPlan'
 import { useSessionStore } from '@/stores/session'
@@ -109,7 +110,7 @@ function recipeStepKey(step: { recipeId: string; stepNumber: number }): string {
       Back
     </button>
 
-    <p v-if="store.loading" class="mt-4 text-sm text-muted">Loading…</p>
+    <Spinner v-if="store.loading" class="mt-4" />
     <p v-else-if="!recipe" class="mt-4 text-sm text-muted">Recipe not found.</p>
 
     <template v-else>

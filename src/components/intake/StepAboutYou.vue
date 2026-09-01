@@ -1,29 +1,46 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { useIntakeStore } from '@/stores/intake'
 import { cmToFeetInches, feetInchesToCm, kgToLb, lbToKg } from '@/lib/intake/units'
 
 const store = useIntakeStore()
 
-// The store always holds metric — these are display-only two-way
-// bindings that convert on the way in and out (docs/intake.md: "imperial
-// units are an input-layer concern only and should never reach the
-// database").
-const heightFeet = computed({
-  get: () => (store.answers.heightCm ? cmToFeetInches(store.answers.heightCm).feet : null),
-  set: (feet) => {
-    const inches = store.answers.heightCm ? cmToFeetInches(store.answers.heightCm).inches : 0
-    store.answers.heightCm = feet !== null ? Math.round(feetInchesToCm(feet, inches)) : null
-  },
+// The store always holds metric (docs/intake.md: "imperial units are an
+// input-layer concern only and should never reach the database"), but
+// the feet/inches inputs are NOT a two-way computed binding through it —
+// that was the original design, and it meant editing JUST the feet value
+// still round-tripped the INCHES value through cm and back too, which
+// could visibly shift it from whatever was actually typed (worse before
+// units.ts's own carry-bug fix, but still true after it: any cm rounding
+// is still a re-derivation, not an echo of the input). These two hold
+// exactly what the person typed; heightCm is derived FROM them, one-way,
+// never the reverse — except the one deliberate exception below, when
+// units are switched TO imperial and there's a metric value already
+// entered to convert as a starting point.
+const initialHeight = store.answers.heightCm ? cmToFeetInches(store.answers.heightCm) : { feet: null, inches: null }
+const heightFeet = ref<number | null>(initialHeight.feet)
+const heightInches = ref<number | null>(initialHeight.inches)
+
+watch([heightFeet, heightInches], ([feet, inches]) => {
+  store.answers.heightCm = feet !== null ? Math.round(feetInchesToCm(feet, inches ?? 0)) : null
 })
-const heightInches = computed({
-  get: () => (store.answers.heightCm ? cmToFeetInches(store.answers.heightCm).inches : null),
-  set: (inches) => {
-    const feet = store.answers.heightCm ? cmToFeetInches(store.answers.heightCm).feet : 0
-    store.answers.heightCm = inches !== null ? Math.round(feetInchesToCm(feet, inches)) : null
+
+// The one point these DO get overwritten from heightCm: switching units
+// mid-flow, so flipping to imperial after entering a metric value shows
+// its equivalent rather than a blank pair of inputs. Metric needs no
+// equivalent handling the other way — its input already binds directly
+// to store.answers.heightCm, which the watch above keeps current.
+watch(
+  () => store.answers.units,
+  (units) => {
+    if (units !== 'imperial') return
+    const converted = store.answers.heightCm ? cmToFeetInches(store.answers.heightCm) : { feet: null, inches: null }
+    heightFeet.value = converted.feet
+    heightInches.value = converted.inches
   },
-})
+)
+
 const weightLb = computed({
   get: () => (store.answers.weightKg ? Math.round(kgToLb(store.answers.weightKg)) : null),
   set: (lb) => {

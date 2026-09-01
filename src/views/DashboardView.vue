@@ -2,6 +2,7 @@
 import { ChevronRight, X } from '@lucide/vue'
 import { computed, onMounted, ref, watch } from 'vue'
 
+import Spinner from '@/components/shared/Spinner.vue'
 import SetLogEditor from '@/components/workout/SetLogEditor.vue'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useMealPlanStore } from '@/stores/mealPlan'
@@ -82,7 +83,7 @@ const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'L
   <div class="p-4 lg:p-0">
     <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Today</h1>
 
-    <p v-if="planStore.loading" class="mt-2 text-sm text-muted">Loading…</p>
+    <Spinner v-if="planStore.loading" class="mt-2" />
 
     <template v-else-if="!planStore.hasPlan">
       <p class="mt-2 text-sm text-muted">No plan yet — complete the intake questionnaire to generate your first week.</p>

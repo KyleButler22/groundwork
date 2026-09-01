@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 
+import Spinner from '@/components/shared/Spinner.vue'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useMealPlanStore } from '@/stores/mealPlan'
 import { useSessionStore } from '@/stores/session'
@@ -27,7 +28,7 @@ function itemLabel(item: GroceryItem): string {
   <div class="p-4 pb-8 lg:p-0">
     <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Grocery</h1>
 
-    <p v-if="store.loading" class="mt-2 text-sm text-muted">Loading…</p>
+    <Spinner v-if="store.loading" class="mt-2" />
 
     <template v-else-if="!store.hasPlan">
       <p class="mt-2 text-sm text-muted">Generate a meal plan first — your grocery list is built from it.</p>

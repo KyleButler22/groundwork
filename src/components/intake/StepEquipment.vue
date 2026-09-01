@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
+import Spinner from '@/components/shared/Spinner.vue'
 import { db } from '@/lib/db'
 import { useIntakeStore } from '@/stores/intake'
 import type { Equipment } from '@/types/domain'
@@ -31,7 +32,7 @@ function toggle(slug: string) {
       </p>
     </div>
 
-    <p v-if="loading" class="text-sm text-muted">Loading equipment list…</p>
+    <Spinner v-if="loading" label="Loading equipment list…" />
     <div v-else class="grid grid-cols-2 gap-2 lg:grid-cols-3">
       <button
         v-for="item in equipment"

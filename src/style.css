@@ -121,6 +121,63 @@ body {
   box-shadow: var(--shadow-card);
 }
 
+/* Native number-input spin buttons and select dropdown arrows both render
+   using the OS/browser's own default widget chrome, not this app's design
+   tokens — jarring next to every deliberately-styled `rounded-xl border
+   border-rule` input around them, and impossible to recolor/reshape into
+   matching the rest of the app rather than trying to reskin a widget that
+   was never designed to be reskinned. */
+
+/* Spin buttons: hidden outright, not restyled — Chrome/Safari expose them
+   as pseudo-elements (`::-webkit-inner-spin-button` etc.) that only accept
+   crude size/display tweaks, never real color/shape control; Firefox's
+   `-moz-appearance: textfield` is the equivalent hide for its native
+   widget. Every number input in this app already reads fine as a plain
+   bordered text field without them — nothing here relies on click-to-
+   increment. */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Select dropdown arrow: `appearance: none` drops the native one (which
+   otherwise ignores color entirely), replaced with a chevron drawn via
+   `mask-image` rather than `background-image` specifically so its actual
+   visible color comes from a normal `background-color` declaration —
+   `--color-muted` here — and stays theme-aware for free, the same way any
+   token-driven color does elsewhere, with no separate light/dark SVG to
+   maintain. */
+select {
+  appearance: none;
+  background-color: transparent;
+  padding-right: 2.25rem;
+  background-image: none;
+}
+.select-chevron {
+  position: relative;
+}
+.select-chevron::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0.875rem;
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+  background-color: var(--color-muted);
+  transform: translateY(-50%);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

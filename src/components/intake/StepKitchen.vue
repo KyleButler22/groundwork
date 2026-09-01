@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
+import Spinner from '@/components/shared/Spinner.vue'
 import { db } from '@/lib/db'
 import { useIntakeStore } from '@/stores/intake'
 import type { Allergen, DietTag } from '@/types/domain'
@@ -66,7 +67,7 @@ function toggleMealSlot(key: MealSlotAnswerKey) {
       <p class="mt-1 text-sm text-muted">This shapes your meal plans once those are built — safe to answer honestly even before that's ready.</p>
     </div>
 
-    <p v-if="loading" class="text-sm text-muted">Loading…</p>
+    <Spinner v-if="loading" />
 
     <template v-else>
       <fieldset>
@@ -130,12 +131,14 @@ function toggleMealSlot(key: MealSlotAnswerKey) {
     <label class="block">
       <span class="text-sm font-medium text-ink">Weeknight cook-time ceiling</span>
       <span class="mt-0.5 block text-xs text-muted">A busier Sunday roast can still take longer — this is just for a normal Tuesday.</span>
-      <select v-model.number="store.answers.cookTimeCeilingMinutes" class="mt-1 min-h-11 w-full rounded-xl border border-rule px-3 text-ink">
-        <option :value="15">15 minutes</option>
-        <option :value="25">25 minutes</option>
-        <option :value="40">40 minutes</option>
-        <option :value="60">No real limit</option>
-      </select>
+      <span class="select-chevron mt-1 block">
+        <select v-model.number="store.answers.cookTimeCeilingMinutes" class="min-h-11 w-full rounded-xl border border-rule px-3 text-ink">
+          <option :value="15">15 minutes</option>
+          <option :value="25">25 minutes</option>
+          <option :value="40">40 minutes</option>
+          <option :value="60">No real limit</option>
+        </select>
+      </span>
     </label>
 
     <label class="block">
