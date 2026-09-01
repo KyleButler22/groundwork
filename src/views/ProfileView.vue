@@ -1,13 +1,21 @@
 <script setup lang="ts">
-import { CircleUser, Eye, EyeOff, ListChecks, Lock, LogOut, Mail, MailCheck } from '@lucide/vue'
+import { CircleUser, Eye, EyeOff, ListChecks, Lock, LogOut, Mail, MailCheck, Monitor, Moon, Sun } from '@lucide/vue'
 import { computed, ref } from 'vue'
 
 import Spinner from '@/components/shared/Spinner.vue'
 import { useSessionStore } from '@/stores/session'
+import { type ThemeChoice, useThemeStore } from '@/stores/theme'
 
 // Account, targets, equipment, dietary preferences, and auth (sign in / out).
 // Only auth is built so far — the rest is still TASKS.md territory.
 const session = useSessionStore()
+const theme = useThemeStore()
+
+const THEME_OPTIONS: { value: ThemeChoice; label: string; icon: typeof Sun }[] = [
+  { value: 'system', label: 'System', icon: Monitor },
+  { value: 'light', label: 'Light', icon: Sun },
+  { value: 'dark', label: 'Dark', icon: Moon },
+]
 
 type Mode = 'sign_in' | 'sign_up' | 'reset'
 const mode = ref<Mode>('sign_in')
@@ -67,6 +75,23 @@ async function handleSignOut(): Promise<void> {
 <template>
   <div class="p-4 lg:p-0">
     <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Profile</h1>
+
+    <div class="mt-4 lg:max-w-sm">
+      <span class="text-sm font-medium text-ink">Theme</span>
+      <div class="mt-1.5 flex gap-2">
+        <button
+          v-for="option in THEME_OPTIONS"
+          :key="option.value"
+          type="button"
+          class="flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-full border px-3 text-sm font-medium transition-colors"
+          :class="theme.choice === option.value ? 'border-train bg-train-wash text-train' : 'border-rule text-muted hover:border-ink-soft hover:text-ink'"
+          @click="theme.setChoice(option.value)"
+        >
+          <component :is="option.icon" :size="16" :stroke-width="1.75" aria-hidden="true" />
+          {{ option.label }}
+        </button>
+      </div>
+    </div>
 
     <Spinner v-if="!session.isReady" class="mt-2" />
 

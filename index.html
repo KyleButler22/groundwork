@@ -2,6 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Applies a saved theme choice before the first paint — src/stores/
+      // theme.ts is the reactive source of truth once Vue mounts, but that's
+      // too late here: waiting for it would flash the wrong theme for
+      // anyone who chose the non-default one. 'system' (or nothing saved)
+      // needs no attribute at all — style.css's own prefers-color-scheme
+      // media query already handles that case correctly on its own.
+      try {
+        var t = localStorage.getItem('groundwork-theme')
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t
+      } catch (e) {}
+    </script>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
