@@ -9,37 +9,6 @@
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
-  --color-ground: #f6f8f7;
-  --color-surface: #ffffff;
-  --color-ink: #16201e;
-  --color-ink-soft: #3d4c48;
-  --color-muted: #66756f;
-  --color-rule: #dce3e0;
-
-  --color-train: #1f6f5c;
-  --color-train-wash: #e4efea;
-  --color-nutri: #8a6e2f;
-  --color-nutri-wash: #f2ecdd;
-
-  --color-warn: #a4472b;
-  --color-warn-wash: #f7e7e1;
-
-  /* Sidebar surface (desktop only, App.vue/SidebarNav.vue) — one step
-   * off `surface` the same way `ground` is, so the sidebar reads as a
-   * distinct panel next to the content column rather than card-on-card. */
-  --color-panel: #eef2f0;
-}
-
-:root {
-  /* Card elevation — soft and diffuse (a 2025 "soft shadow" reads as
-   * lifted without the harsh, dated drop-shadows of a decade ago).
-   * Token, not a bare Tailwind shadow-*, because dark mode below doesn't
-   * just darken this value — it replaces it with a hairline border
-   * instead (see the comment there for why). */
-  --shadow-card: 0 1px 2px rgba(16, 24, 22, 0.04), 0 8px 24px -6px rgba(16, 24, 22, 0.1);
-}
-
-:root[data-theme='dark'] {
   --color-ground: #0e1513;
   --color-surface: #151e1b;
   --color-ink: #e7edea;
@@ -55,35 +24,64 @@
   --color-warn: #e08a6b;
   --color-warn-wash: #33201a;
 
+  /* Sidebar surface (desktop only, App.vue/SidebarNav.vue) — one step
+   * off `surface` the same way `ground` is, so the sidebar reads as a
+   * distinct panel next to the content column rather than card-on-card. */
   --color-panel: #101815;
+}
 
+:root {
   /* A dark shadow barely registers against an already-dark surface — it
    * just looks muddy rather than lifted. A subtle light hairline border
    * reads as "raised" just as clearly here, so the token becomes a
-   * (transparent, i.e. no-op) shadow and shadow-card below adds the
-   * border itself only in dark mode. */
+   * (transparent, i.e. no-op) shadow and shadow-card's own utility class
+   * adds the border itself only in dark mode — which is the default now,
+   * see the light override below for the real shadow value. */
   --shadow-card: 0 0 0 transparent;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --color-ground: #0e1513;
-    --color-surface: #151e1b;
-    --color-ink: #e7edea;
-    --color-ink-soft: #c3cfca;
-    --color-muted: #8fa09b;
-    --color-rule: #25322e;
+:root[data-theme='light'] {
+  --color-ground: #f6f8f7;
+  --color-surface: #ffffff;
+  --color-ink: #16201e;
+  --color-ink-soft: #3d4c48;
+  --color-muted: #66756f;
+  --color-rule: #dce3e0;
 
-    --color-train: #57be9e;
-    --color-train-wash: #16302a;
-    --color-nutri: #cba95c;
-    --color-nutri-wash: #2c2617;
+  --color-train: #1f6f5c;
+  --color-train-wash: #e4efea;
+  --color-nutri: #8a6e2f;
+  --color-nutri-wash: #f2ecdd;
 
-    --color-warn: #e08a6b;
-    --color-warn-wash: #33201a;
+  --color-warn: #a4472b;
+  --color-warn-wash: #f7e7e1;
 
-    --color-panel: #101815;
-    --shadow-card: 0 0 0 transparent;
+  --color-panel: #eef2f0;
+
+  /* Card elevation — soft and diffuse (a soft shadow reads as lifted
+   * without the harsh, dated drop-shadows of a decade ago). */
+  --shadow-card: 0 1px 2px rgba(16, 24, 22, 0.04), 0 8px 24px -6px rgba(16, 24, 22, 0.1);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --color-ground: #f6f8f7;
+    --color-surface: #ffffff;
+    --color-ink: #16201e;
+    --color-ink-soft: #3d4c48;
+    --color-muted: #66756f;
+    --color-rule: #dce3e0;
+
+    --color-train: #1f6f5c;
+    --color-train-wash: #e4efea;
+    --color-nutri: #8a6e2f;
+    --color-nutri-wash: #f2ecdd;
+
+    --color-warn: #a4472b;
+    --color-warn-wash: #f7e7e1;
+
+    --color-panel: #eef2f0;
+    --shadow-card: 0 1px 2px rgba(16, 24, 22, 0.04), 0 8px 24px -6px rgba(16, 24, 22, 0.1);
   }
 }
 
