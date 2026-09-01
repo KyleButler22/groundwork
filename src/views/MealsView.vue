@@ -2,7 +2,7 @@
 import { ChevronRight, Lock, LockOpen } from '@lucide/vue'
 import { computed, onMounted } from 'vue'
 
-import Spinner from '@/components/shared/Spinner.vue'
+import Skeleton from '@/components/shared/Skeleton.vue'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useMealPlanStore } from '@/stores/mealPlan'
 import { useSessionStore } from '@/stores/session'
@@ -44,7 +44,12 @@ function recipeLink(entry: MealPlanEntry) {
   <div class="p-4 pb-8 lg:p-0">
     <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Meals</h1>
 
-    <Spinner v-if="store.loading" class="mt-2" />
+    <div v-if="store.loading" class="mt-4 space-y-5 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-6 lg:space-y-0">
+      <section v-for="n in 7" :key="n" class="space-y-2">
+        <Skeleton class="rounded-md" height="1rem" width="50%" />
+        <Skeleton class="rounded-xl" height="4.5rem" />
+      </section>
+    </div>
 
     <template v-else-if="!store.hasPlan">
       <p class="mt-2 text-sm text-muted">Your weekly meal plan will appear here once generated.</p>
