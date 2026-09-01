@@ -62,7 +62,7 @@ async function handlePrimaryAction() {
       </ul>
     </div>
 
-    <footer class="border-t border-rule bg-surface p-4 pb-safe">
+    <footer class="border-t border-rule bg-surface p-4 pb-safe-4">
       <div class="mx-auto flex max-w-2xl items-center justify-between gap-3">
         <button
           type="button"
