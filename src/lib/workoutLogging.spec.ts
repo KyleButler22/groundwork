@@ -172,12 +172,13 @@ describe('computeSessionStreak', () => {
 
   it('sorts sessions by week then day before counting, regardless of input order', () => {
     const sessions = [
-      session({ id: 's3', weekNumber: 2, dayIndex: 0 }),
-      session({ id: 's1', weekNumber: 1, dayIndex: 0 }),
+      session({ id: 's4', weekNumber: 1, dayIndex: 6 }),
       session({ id: 's2', weekNumber: 1, dayIndex: 2 }),
+      session({ id: 's1', weekNumber: 1, dayIndex: 0 }),
+      session({ id: 's3', weekNumber: 1, dayIndex: 4 }),
     ]
-    const logs = [log('s1', 'completed'), log('s2', 'completed'), log('s3', 'completed')]
-    expect(computeSessionStreak(sessions, logs)).toBe(3)
+    const logs = [log('s1', 'completed'), log('s2', 'completed'), log('s3', 'skipped'), log('s4', 'completed')]
+    expect(computeSessionStreak(sessions, logs)).toBe(1)
   })
 
   it('treats a session skipped over entirely (no log at all) as breaking the streak, same as an explicit skip', () => {
