@@ -230,3 +230,20 @@ option {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Entrance/exit for the promotion banner (Dashboard + Workouts) — the
+   app's one real "moment", worth a beat of polish instead of popping
+   in/out instantly. Frozen for free by the reduced-motion rule above,
+   since it's a plain CSS transition matched by that rule's universal
+   selector. */
+.promo-enter-active,
+.promo-leave-active {
+  transition:
+    opacity 200ms ease-out,
+    transform 200ms ease-out;
+}
+.promo-enter-from,
+.promo-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}

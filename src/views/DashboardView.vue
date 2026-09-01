@@ -133,22 +133,24 @@ const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'L
             </p>
           </div>
 
-          <div
-            v-if="planStore.promotionMessages.length"
-            class="mt-3 flex items-start justify-between gap-2 rounded-xl border border-train bg-train-wash px-3 py-2 text-xs text-train"
-          >
-            <ul class="space-y-1">
-              <li v-for="(message, i) in planStore.promotionMessages" :key="i">{{ message }}</li>
-            </ul>
-            <button
-              type="button"
-              class="flex min-h-11 min-w-11 shrink-0 items-center justify-center text-train/70 transition-colors hover:text-train"
-              aria-label="Dismiss"
-              @click="planStore.dismissPromotionMessages()"
+          <Transition name="promo">
+            <div
+              v-if="planStore.promotionMessages.length"
+              class="mt-3 flex items-start justify-between gap-2 rounded-xl border border-train bg-train-wash px-3 py-2 text-xs text-train"
             >
-              <X :size="16" :stroke-width="2" aria-hidden="true" />
-            </button>
-          </div>
+              <ul class="space-y-1">
+                <li v-for="(message, i) in planStore.promotionMessages" :key="i">{{ message }}</li>
+              </ul>
+              <button
+                type="button"
+                class="flex min-h-11 min-w-11 shrink-0 items-center justify-center text-train/70 transition-colors hover:text-train"
+                aria-label="Dismiss"
+                @click="planStore.dismissPromotionMessages()"
+              >
+                <X :size="16" :stroke-width="2" aria-hidden="true" />
+              </button>
+            </div>
+          </Transition>
 
           <ul class="mt-4 space-y-2">
             <li
