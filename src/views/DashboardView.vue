@@ -59,7 +59,14 @@ const displayedSession = computed(() => planStore.sessions.find((s) => s.id === 
 
 function onToggleItem(item: PlanItem): void {
   if (!displayedSession.value) return
+  const wasChecked = planStore.isItemChecked(item.id)
   planStore.toggleItemChecked(userId.value, displayedSession.value, item)
+  if (!wasChecked) {
+    justCheckedId.value = item.id
+    setTimeout(() => {
+      if (justCheckedId.value === item.id) justCheckedId.value = null
+    }, 500)
+  }
 }
 
 // Collapsed by default, one at a time — this view is "scanned, not read"
@@ -69,6 +76,14 @@ const expandedItemId = ref<string | null>(null)
 function toggleExpanded(itemId: string): void {
   expandedItemId.value = expandedItemId.value === itemId ? null : itemId
 }
+
+// Brief background flash on check-off — a purposeful, short-lived
+// micro-interaction on the one moment per exercise that matters most,
+// not decoration on every hover. Cleared after 500ms; the flash color
+// itself fades back out over the row's own `transition-[background-
+// color]` (see the template change), so this only needs to control
+// WHEN the flash class is removed, not animate anything imperatively.
+const justCheckedId = ref<string | null>(null)
 
 // No "advance to next week" yet (see TASKS.md) — once a plan's week is
 // more than a few days old, today may simply not be one of its 7 days.
@@ -139,7 +154,8 @@ const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'L
             <li
               v-for="item in planStore.itemsForSession(displayedSession.id)"
               :key="item.id"
-              class="rounded-xl border border-rule bg-surface px-4 py-3 shadow-card transition-shadow lg:hover:shadow-none lg:hover:bg-ground/60"
+              class="rounded-xl border border-rule bg-surface px-4 py-3 shadow-card transition-[background-color,box-shadow] duration-300 lg:hover:shadow-none lg:hover:bg-ground/60"
+              :class="{ 'bg-train-wash': justCheckedId === item.id }"
             >
               <div class="flex items-center gap-3">
                 <label class="flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center">
