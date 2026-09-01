@@ -150,7 +150,7 @@ function toggleExpanded(itemId: string): void {
               v-for="item in planStore.itemsForSession(s.id)"
               :key="item.id"
               class="rounded-xl border border-rule bg-surface px-4 py-3 shadow-card transition-[background-color,box-shadow] duration-300 lg:hover:shadow-none lg:hover:bg-ground/60"
-              :class="{ 'bg-train-wash': justCheckedId === item.id }"
+              :class="{ '!bg-train-wash': justCheckedId === item.id }"
             >
               <div class="flex items-center gap-3">
                 <label class="flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center">

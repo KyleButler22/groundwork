@@ -38,6 +38,11 @@
    * adds the border itself only in dark mode — which is the default now,
    * see the light override below for the real shadow value. */
   --shadow-card: 0 0 0 transparent;
+  /* Tells the browser to draw its OWN native chrome (scrollbars, unchecked
+   * checkbox fill, select popup frame/highlight, form autofill background)
+   * dark instead of assuming light — dark is the default theme here, see
+   * the light overrides below for the counterpart. */
+  color-scheme: dark;
 }
 
 :root[data-theme='light'] {
@@ -61,6 +66,7 @@
   /* Card elevation — soft and diffuse (a soft shadow reads as lifted
    * without the harsh, dated drop-shadows of a decade ago). */
   --shadow-card: 0 1px 2px rgba(16, 24, 22, 0.04), 0 8px 24px -6px rgba(16, 24, 22, 0.1);
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: light) {
@@ -82,6 +88,7 @@
 
     --color-panel: #eef2f0;
     --shadow-card: 0 1px 2px rgba(16, 24, 22, 0.04), 0 8px 24px -6px rgba(16, 24, 22, 0.1);
+    color-scheme: light;
   }
 }
 
