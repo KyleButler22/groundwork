@@ -102,6 +102,16 @@ body {
   overscroll-behavior-y: none;
 }
 
+/* Visible keyboard focus on every interactive element, app-wide — 2026
+   accessibility baseline, not optional (see the design spec this
+   implements). :focus-visible, not :focus: the former only fires for
+   keyboard/programmatic focus, not every mouse click, which is the
+   actual goal — a ring for keyboard users, nothing distracting on tap. */
+:focus-visible {
+  outline: 2px solid var(--color-train);
+  outline-offset: 2px;
+}
+
 /* Safe-area utilities for the bottom tab bar — see BottomNav.vue.
    Falls back to 0 on browsers without env() support.
 
