@@ -116,7 +116,7 @@ const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'L
     </div>
 
     <template v-else-if="!planStore.hasPlan">
-      <p class="mt-2 text-sm text-muted">No plan yet — complete the intake questionnaire to generate your first week.</p>
+      <p class="mt-2 text-sm text-muted">No plan yet: complete the intake questionnaire to generate your first week.</p>
       <RouterLink to="/intake" class="mt-4 inline-flex min-h-11 items-center rounded-full bg-train px-5 text-sm font-medium text-white transition-opacity hover:opacity-90">
         Start intake
       </RouterLink>
@@ -193,7 +193,7 @@ const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'L
         </template>
 
         <template v-else>
-          <p class="mt-2 text-sm text-muted">🎉 You've completed every session in this training block — {{ planStore.blockProgress.done }}/{{ planStore.blockProgress.total }} done.</p>
+          <p class="mt-2 text-sm text-muted">🎉 You've completed every session in this training block · {{ planStore.blockProgress.done }}/{{ planStore.blockProgress.total }} done.</p>
           <RouterLink to="/workouts" class="mt-4 inline-block text-sm font-medium text-train hover:underline"> Review the full plan → </RouterLink>
         </template>
       </section>

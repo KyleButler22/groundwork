@@ -58,7 +58,7 @@ function itemQuantity(item: GroceryItem): string {
     </div>
 
     <template v-else-if="!store.hasPlan">
-      <p class="mt-2 text-sm text-muted">Generate a meal plan first — your grocery list is built from it.</p>
+      <p class="mt-2 text-sm text-muted">Generate a meal plan first: your grocery list is built from it.</p>
       <RouterLink
         to="/meals"
         class="mt-4 inline-flex min-h-11 items-center rounded-full bg-nutri px-5 text-sm font-medium text-white transition-opacity hover:opacity-90"

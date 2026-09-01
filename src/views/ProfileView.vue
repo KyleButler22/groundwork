@@ -117,7 +117,7 @@ async function handleSignOut(): Promise<void> {
         Retake the intake questionnaire
       </RouterLink>
       <p class="mt-2 text-xs text-muted lg:max-w-sm">
-        No dedicated settings screen yet for editing targets, equipment, or dietary preferences one at a time — going through the
+        No dedicated settings screen yet for editing targets, equipment, or dietary preferences one at a time: going through the
         full questionnaire again is how to update any of them for now. It replaces your current plan, archiving the old one rather
         than deleting it.
       </p>
@@ -146,7 +146,7 @@ async function handleSignOut(): Promise<void> {
 
         <p v-if="confirmationSent" class="mt-4 flex items-start gap-2 rounded-xl border border-nutri bg-nutri-wash px-3 py-2 text-sm text-nutri">
           <MailCheck :size="18" :stroke-width="1.75" class="mt-0.5 shrink-0" aria-hidden="true" />
-          <span v-if="confirmationSent === 'sign_up'">Account created — check {{ email || 'your email' }} for a confirmation link before signing in.</span>
+          <span v-if="confirmationSent === 'sign_up'">Account created: check {{ email || 'your email' }} for a confirmation link before signing in.</span>
           <span v-else>If an account exists for that email, a password reset link is on its way.</span>
         </p>
 
