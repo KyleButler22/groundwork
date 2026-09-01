@@ -22,6 +22,14 @@ onMounted(() => store.loadActivePlan(userId.value))
 function itemLabel(item: GroceryItem): string {
   return item.manualLabel ?? store.ingredientName(item.ingredientId)
 }
+
+// Count-based items ("each") read better as "x 3" than "3 each" — every
+// other unit keeps the plain "quantity unit" order (e.g. "17 g").
+function itemQuantity(item: GroceryItem): string {
+  const unit = store.unitLabel(item.displayUnitId)
+  if (unit === 'each') return `x ${item.displayQuantity}`
+  return `${item.displayQuantity} ${unit}`
+}
 </script>
 
 <template>
@@ -68,7 +76,7 @@ function itemLabel(item: GroceryItem): string {
                   @change="store.toggleGroceryItemChecked(item.id, userId)"
                 />
                 <span class="flex-1 text-sm text-ink" :class="{ 'text-muted line-through': item.isChecked }">{{ itemLabel(item) }}</span>
-                <span class="shrink-0 font-mono text-sm tabular-nums text-muted"> {{ item.displayQuantity }} {{ store.unitLabel(item.displayUnitId) }} </span>
+                <span class="shrink-0 font-mono text-sm tabular-nums text-muted">{{ itemQuantity(item) }}</span>
               </label>
             </li>
           </ul>
