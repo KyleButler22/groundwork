@@ -157,6 +157,19 @@ select {
   padding-right: 2.25rem;
   background-image: none;
 }
+/* The CLOSED box above takes its background from whatever page/card is
+   behind it (transparent, matching every plain bordered input elsewhere
+   with no bg-* class of its own) — but the OPEN popup list is rendered by
+   the OS/browser as native chrome outside that context, and defaults to
+   a stark white-background/black-text/blue-highlight look with zero
+   relation to the page around it regardless of what `select` itself is
+   styled as. `background-color`/`color` on `option` directly is the one
+   lever modern Chromium/Firefox expose for it; there is no equivalent
+   for the selection highlight color, which stays browser-default. */
+option {
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+}
 .select-chevron {
   position: relative;
 }

@@ -73,10 +73,12 @@ function setSkipped(skipped: boolean) {
       <!-- Horizontal push -->
       <fieldset class="rounded-xl border border-rule p-4">
         <legend class="px-1 text-sm font-medium text-ink">Push-ups</legend>
-        <div v-if="branch.canFullPushup === null" class="mt-2 flex gap-2">
-          <p class="mb-1 w-full text-sm text-muted">Can you do at least one full push-up, from your toes?</p>
-          <button type="button" class="min-h-11 flex-1 rounded-full border border-rule text-sm transition-colors hover:border-ink-soft" @click="branch.canFullPushup = true">Yes</button>
-          <button type="button" class="min-h-11 flex-1 rounded-full border border-rule text-sm transition-colors hover:border-ink-soft" @click="branch.canFullPushup = false">No</button>
+        <div v-if="branch.canFullPushup === null" class="mt-2">
+          <p class="mb-2 text-sm text-muted">Can you do at least one full push-up, from your toes?</p>
+          <div class="flex gap-2">
+            <button type="button" class="min-h-11 flex-1 rounded-full border border-rule text-sm transition-colors hover:border-ink-soft" @click="branch.canFullPushup = true">Yes</button>
+            <button type="button" class="min-h-11 flex-1 rounded-full border border-rule text-sm transition-colors hover:border-ink-soft" @click="branch.canFullPushup = false">No</button>
+          </div>
         </div>
         <label v-else-if="!branch.canFullPushup" class="mt-2 block text-sm">
           How many knee push-ups can you do with good form before your hips sag?
@@ -91,18 +93,22 @@ function setSkipped(skipped: boolean) {
       <!-- Vertical pull -->
       <fieldset class="rounded-xl border border-rule p-4">
         <legend class="px-1 text-sm font-medium text-ink">Pull-ups</legend>
-        <div v-if="branch.hasBar === null" class="mt-2 flex gap-2">
-          <p class="mb-1 w-full text-sm text-muted">Do you have a pull-up bar (or sturdy overhead bar) to test with?</p>
-          <button type="button" class="min-h-11 flex-1 rounded-full border border-rule text-sm transition-colors hover:border-ink-soft" @click="branch.hasBar = true">Yes</button>
-          <button type="button" class="min-h-11 flex-1 rounded-full border border-rule text-sm transition-colors hover:border-ink-soft" @click="branch.hasBar = false">No</button>
+        <div v-if="branch.hasBar === null" class="mt-2">
+          <p class="mb-2 text-sm text-muted">Do you have a pull-up bar (or sturdy overhead bar) to test with?</p>
+          <div class="flex gap-2">
+            <button type="button" class="min-h-11 flex-1 rounded-full border border-rule text-sm transition-colors hover:border-ink-soft" @click="branch.hasBar = true">Yes</button>
+            <button type="button" class="min-h-11 flex-1 rounded-full border border-rule text-sm transition-colors hover:border-ink-soft" @click="branch.hasBar = false">No</button>
+          </div>
         </div>
         <p v-else-if="!branch.hasBar" class="mt-2 text-sm text-muted">
           No problem — we'll start you at the beginning of this ladder and let it correct quickly from there.
         </p>
-        <div v-else-if="branch.hasAnyPullup === null" class="mt-2 flex gap-2">
-          <p class="mb-1 w-full text-sm text-muted">Can you do a strict pull-up (no kipping)?</p>
-          <button type="button" class="min-h-11 flex-1 rounded-full border border-rule text-sm transition-colors hover:border-ink-soft" @click="branch.hasAnyPullup = true">Yes</button>
-          <button type="button" class="min-h-11 flex-1 rounded-full border border-rule text-sm transition-colors hover:border-ink-soft" @click="branch.hasAnyPullup = false">No</button>
+        <div v-else-if="branch.hasAnyPullup === null" class="mt-2">
+          <p class="mb-2 text-sm text-muted">Can you do a strict pull-up (no kipping)?</p>
+          <div class="flex gap-2">
+            <button type="button" class="min-h-11 flex-1 rounded-full border border-rule text-sm transition-colors hover:border-ink-soft" @click="branch.hasAnyPullup = true">Yes</button>
+            <button type="button" class="min-h-11 flex-1 rounded-full border border-rule text-sm transition-colors hover:border-ink-soft" @click="branch.hasAnyPullup = false">No</button>
+          </div>
         </div>
         <label v-else-if="branch.hasAnyPullup" class="mt-2 block text-sm">
           How many strict pull-ups can you do?
