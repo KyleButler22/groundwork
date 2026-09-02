@@ -35,6 +35,12 @@ export interface PromotionCandidate {
  * = rung 1 (the lowest level) is treated as current — that's genuinely
  * where the generator would start someone on this pattern, so it's a
  * real answer, not a placeholder empty state.
+ *
+ * This walks exercisesByPattern in level order, not progression_edges —
+ * correct today since no branch content exists in the seed data yet (see
+ * library.ts's own "no ladder branches yet" comment), but worth knowing:
+ * if a branch is ever added, this will silently flatten it into one line
+ * rather than failing loudly.
  */
 export function buildProgressionMap(library: MovementLibrary, levels: readonly UserExerciseLevel[]): PatternProgress[] {
   const levelByPattern = new Map(levels.map((l) => [l.patternId, l]))
@@ -72,6 +78,13 @@ export function buildProgressionMap(library: MovementLibrary, levels: readonly U
  * zero, or every positive streak belongs to an already-maxed pattern.
  * These are three shapes of "nothing to nudge about", not three cases to
  * special-case separately.
+ *
+ * The Today-view copy that reads this ("one more good session") is only
+ * accurate because promotion.ts resets consecutiveSuccess to 0 on both
+ * its promoted and ceiling_reached branches, so a persisted value here is
+ * always 0 or 1 in practice — if that reset logic ever changes, this
+ * value could exceed 1 and the copy would silently start lying with
+ * nothing here to catch it.
  */
 export function findClosestToPromotion(
   patterns: readonly MovementPattern[],

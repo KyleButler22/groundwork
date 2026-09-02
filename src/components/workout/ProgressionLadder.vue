@@ -14,7 +14,10 @@ const props = defineProps<{ progress: PatternProgress }>()
 // the node's index alone — no runtime position measurement needed.
 const NODES_PER_ROW = 5
 
-function chunk<T>(items: readonly T[], size: number): T[][] {
+function chunk<T>(items: readonly T[], max: number): T[][] {
+  if (items.length === 0) return []
+  const rowCount = Math.ceil(items.length / max)
+  const size = Math.ceil(items.length / rowCount)
   const rows: T[][] = []
   for (let i = 0; i < items.length; i += size) rows.push(items.slice(i, i + size))
   return rows
@@ -33,14 +36,14 @@ function bothClimbed(before: ProgressionNode, after: ProgressionNode): boolean {
 
 <template>
   <section class="mt-4">
-    <h3 class="text-sm font-semibold text-ink">{{ progress.patternName }}</h3>
-    <div class="mt-2 flex flex-col gap-1">
+    <h4 class="text-sm font-semibold text-ink">{{ progress.patternName }}</h4>
+    <div class="mt-2 flex max-w-sm flex-col gap-1">
       <template v-for="(row, rowIndex) in rows" :key="rowIndex">
         <div class="flex items-center">
           <template v-for="(node, i) in row" :key="node.exerciseId">
             <RouterLink
               :to="`/exercises/${node.exerciseId}`"
-              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-mono font-bold tabular-nums transition-transform hover:scale-105"
+              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-xs font-mono font-bold tabular-nums transition-transform hover:scale-105"
               :class="{
                 'bg-train text-white': node.status === 'completed',
                 'border-2 border-train bg-surface text-train': node.status === 'current',

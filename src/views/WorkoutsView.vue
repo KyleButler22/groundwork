@@ -189,12 +189,12 @@ function toggleExpanded(itemId: string): void {
       <section class="mt-8">
         <h2 class="text-lg font-semibold text-ink">Progressions</h2>
         <template v-for="(p, i) in progressions" :key="p.patternId">
-          <p
+          <h3
             v-if="i === 0 || p.category !== progressions[i - 1].category"
             class="mt-4 text-xs font-semibold uppercase tracking-wide text-muted"
           >
             {{ p.category }}
-          </p>
+          </h3>
           <ProgressionLadder :progress="p" />
         </template>
       </section>
