@@ -99,6 +99,37 @@ describe('findClosestToPromotion', () => {
     expect(findClosestToPromotion(patterns, levels, library)).toEqual({ patternId: 1, patternName: 'Pattern 1', consecutiveSuccess: 1 })
   })
 
+  it('lets a higher consecutiveSuccess win over a better sortOrder', () => {
+    // Pattern 1 has the worse sortOrder (2, would lose a pure sortOrder
+    // tie-break) but the higher streak; pattern 2 has the better sortOrder
+    // (1, would win a pure sortOrder tie-break) but the lower streak. Give
+    // pattern 2 a promotable rung (as the sortOrder tie-break test below
+    // does) so both rows are genuine candidates — otherwise pattern 2's
+    // exerciseId 20 has no outgoing edge in the base `edges` fixture and
+    // gets filtered out before the comparator ever runs, leaving only one
+    // candidate and making the assertion pass no matter what the
+    // comparator does. If the comparator's primary consecutiveSuccess term
+    // were ever deleted, this would incorrectly resolve to pattern 2 —
+    // this test exists specifically to fail in that case (verified by
+    // temporarily deleting that term locally: this test then fails while
+    // the rest of the suite still passes).
+    const exercisesWithPromotion = [...exercises, exercise({ id: 21, patternId: 2, level: 2 })]
+    const edgesWithPromotion: ProgressionEdge[] = [...edges, { fromExerciseId: 20, toExerciseId: 21, kind: 'progression' }]
+    const libraryWithPromotion = buildLibrary({
+      patterns,
+      exercises: exercisesWithPromotion,
+      edges: edgesWithPromotion,
+      equipment: NO_EQUIPMENT,
+      exerciseEquipment: NO_EXERCISE_EQUIPMENT,
+      contraindications: NO_CONTRAINDICATIONS,
+    })
+    const levels = [
+      level({ patternId: 1, exerciseId: 10, consecutiveSuccess: 2 }),
+      level({ patternId: 2, exerciseId: 20, consecutiveSuccess: 1 }),
+    ]
+    expect(findClosestToPromotion(patterns, levels, libraryWithPromotion)).toEqual({ patternId: 1, patternName: 'Pattern 1', consecutiveSuccess: 2 })
+  })
+
   it('breaks ties by sortOrder (lower wins)', () => {
     const levels = [
       level({ patternId: 1, exerciseId: 10, consecutiveSuccess: 1 }), // sortOrder 2
@@ -118,6 +149,15 @@ describe('findClosestToPromotion', () => {
 
   it('returns null when every streak is zero', () => {
     const levels = [level({ patternId: 1, exerciseId: 10, consecutiveSuccess: 0 })]
+    expect(findClosestToPromotion(patterns, levels, library)).toBeNull()
+  })
+
+  it('excludes a level row whose patternId is not in the given patterns list', () => {
+    // exerciseId 10 is genuinely promotable per the shared `edges` fixture,
+    // and consecutiveSuccess is positive — this row would be a valid
+    // candidate if not for patternId 999 being absent from `patterns`,
+    // isolating exactly that guard.
+    const levels = [level({ patternId: 999, exerciseId: 10, consecutiveSuccess: 1 })]
     expect(findClosestToPromotion(patterns, levels, library)).toBeNull()
   })
 
