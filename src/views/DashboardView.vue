@@ -4,6 +4,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 
 import Skeleton from '@/components/shared/Skeleton.vue'
 import SetLogEditor from '@/components/workout/SetLogEditor.vue'
+import { findClosestToPromotion } from '@/lib/progressionMap'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useMealPlanStore } from '@/stores/mealPlan'
 import { usePlanStore } from '@/stores/plan'
@@ -92,6 +93,11 @@ const justCheckedId = ref<string | null>(null)
 const todayIso = new Date().toISOString().slice(0, 10)
 const todayMeals = computed(() => mealStore.entriesByDay.get(todayIso) ?? [])
 const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' }
+
+const closestToPromotion = computed(() => {
+  if (!planStore.library) return null
+  return findClosestToPromotion([...planStore.library.patternById.values()], planStore.levels, planStore.library)
+})
 </script>
 
 <template>
@@ -100,6 +106,9 @@ const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'L
       <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Today</h1>
       <p v-if="planStore.sessionStreak > 0" class="shrink-0 text-sm font-medium text-train">🔥 {{ planStore.sessionStreak }}-session streak</p>
     </div>
+    <p v-if="closestToPromotion" class="mt-1 text-sm text-muted">
+      🎯 One more good <span class="font-medium text-ink">{{ closestToPromotion.patternName }}</span> session to level up
+    </p>
 
     <div v-if="planStore.loading" class="mt-1 space-y-2 lg:mt-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-10 lg:space-y-0">
       <section class="space-y-2">
