@@ -8,11 +8,13 @@ Also published as a formatted artifact: https://claude.ai/code/artifact/17ab036a
 
 ## Ranked by leverage
 
-### 1. A visual skill map for progressions
+### 1. A visual skill map for progressions — ✅ Shipped
 
 Dedicated calisthenics apps (Calistack, Calistree, Simple Calisthenics) treat this as their whole pitch: a node graph of every movement, each one Locked → Unlocked → Ongoing → Mastered, mapping the real path to a planche, front lever, or muscle-up.
 
-Groundwork already models this on the backend — `movement_patterns` → `progression_edges` → per-level exercises is the same ladder these apps draw on screen. Right now it only drives what session you get; a user can't see the ladder at all. This is the single highest-leverage item on the list: real differentiation, built mostly on data that already exists.
+Groundwork already modeled this on the backend — `movement_patterns` → `progression_edges` → per-level exercises is the same ladder these apps draw on screen. It previously only drove which session a user got; there was no way to see the ladder at all. This was the single highest-leverage item on the list: real differentiation, built mostly on data that already existed.
+
+**What actually shipped** (see `docs/superpowers/specs/2026-09-02-progression-map-design.md`) is a deliberately simpler 3-state version of the 4-state framing above — completed / current / locked, derived purely from a user's current position with no promotion history kept. `user_exercise_levels` only stores where you are right now, not a record of every rung you've ever reached, so a genuine 4th "Mastered, permanently" state would need a real schema addition (a "highest ever reached" watermark) rather than being free from data that already exists. That trade-off was made explicitly, not discovered late — see the spec's "Out of scope for this pass" section — and can be revisited if losing a completed mark on a regression ever feels wrong in practice.
 
 - **Effort:** Medium
 - **Sources:** [Simple Calisthenics](https://www.simple-calisthenics.com/features/calisthenics-skill-tree), [Gymnase Tips](https://www.gymnasetips.com/best-calisthenics-app/)
