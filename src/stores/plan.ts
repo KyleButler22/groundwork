@@ -497,6 +497,8 @@ export const usePlanStore = defineStore('plan', () => {
     loading,
     warnings,
     hasPlan,
+    library,
+    levels,
     sessionsByWeek,
     nextSession,
     sessionStreak,

@@ -3,8 +3,10 @@ import { ChevronRight, X } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 
 import Skeleton from '@/components/shared/Skeleton.vue'
+import ProgressionLadder from '@/components/workout/ProgressionLadder.vue'
 import SetLogEditor from '@/components/workout/SetLogEditor.vue'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
+import { buildProgressionMap } from '@/lib/progressionMap'
 import { usePlanStore } from '@/stores/plan'
 import { useSessionStore } from '@/stores/session'
 import type { PlanItem, PlanSession } from '@/types/domain'
@@ -26,6 +28,8 @@ onMounted(async () => {
 })
 
 const weekNumbers = computed(() => Array.from({ length: planStore.plan?.weeks ?? 0 }, (_, i) => i + 1))
+
+const progressions = computed(() => (planStore.library ? buildProgressionMap(planStore.library, planStore.levels) : []))
 
 function weekPercent(week: number): number {
   const p = planStore.weekProgress.get(week)
@@ -182,6 +186,18 @@ function toggleExpanded(itemId: string): void {
           </ul>
         </section>
       </div>
+      <section class="mt-8">
+        <h2 class="text-lg font-semibold text-ink">Progressions</h2>
+        <template v-for="(p, i) in progressions" :key="p.patternId">
+          <p
+            v-if="i === 0 || p.category !== progressions[i - 1].category"
+            class="mt-4 text-xs font-semibold uppercase tracking-wide text-muted"
+          >
+            {{ p.category }}
+          </p>
+          <ProgressionLadder :progress="p" />
+        </template>
+      </section>
     </template>
   </div>
 </template>
