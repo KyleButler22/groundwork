@@ -32,3 +32,11 @@ supabase/.temp/
 # superpowers scratch state — brainstorming-session mockups, subagent-driven-
 # development ledgers/diffs. Session-local working files, not project source.
 .superpowers/
+
+# Native worktree tooling nests feature worktrees here (a full checked-out
+# source tree + node_modules per worktree) instead of the top-level
+# .worktrees/ convention superpowers' own skill defaults to. Never tracked —
+# this was an unignored gap until it was noticed while finishing the shared
+# Alert component branch (2026-09-02); harmless only because nothing had yet
+# run a broad `git add -A` while a worktree sat here.
+.claude/worktrees/
