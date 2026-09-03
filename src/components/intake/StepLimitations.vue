@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
+import Alert from '@/components/shared/Alert.vue'
 import Spinner from '@/components/shared/Spinner.vue'
 import { db } from '@/lib/db'
 import { useIntakeStore } from '@/stores/intake'
@@ -53,10 +54,10 @@ function toggle(slug: string) {
       <input v-model="store.answers.isPregnantOrPostpartum" type="checkbox" />
       Pregnant, or fewer than 12 weeks postpartum
     </label>
-    <p v-if="store.answers.isPregnantOrPostpartum" class="rounded-xl border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">
+    <Alert v-if="store.answers.isPregnantOrPostpartum" variant="info">
       This app's plans aren't built for pregnancy or early postpartum training — please talk to your doctor or a
       pelvic-floor specialist about what's appropriate right now.
-    </p>
+    </Alert>
 
     <div class="space-y-4 border-t border-rule pt-5">
       <p class="text-sm text-muted">
