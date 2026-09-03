@@ -6,6 +6,9 @@ const props = withDefaults(
   defineProps<{
     variant: 'success' | 'error' | 'info'
     dismissible?: boolean
+    // Assumes a Lucide-shaped icon component: the template hard-codes
+    // `:size` and `:stroke-width` onto it below, so `Component` here is
+    // typed wider than what actually renders correctly.
     icon?: Component
   }>(),
   { dismissible: false, icon: undefined },
@@ -32,8 +35,9 @@ const resolvedIcon = computed(() => props.icon ?? DEFAULT_ICON[props.variant])
     :class="{
       'bg-train-wash': variant === 'success',
       'bg-warn-wash': variant === 'error',
-      'bg-panel': variant === 'info',
+      'bg-ink-soft/10': variant === 'info',
     }"
+    :role="variant === 'error' ? 'alert' : 'status'"
   >
     <div
       class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
@@ -48,6 +52,10 @@ const resolvedIcon = computed(() => props.icon ?? DEFAULT_ICON[props.variant])
     <div class="flex-1 pt-0.5 text-sm text-ink">
       <slot />
     </div>
+    <!-- Alert never self-hides on dismiss: it only emits `dismiss`, so the
+         caller owns the v-if/v-model that actually removes it. Setting
+         `dismissible` without wiring `@dismiss` renders a button that
+         looks functional but does nothing. -->
     <button
       v-if="dismissible"
       type="button"
