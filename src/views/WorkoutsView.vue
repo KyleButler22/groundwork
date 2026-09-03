@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ChevronRight, X } from '@lucide/vue'
+import { ChevronRight } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 
+import Alert from '@/components/shared/Alert.vue'
 import Skeleton from '@/components/shared/Skeleton.vue'
 import ProgressionLadder from '@/components/workout/ProgressionLadder.vue'
 import SetLogEditor from '@/components/workout/SetLogEditor.vue'
@@ -118,19 +119,17 @@ function toggleExpanded(itemId: string): void {
       </div>
 
       <Transition name="promo">
-        <div v-if="planStore.promotionMessages.length" class="mt-4 flex items-start justify-between gap-2 rounded-xl border border-train bg-train-wash px-3 py-2 text-xs text-train">
+        <Alert
+          v-if="planStore.promotionMessages.length"
+          variant="success"
+          dismissible
+          class="mt-4"
+          @dismiss="planStore.dismissPromotionMessages()"
+        >
           <ul class="space-y-1">
             <li v-for="(message, i) in planStore.promotionMessages" :key="i">{{ message }}</li>
           </ul>
-          <button
-            type="button"
-            class="flex min-h-11 min-w-11 shrink-0 items-center justify-center text-train/70 transition-colors hover:text-train"
-            aria-label="Dismiss"
-            @click="planStore.dismissPromotionMessages()"
-          >
-            <X :size="16" :stroke-width="2" aria-hidden="true" />
-          </button>
-        </div>
+        </Alert>
       </Transition>
 
       <div class="mt-4 space-y-4 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
