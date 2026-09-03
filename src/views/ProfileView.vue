@@ -2,6 +2,7 @@
 import { CircleUser, Eye, EyeOff, ListChecks, Lock, LogOut, Mail, MailCheck, Monitor, Moon, Sun } from '@lucide/vue'
 import { computed, ref } from 'vue'
 
+import Alert from '@/components/shared/Alert.vue'
 import Spinner from '@/components/shared/Spinner.vue'
 import { useSessionStore } from '@/stores/session'
 import { type ThemeChoice, useThemeStore } from '@/stores/theme'
@@ -144,11 +145,10 @@ async function handleSignOut(): Promise<void> {
           </button>
         </div>
 
-        <p v-if="confirmationSent" class="mt-4 flex items-start gap-2 rounded-xl border border-nutri bg-nutri-wash px-3 py-2 text-sm text-nutri">
-          <MailCheck :size="18" :stroke-width="1.75" class="mt-0.5 shrink-0" aria-hidden="true" />
+        <Alert v-if="confirmationSent" variant="info" :icon="MailCheck" class="mt-4">
           <span v-if="confirmationSent === 'sign_up'">Account created: check {{ email || 'your email' }} for a confirmation link before signing in.</span>
           <span v-else>If an account exists for that email, a password reset link is on its way.</span>
-        </p>
+        </Alert>
 
         <form v-else class="mt-4 space-y-3" @submit.prevent="handleSubmit">
           <label class="block">
@@ -203,7 +203,7 @@ async function handleSignOut(): Promise<void> {
             Forgot password?
           </button>
 
-          <p v-if="session.authError" class="rounded-xl border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">{{ session.authError }}</p>
+          <Alert v-if="session.authError" variant="error">{{ session.authError }}</Alert>
 
           <button
             type="submit"
