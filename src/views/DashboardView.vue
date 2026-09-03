@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ChevronRight, X } from '@lucide/vue'
+import { ChevronRight } from '@lucide/vue'
 import { computed, onMounted, ref, watch } from 'vue'
 
+import Alert from '@/components/shared/Alert.vue'
 import Skeleton from '@/components/shared/Skeleton.vue'
 import SetLogEditor from '@/components/workout/SetLogEditor.vue'
 import { findClosestToPromotion } from '@/lib/progressionMap'
@@ -106,9 +107,9 @@ const closestToPromotion = computed(() => {
       <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Today</h1>
       <p v-if="planStore.sessionStreak > 0" class="shrink-0 text-sm font-medium text-train">🔥 {{ planStore.sessionStreak }}-session streak</p>
     </div>
-    <p v-if="closestToPromotion" class="mt-1 text-sm text-muted">
-      🎯 One more good <span class="font-medium text-ink">{{ closestToPromotion.patternName }}</span> session to level up
-    </p>
+    <Alert v-if="closestToPromotion" variant="success" class="mt-1">
+      🎯 One more good <span class="font-medium">{{ closestToPromotion.patternName }}</span> session to level up
+    </Alert>
 
     <div v-if="planStore.loading" class="mt-1 space-y-2 lg:mt-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-10 lg:space-y-0">
       <section class="space-y-2">
@@ -146,22 +147,17 @@ const closestToPromotion = computed(() => {
           </div>
 
           <Transition name="promo">
-            <div
+            <Alert
               v-if="planStore.promotionMessages.length"
-              class="mt-3 flex items-start justify-between gap-2 rounded-xl border border-train bg-train-wash px-3 py-2 text-xs text-train"
+              variant="success"
+              dismissible
+              class="mt-3"
+              @dismiss="planStore.dismissPromotionMessages()"
             >
               <ul class="space-y-1">
                 <li v-for="(message, i) in planStore.promotionMessages" :key="i">{{ message }}</li>
               </ul>
-              <button
-                type="button"
-                class="flex min-h-11 min-w-11 shrink-0 items-center justify-center text-train/70 transition-colors hover:text-train"
-                aria-label="Dismiss"
-                @click="planStore.dismissPromotionMessages()"
-              >
-                <X :size="16" :stroke-width="2" aria-hidden="true" />
-              </button>
-            </div>
+            </Alert>
           </Transition>
 
           <ul class="mt-4 space-y-2">
