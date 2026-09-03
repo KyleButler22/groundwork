@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
+import Alert from '@/components/shared/Alert.vue'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useIntakeStore, TOTAL_STEPS } from '@/stores/intake'
 import { useSessionStore } from '@/stores/session'
@@ -54,9 +55,9 @@ async function handlePrimaryAction() {
         <component :is="currentComponent" />
       </KeepAlive>
 
-      <p v-if="store.submitError" class="mt-4 rounded-xl border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">
+      <Alert v-if="store.submitError" variant="error" class="mt-4">
         {{ store.submitError }}
-      </p>
+      </Alert>
       <ul v-if="store.submitWarnings.length" class="mt-4 space-y-1 rounded-xl border border-rule bg-surface px-3 py-2 text-xs text-muted">
         <li v-for="(warning, i) in store.submitWarnings" :key="i">{{ warning }}</li>
       </ul>
