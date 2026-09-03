@@ -2,6 +2,7 @@
 import { ChevronRight, Lock, LockOpen } from '@lucide/vue'
 import { computed, onMounted } from 'vue'
 
+import Alert from '@/components/shared/Alert.vue'
 import Skeleton from '@/components/shared/Skeleton.vue'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { useMealPlanStore } from '@/stores/mealPlan'
@@ -53,7 +54,7 @@ function recipeLink(entry: MealPlanEntry) {
 
     <template v-else-if="!store.hasPlan">
       <p class="mt-2 text-sm text-muted">Your weekly meal plan will appear here once generated.</p>
-      <p v-if="store.error" class="mt-3 rounded-xl border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">{{ store.error }}</p>
+      <Alert v-if="store.error" variant="error" class="mt-3">{{ store.error }}</Alert>
       <button
         type="button"
         class="mt-4 min-h-11 rounded-full bg-nutri px-5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40"
@@ -88,7 +89,7 @@ function recipeLink(entry: MealPlanEntry) {
         {{ store.generating ? 'Working…' : 'Done with this week → plan the next one' }}
       </button>
 
-      <p v-if="store.error" class="mt-3 rounded-xl border border-warn bg-warn-wash px-3 py-2 text-sm text-warn">{{ store.error }}</p>
+      <Alert v-if="store.error" variant="error" class="mt-3">{{ store.error }}</Alert>
       <ul v-if="store.warnings.length" class="mt-3 space-y-1 rounded-xl border border-rule bg-surface px-3 py-2 text-xs text-muted">
         <li v-for="(warning, i) in store.warnings" :key="i">{{ warning }}</li>
       </ul>
