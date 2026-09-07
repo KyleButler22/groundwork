@@ -6,6 +6,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import { ensureContentSeeded } from './lib/devContentSeed'
 import { router } from './router'
+import { restoreIntakeSnapshotIfPresent } from './stores/intake'
 import { useSessionStore } from './stores/session'
 
 const app = createApp(App)
@@ -25,4 +26,13 @@ const sessionReady = session.init()
 sessionReady.finally(() => app.mount('#app'))
 sessionReady.finally(() => {
   ensureContentSeeded(session.session?.user.id ?? null).catch((err) => console.error('[devContentSeed] failed:', err))
+
+  // The other half of IntakeView's sign-up-gate safety net: a fresh
+  // sign-up's email-confirmation link redirects here as a real page load,
+  // landing on the project's configured Site URL — not necessarily back
+  // on /intake — so a restored snapshot needs an explicit navigation, not
+  // just trusting the current route.
+  if (session.session && restoreIntakeSnapshotIfPresent()) {
+    router.isReady().then(() => router.push('/intake'))
+  }
 })
