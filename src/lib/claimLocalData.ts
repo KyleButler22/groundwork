@@ -5,15 +5,27 @@ import { supabase } from '@/lib/supabase'
 import { pushRow, pushRows, pushUserTargets, replaceSet } from '@/lib/sync'
 
 /**
- * Triggered once, from session.ts's onAuthStateChange, the first time a
- * real 'SIGNED_IN' event fires. Kyle's explicit choice (see the plan this
- * implements): existing local-dev-user data becomes the new account's
- * data, rather than being left orphaned or silently discarded.
+ * Triggered from session.ts's onAuthStateChange on every real 'SIGNED_IN'
+ * event (sign-up or sign-in — not a restored/persisted session on boot,
+ * that's main.ts's separate concern). Two responsibilities bundled under
+ * one name because they share the same trigger and the same real content
+ * pull, not because they're one concept:
  *
- * Eligibility check first: if the signed-into account already has any
- * real Supabase data, this does nothing — never overwrite an account's
- * real history with stale local-dev-user content just because THIS
- * browser happens to have some sitting in Dexie.
+ * 1. **Claim, at most once per account**: Kyle's explicit choice (see the
+ *    plan this implements) — existing local-dev-user data becomes the new
+ *    account's data, rather than being left orphaned or silently
+ *    discarded. Eligibility-gated (below): if the signed-into account
+ *    already has real Supabase data, or there's no local-dev-user data
+ *    sitting in Dexie to begin with, there's nothing to claim.
+ * 2. **Ensure real content, every time, unconditionally**: regardless of
+ *    claim-eligibility, `pullRealContent()` runs in EVERY branch below.
+ *    This is the only place a genuine sign-in event ever refreshes content
+ *    mid-session — main.ts's boot-time `ensureContentSeeded` only runs
+ *    once, before this store even has a session to react to, so without
+ *    this, a user who signs in without reloading the page keeps whatever
+ *    content Dexie already had (commonly the anonymous local-file movement
+ *    library a signed-out visitor sees while browsing intake — real, but
+ *    not the authoritative Supabase copy) indefinitely.
  *
  * The trickiest part isn't the user_id re-keying itself, it's that ALL SIX
  * content tables (ingredients, recipes, exercises, movement_patterns,
@@ -42,12 +54,30 @@ export async function claimLocalDataIfNeeded(realUserId: string): Promise<string
   if (realUserId === LOCAL_DEV_USER_ID) return warnings
 
   const { data: existingProfile } = await supabase.from('profiles').select('id').eq('id', realUserId).maybeSingle()
-  if (existingProfile) return warnings // this account already has real data — never clobber it
+  if (existingProfile) {
+    // Not eligible to claim (never clobber an account's real data), but a
+    // real content pull is still needed here regardless — this is also the
+    // only place a RETURNING user signing in on a fresh device/browser ever
+    // gets one mid-session (main.ts's boot-time pull only fires for a
+    // session that's already resolved BEFORE mount; nothing else re-checks
+    // content on a live SIGNED_IN event). Unconditional, not the usual
+    // `ensureContentSeeded`'s "only if empty" guard — Dexie's movement
+    // tables may already hold the anonymous local-file seed (see
+    // devContentSeed.ts) from browsing intake before signing in, which
+    // looks non-empty but isn't the real, authoritative content yet.
+    await pullRealContent()
+    return warnings
+  }
 
   const hasLocalData =
     (await db.workoutPlans.where('userId').equals(LOCAL_DEV_USER_ID).count()) > 0 ||
     (await db.mealPlans.where('userId').equals(LOCAL_DEV_USER_ID).count()) > 0
-  if (!hasLocalData) return warnings
+  if (!hasLocalData) {
+    // Brand new account, nothing local to claim — but same reasoning as
+    // just above: still needs a real, unconditional pull, not a skip.
+    await pullRealContent()
+    return warnings
+  }
 
   console.info('[claimLocalData] Claiming existing local-dev-user data for the newly signed-in account.')
 

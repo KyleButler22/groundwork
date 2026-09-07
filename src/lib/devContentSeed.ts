@@ -3,38 +3,52 @@ import { fromRow, pullContentTable } from '@/lib/sync'
 import { isConfigured } from '@/lib/supabase'
 
 /**
- * Two content sources, chosen per caller: real Supabase content (once
- * signed in — content tables are `to authenticated` per RLS, see
- * 0009_rls.sql, so an unauthenticated read can never work regardless of
- * whether a project is configured) or the local seed files (dev only,
- * signed out, or no project configured at all).
+ * Two content domains, two different rules for where they can come from:
  *
- * Local-file loading is dev-mode only, and never bundled into a
- * production build: every seed SQL file is loaded via a DYNAMIC import
- * gated behind `import.meta.env.DEV`, which Vite inlines as a literal
- * `false` in production and dead-code-eliminates the whole branch —
- * including the dynamic imports and the `import.meta.glob` below — out of
- * the bundle. This is exactly the "content tables never ship in the app
- * bundle" rule from docs/schema.md; it doesn't get suspended just because
- * the content is arriving from a local file instead of Supabase.
+ * - **Movement library** (patterns/exercises/edges/equipment/body regions/
+ *   contraindications): small, fixed, unlicensed reference data — ~60
+ *   exercises total. Bundled into EVERY build, dev and production alike,
+ *   via a local-file seed, so intake is fully navigable (equipment step,
+ *   body-region picker, placement tests) for a signed-out visitor who has
+ *   no account yet. Once signed in, a real Supabase pull (RLS: content
+ *   tables are `to authenticated`, see 0009_rls.sql) always replaces it —
+ *   see claimLocalData.ts, the only place that happens mid-session.
+ * - **Food/recipes** (the 200-recipe corpus + reference tables): real
+ *   content requires an authenticated read, same as the movement library,
+ *   but has NO local-file fallback in production — signed out there means
+ *   empty, by design. This is the actual "content tables never ship in
+ *   the app bundle" rule from docs/schema.md, which exists to avoid an app
+ *   store review cycle to fix a recipe typo once this ships natively
+ *   (there is no native build yet, and this corpus is orders of magnitude
+ *   bigger than the movement library — not a case for the same exception).
+ *   Dev mode gets the same local-file fallback the movement library does,
+ *   signed out, purely for convenience working on food/meal features
+ *   without a live project — never bundled into a production build:
+ *   `ensureFoodAndRecipesSeeded`'s dynamic imports are gated behind
+ *   `import.meta.env.DEV`, which Vite inlines as a literal `false` in
+ *   production and dead-code-eliminates the whole branch out of the
+ *   bundle, `import.meta.glob` included.
  *
- * The two content domains (movement library, food/recipes) are seeded
- * independently, each gated on its OWN table being empty — not one shared
- * gate on movementPatterns. An existing dev install that already seeded
- * the movement library before the food/recipe tables existed would
- * otherwise never pick up this seeding, since movementPatterns.count()
- * would already be > 0 and short-circuit the whole function.
+ * The two content domains are seeded independently, each gated on its OWN
+ * table being empty — not one shared gate on movementPatterns. An existing
+ * dev install that already seeded the movement library before the food/
+ * recipe tables existed would otherwise never pick up this seeding, since
+ * movementPatterns.count() would already be > 0 and short-circuit the
+ * whole function.
  */
 export async function ensureContentSeeded(userId: string | null): Promise<void> {
   if (!import.meta.env.DEV) {
     if (isConfigured && userId) {
       if ((await db.movementPatterns.count()) === 0) await pullRealContent()
-    } else if (!isConfigured) {
-      console.warn('[devContentSeed] No Supabase project and this is a production build — movement and food content is empty.')
+    } else {
+      // Signed out (or no project configured at all): no real pull is
+      // possible yet, but the movement library still ships in this build
+      // (see the module comment above) so intake works end to end anyway.
+      // Food/recipes stay empty here — no bundled fallback for those, by
+      // design — Meals shows its own "not ready yet" state for that gap.
+      await ensureMovementLibrarySeeded()
+      if (!isConfigured) console.warn('[devContentSeed] No Supabase project configured — food/recipe content will stay empty until one exists.')
     }
-    // A production build with a configured project but nobody signed in
-    // yet has no content until they do — there's no local-file fallback
-    // to fall through to here, by design (see the module comment above).
     return
   }
 
