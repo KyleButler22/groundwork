@@ -50,7 +50,7 @@ function toggle(slug: string) {
       </button>
     </div>
 
-    <label class="flex min-h-11 items-center gap-2 rounded-xl border border-rule px-3 text-sm text-ink">
+    <label class="flex min-h-11 items-center gap-2 rounded-xl border border-rule px-3 py-3 text-sm text-ink">
       <input v-model="store.answers.isPregnantOrPostpartum" type="checkbox" />
       Pregnant, or fewer than 12 weeks postpartum
     </label>

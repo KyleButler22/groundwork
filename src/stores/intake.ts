@@ -77,7 +77,7 @@ function freshAnswers(): IntakeAnswers {
     sexAtBirth: null,
     heightCm: null,
     weightKg: null,
-    units: 'metric',
+    units: 'imperial',
     neatFactor: null,
     daysPerWeek: null,
     sessionMinutes: null,

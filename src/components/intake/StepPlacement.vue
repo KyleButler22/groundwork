@@ -64,7 +64,7 @@ function setSkipped(skipped: boolean) {
       </p>
     </div>
 
-    <label class="flex min-h-11 items-center gap-2 rounded-xl border border-rule px-3 text-sm text-ink">
+    <label class="flex min-h-11 items-center gap-2 rounded-xl border border-rule px-3 py-3 text-sm text-ink">
       <input type="checkbox" :checked="store.answers.placement.skipped" @change="setSkipped(($event.target as HTMLInputElement).checked)" />
       Skip this — start me at a safe, middle level on everything
     </label>
@@ -115,7 +115,7 @@ function setSkipped(skipped: boolean) {
           <input v-model.number="local.pullUpReps" type="number" inputmode="numeric" class="mt-1 min-h-11 w-full rounded-xl border border-rule px-3" />
         </label>
         <label v-else class="mt-2 block text-sm">
-          How long can you hang from the bar, or hold yourself at the top?
+          How long can you hang from the bar, or hold yourself at the top? (in seconds)
           <input v-model.number="local.hangSeconds" type="number" inputmode="numeric" placeholder="seconds" class="mt-1 min-h-11 w-full rounded-xl border border-rule px-3" />
         </label>
       </fieldset>
@@ -130,7 +130,7 @@ function setSkipped(skipped: boolean) {
       <!-- Core -->
       <label class="block rounded-xl border border-rule p-4 text-sm">
         <span class="font-medium text-ink">Plank</span>
-        <span class="mt-1 block text-muted">How long can you hold a full plank with a straight line, hips level?</span>
+        <span class="mt-1 block text-muted">How long can you hold a full plank with a straight line, hips level? (in seconds)</span>
         <input v-model.number="local.plankSeconds" type="number" inputmode="numeric" placeholder="seconds" class="mt-2 min-h-11 w-full rounded-xl border border-rule px-3" />
       </label>
 
@@ -142,7 +142,7 @@ function setSkipped(skipped: boolean) {
           I can't hold a wall handstand at all right now
         </label>
         <label v-if="!local.cannotHoldHandstand" class="mt-2 block text-sm">
-          How long can you hold a wall handstand (chest or back to the wall)?
+          How long can you hold a wall handstand (chest or back to the wall)? (in seconds)
           <input v-model.number="local.handstandSeconds" type="number" inputmode="numeric" placeholder="seconds" class="mt-1 min-h-11 w-full rounded-xl border border-rule px-3" />
         </label>
       </fieldset>
