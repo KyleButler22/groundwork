@@ -8,8 +8,8 @@ import { useSessionStore } from '@/stores/session'
 // Shared by ProfileView (account settings) and IntakeView (the sign-up
 // gate just before generating a plan) — extracted rather than duplicated
 // since both need the exact same sign in / sign up / forgot-password
-// flow, styling included. No props: it owns its own local form state and
-// talks to the session store directly, same as it did inline in
+// flow, styling included. Otherwise no props: it owns its own local form
+// state and talks to the session store directly, same as it did inline in
 // ProfileView before this split. A caller that needs to react to a
 // successful auth (IntakeView does) watches `session.session` itself
 // rather than this component emitting an event — that's already the one
@@ -18,7 +18,8 @@ import { useSessionStore } from '@/stores/session'
 const session = useSessionStore()
 
 type Mode = 'sign_in' | 'sign_up' | 'reset'
-const mode = ref<Mode>('sign_in')
+const props = withDefaults(defineProps<{ initialMode?: Mode }>(), { initialMode: 'sign_in' })
+const mode = ref<Mode>(props.initialMode)
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')

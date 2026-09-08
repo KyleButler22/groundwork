@@ -95,7 +95,7 @@ async function handlePrimaryAction() {
 
       <div v-if="needsAuthGate" class="mt-6 rounded-2xl border border-rule bg-surface p-4 shadow-card">
         <p class="mb-3 text-sm text-ink">One last step — create a free account to generate your workout and meal plan.</p>
-        <AuthForm />
+        <AuthForm initial-mode="sign_up" />
       </div>
 
       <Alert v-if="store.submitError" variant="error" class="mt-4">

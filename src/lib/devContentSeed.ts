@@ -138,7 +138,12 @@ async function ensureMovementLibrarySeeded(): Promise<void> {
   const existing = await db.movementPatterns.count()
   if (existing > 0) return
 
-  console.info('[devContentSeed] No Supabase project configured — seeding the movement library from the local seed file (dev only).')
+  // Not always "no project configured" any more — this also runs, with a
+  // real project present, for every signed-out visitor in production (see
+  // ensureContentSeeded's module comment). Describes what it's doing, not
+  // an assumed cause; each caller already logs its own more specific
+  // reason (or nothing, when the bundled library is simply expected).
+  console.info('[devContentSeed] Seeding the movement library from the local seed file.')
 
   const { parseMovementLibrarySeed } = await import('@/generators/__fixtures__/parseMovementLibrarySeed')
   // Deliberately outside src/ — this is the actual seed file, not a copy.

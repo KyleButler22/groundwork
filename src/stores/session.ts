@@ -52,7 +52,17 @@ export const useSessionStore = defineStore('session', () => {
     authError.value = null
     authPending.value = true
     try {
-      const { data, error } = await supabase.auth.signUp({ email, password })
+      // Without an explicit emailRedirectTo, Supabase falls back to the
+      // project's dashboard-configured Site URL — which is easy to leave
+      // on its placeholder default (http://localhost:3000) and forget,
+      // since nothing local ever exercises the email link to notice. This
+      // makes the confirmation link always point back to wherever sign-up
+      // actually happened (Amplify, a preview URL, local dev, all of it)
+      // instead of depending on one static dashboard setting. Supabase
+      // still requires this exact origin to be on the project's Redirect
+      // URLs allow-list — an unlisted origin is silently ignored in favor
+      // of the broken default, not rejected with an error.
+      const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } })
       if (error) {
         authError.value = error.message
         return false
@@ -90,7 +100,11 @@ export const useSessionStore = defineStore('session', () => {
     authError.value = null
     authPending.value = true
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email)
+      // Same reasoning as signUp's emailRedirectTo above — this call takes
+      // its redirect as a sibling `redirectTo` field, not nested under an
+      // `options` object the way signUp's is; easy to get wrong by pattern-
+      // matching the other call, so worth this note.
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin })
       if (error) {
         authError.value = error.message
         return false
