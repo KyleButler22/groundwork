@@ -49,13 +49,29 @@ onMounted(() => {
 // wrong transient value and got stuck on it, permanently, even across a
 // hard reload. `loading` only flips to false once loadActivePlan() has
 // fully finished every assignment, so reading nextSession then is safe.
+//
+// Deliberately NOT `{ immediate: true }` — planStore is a singleton that
+// outlives this component, so `loading` can already be `false` (left over
+// from whatever this store last loaded) the instant a FRESH mount of this
+// same component runs its setup, before onMounted's loadActivePlan() call
+// below has even started. An immediate watcher would then latch RIGHT
+// THEN against the store's stale leftover sessions/logs — real symptom,
+// reproduced live: retake the intake questionnaire (which regenerates a
+// plan on /intake, then routes here), and Dashboard showed "you've
+// completed every session" over a brand new, completely unstarted plan,
+// because it had latched onto whatever the OLD plan's store state
+// happened to be a tick before the new plan was even queried. Since
+// loadActivePlan() always sets loading true then false again — even from
+// an already-false starting point, `false → true` is a genuine change —
+// a non-immediate watcher is guaranteed to fire on ITS true → false
+// transition specifically, never on leftover state from before this
+// mount.
 const displayedSessionId = ref<string | null>(null)
 watch(
   () => planStore.loading,
   (loading) => {
     if (!loading && displayedSessionId.value === null) displayedSessionId.value = planStore.nextSession?.id ?? null
   },
-  { immediate: true },
 )
 const displayedSession = computed(() => planStore.sessions.find((s) => s.id === displayedSessionId.value) ?? null)
 
