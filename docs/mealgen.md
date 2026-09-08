@@ -190,10 +190,12 @@ Two distinct actions — conflating them is a real UX failure (rerolling a whole
 
 | Action | Seed | Exclusions | Scope |
 |---|---|---|---|
-| Regenerate week | `hash(seed, ++regen_count)` | all current unlocked recipes | Unlocked slots only; `is_locked` entries untouched |
-| Swap one meal | `hash(seed, day, slot, n)` | just that recipe | Re-score that slot, repair only that day |
+| Regenerate week | `hash(seed, ++regen_count)` | all current unlocked recipes | Unlocked slots only; `is_locked` entries untouched; repairs normally |
+| Swap one meal | `hash(seed, day, slot, n)` | just that recipe | Re-score that slot only — no repair pass, so no other slot (same day or not) is ever touched |
 
 Both cost nothing — no network, no model call, no server — which is the entire payoff of deterministic generation, since the regenerate button will get hammered. Every rejection is also signal: write `user_recipe_feedback` on a swap; a recipe swapped away twice should probably stop appearing.
+
+**Revised 2026-09-07** (Kyle's call): swap originally repaired the whole affected day too (so a snack or lunch could shift to absorb the new pick's macro difference) — changed to touch only the target slot after real usage found "I swapped one meal and something else changed too" surprising, especially on a day with few active slots where that reads as "the whole day changed." A day left further out of tolerance by a swap is fixed by a full regenerate, which still repairs normally.
 
 ## Failure modes to detect before assembly, not during
 

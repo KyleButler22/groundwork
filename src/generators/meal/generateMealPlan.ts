@@ -192,19 +192,24 @@ export function regenerateWeek(
 
 /**
  * docs/mealgen.md §9's "Swap one meal" row: re-scores just that slot
- * against everything else held fixed, then repairs only that day (or
- * both affected days — see below). Every other entry from
- * `previousEntries` — locked or not — is passed through as a held-fixed
- * entry for this call only; that's what makes the scope "just this
- * slot," not a statement that they've become permanently locked in the
- * plan itself.
+ * against everything else held fixed, and ONLY that slot — repair is
+ * skipped entirely (see the empty onlyRepairDays below), so the day's
+ * other meals are never touched, even if the new pick shifts that day's
+ * macro total further from its target than repair would tolerate for a
+ * fresh generation. Every other entry from `previousEntries` — locked or
+ * not — is passed through as a held-fixed entry for this call only;
+ * that's what makes the scope "just this slot," not a statement that
+ * they've become permanently locked in the plan itself.
  *
- * "repairs only that day" means exactly that — DAY, not slot: repair.ts's
- * own steps 2/3 can swap the day's snack or lunch to absorb whatever
- * macro shift the new pick just introduced (§7), which is a real,
- * intended side effect, not a bug. Swapping the lunch can legitimately
- * change that same day's snack too; it will never touch a different day
- * (or two days, for a dinner swap that has a leftover — see below).
+ * This was originally "repair only that DAY, not slot" — repair.ts's
+ * steps 2/3 could swap the day's snack or lunch too, to absorb whatever
+ * macro shift the new pick introduced (§7). Kyle's call (2026-09-07):
+ * that reads as "I asked to swap one meal and something else changed
+ * too" even though it's the same day, especially on a day with only two
+ * active slots, where swapping one silently changing the other looks
+ * exactly like "the whole day changed." Precision over on-target macros
+ * for THIS one action; a day left further out of tolerance by a swap can
+ * still be fixed by a full week regenerate, which repairs normally.
  *
  * Swapping a leftover entry itself is refused outright: there's nothing
  * coherent to re-score it against once it's decoupled from its parent —
@@ -266,8 +271,6 @@ export function swapOneMeal(
   })
   const newSeed = hashSeed(input.seed, 'swap', serveOn, slot, swapCount)
   const excludedRecipeIds = new Set([...(input.excludedRecipeIds ?? []), ...(target ? [target.recipeId] : [])])
-  const onlyRepairDays = new Set([serveOn])
-  if (leftoverOfTarget) onlyRepairDays.add(leftoverOfTarget.serveOn)
 
   const result = generateMealPlan({
     ...input,
@@ -275,7 +278,13 @@ export function swapOneMeal(
     lockedEntries: keepEntries,
     excludedRecipeIds,
     dinnerDayPlanOverride: reconstructDinnerDayPlanFromEntries(previousEntries, input.weekStartsOn),
-    onlyRepairDays,
+    // Empty, not the affected day(s) — repairWeek's own loop skips every
+    // day not in onlyRepairDays, so an empty set means "run repair over
+    // zero days," i.e. don't repair at all. This is what makes a swap
+    // touch only the target slot (and its leftover pair, if any) — see
+    // this function's own doc comment above for why, and repair.ts's
+    // `onlyDays` for the mechanism.
+    onlyRepairDays: new Set(),
   })
 
   return result

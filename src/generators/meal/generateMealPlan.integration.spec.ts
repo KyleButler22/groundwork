@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { loadRealFoodSeed } from '@/generators/__fixtures__/loadRealFoodSeed'
-import type { UserRecipeFeedback } from '@/types/domain'
+import type { MealPlanEntry, UserRecipeFeedback } from '@/types/domain'
 
 import { buildGroceryList } from './groceryList'
 import { generateMealPlan, regenerateWeek, swapOneMeal, type GenerateMealPlanInput } from './generateMealPlan'
@@ -198,12 +198,12 @@ describe('generateMealPlan against the real corpus', () => {
     expect(regenerated.entries).not.toEqual(first.entries)
   })
 
-  it('swapOneMeal against the real corpus changes the targeted slot and leaves every OTHER DAY untouched', () => {
-    // docs/mealgen.md §9: swapping re-scores that slot and repairs only
-    // that day — repair (§7) can legitimately touch another slot on the
-    // SAME day (e.g. rescaling or swapping the snack to absorb the macro
-    // shift a new lunch pick introduces), so "only the targeted slot"
-    // is too strong a claim; "only that day" is the actual contract.
+  it('swapOneMeal against the real corpus changes ONLY the targeted slot — no other entry, same day or not', () => {
+    // docs/mealgen.md §9, revised 2026-09-07 (Kyle's call): swapping
+    // re-scores that slot alone and skips repair entirely, specifically
+    // so it can never touch another slot even on the SAME day — the
+    // original "repair that day too" contract read as "I swapped one
+    // meal and something else changed too" in real use.
     const first = generateMealPlan(baseInput({ seed: 8 }))
     const targetDay = first.entries.find((e) => e.slot === 'lunch')!.serveOn
     const swapped = swapOneMeal(baseInput({ seed: 8 }), first.entries, targetDay, 'lunch')
@@ -212,9 +212,10 @@ describe('generateMealPlan against the real corpus', () => {
     const after = swapped.entries.find((e) => e.serveOn === targetDay && e.slot === 'lunch')!
     expect(after.recipeId).not.toBe(before.recipeId)
 
-    const otherDaysAfter = swapped.entries.filter((e) => e.serveOn !== targetDay).map((e) => ({ serveOn: e.serveOn, slot: e.slot, recipeId: e.recipeId }))
-    const otherDaysBefore = first.entries.filter((e) => e.serveOn !== targetDay).map((e) => ({ serveOn: e.serveOn, slot: e.slot, recipeId: e.recipeId }))
-    expect(otherDaysAfter).toEqual(otherDaysBefore)
+    const isTarget = (e: MealPlanEntry) => e.serveOn === targetDay && e.slot === 'lunch'
+    const summarize = (entries: readonly MealPlanEntry[]) =>
+      entries.filter((e) => !isTarget(e)).map((e) => ({ serveOn: e.serveOn, slot: e.slot, recipeId: e.recipeId }))
+    expect(summarize(swapped.entries)).toEqual(summarize(first.entries))
   })
 
   it('swapping a fresh dinner with a real leftover propagates the new recipe to it, and to nowhere else', () => {

@@ -100,14 +100,15 @@ describe('regenerateWeek', () => {
 })
 
 describe('swapOneMeal', () => {
-  it('changes only entries on the targeted DAY (repair may also touch another slot that same day — §7)', () => {
+  it('changes only the exact targeted slot — repair is skipped entirely (2026-09-07), so even a same-day sibling slot is never touched', () => {
     const first = generateMealPlan(baseInput({ seed: 20 }))
     const targetDay = first.entries.find((e) => e.slot === 'snack')!.serveOn
     const swapped = swapOneMeal(baseInput({ seed: 20 }), first.entries, targetDay, 'snack')
 
-    const otherDaysAfter = swapped.entries.filter((e) => e.serveOn !== targetDay).map((e) => ({ serveOn: e.serveOn, slot: e.slot, recipeId: e.recipeId }))
-    const otherDaysBefore = first.entries.filter((e) => e.serveOn !== targetDay).map((e) => ({ serveOn: e.serveOn, slot: e.slot, recipeId: e.recipeId }))
-    expect(otherDaysAfter).toEqual(otherDaysBefore)
+    const isTarget = (e: MealPlanEntry) => e.serveOn === targetDay && e.slot === 'snack'
+    const summarize = (entries: readonly MealPlanEntry[]) =>
+      entries.filter((e) => !isTarget(e)).map((e) => ({ serveOn: e.serveOn, slot: e.slot, recipeId: e.recipeId }))
+    expect(summarize(swapped.entries)).toEqual(summarize(first.entries))
   })
 
   it('passes the previous recipe at that slot as an exclusion', () => {
