@@ -109,6 +109,17 @@ const justCheckedId = ref<string | null>(null)
 // just doesn't render rather than showing a stale or empty-looking card.
 const todayIso = new Date().toISOString().slice(0, 10)
 const todayMeals = computed(() => mealStore.entriesByDay.get(todayIso) ?? [])
+
+// "Sept 9, 2026" — not Intl's standard short-month form (which gives
+// "Sep", 3 letters, for September specifically); this list matches the
+// familiar AP-style month abbreviations instead (March/April/May/June/
+// July spelled out in full since they're already short, the rest
+// shortened), just without AP's own trailing period. Read via local
+// Date getters, not toISOString(), so this always matches the date on
+// the viewer's own wall clock rather than UTC's.
+const MONTH_NAMES = ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
+const now = new Date()
+const todayDisplay = `${MONTH_NAMES[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`
 const SLOT_LABEL: Record<MealSlot, string> = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' }
 
 const closestToPromotion = computed(() => {
@@ -119,8 +130,11 @@ const closestToPromotion = computed(() => {
 
 <template>
   <div class="p-4 lg:p-0">
-    <div class="flex items-baseline justify-between gap-3">
-      <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Today</h1>
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <h1 class="text-2xl font-semibold tracking-tight text-ink lg:text-3xl">Today</h1>
+        <p class="text-sm text-muted">{{ todayDisplay }}</p>
+      </div>
       <p v-if="planStore.sessionStreak > 0" class="shrink-0 text-sm font-medium text-train">🔥 {{ planStore.sessionStreak }}-session streak</p>
     </div>
     <Alert v-if="closestToPromotion" variant="success" class="mt-1">
