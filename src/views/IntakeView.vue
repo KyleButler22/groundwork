@@ -101,9 +101,6 @@ async function handlePrimaryAction() {
       <Alert v-if="store.submitError" variant="error" class="mt-4">
         {{ store.submitError }}
       </Alert>
-      <ul v-if="store.submitWarnings.length" class="mt-4 space-y-1 rounded-xl border border-rule bg-surface px-3 py-2 text-xs text-muted">
-        <li v-for="(warning, i) in store.submitWarnings" :key="i">{{ warning }}</li>
-      </ul>
     </div>
 
     <footer class="border-t border-rule bg-surface p-4 pb-safe-4">

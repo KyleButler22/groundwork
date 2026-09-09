@@ -90,7 +90,6 @@ const equipmentGroups = computed(() => {
       <div class="mt-4 flex h-36 items-center justify-center rounded-2xl border border-rule bg-train-wash text-train shadow-card">
         <PatternIcon :pattern-slug="store.patternSlug(exercise.patternId)" />
       </div>
-      <p class="mt-1.5 text-center text-xs text-muted">A generic {{ store.patternName(exercise.patternId).toLowerCase() }} icon, not this specific exercise.</p>
 
       <p v-if="targetLabel" class="mt-4 font-mono text-sm tabular-nums text-ink">{{ targetLabel }}</p>
 
