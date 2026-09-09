@@ -29,7 +29,7 @@ import type { Goal, MealPlan, MealSlot, Profile, SexAtBirth, UnitPreference, Use
 
 export const TOTAL_STEPS = 8
 
-export interface IntakeAnswers {
+interface IntakeAnswers {
   // Step 1 — about you
   birthYear: number | null
   sexAtBirth: SexAtBirth | null
@@ -377,8 +377,24 @@ export const useIntakeStore = defineStore('intake', () => {
           // the archive so the push below (a second, real gap found the
           // same way — archiving locally never used to reach Supabase at
           // all) has something to push.
-          previousActivePlan = (await db.workoutPlans.where('status').equals('active').first()) ?? null
-          await db.workoutPlans.where('status').equals('active').modify({ status: 'archived', updatedAt: archivedAt })
+          //
+          // Scoped to THIS userId, not just status — a second, more
+          // serious real gap found the same way (2026-09-09): unscoped,
+          // this reads/archives whatever row is active REGARDLESS of
+          // owner, so on a device that's ever cached more than one
+          // account's data, retaking intake as one user could silently
+          // archive a completely different user's still-legitimate plan.
+          previousActivePlan =
+            (await db.workoutPlans
+              .where('userId')
+              .equals(userId)
+              .and((p) => p.status === 'active')
+              .first()) ?? null
+          await db.workoutPlans
+            .where('userId')
+            .equals(userId)
+            .and((p) => p.status === 'active')
+            .modify({ status: 'archived', updatedAt: archivedAt })
           await db.workoutPlans.add(materializedPlan)
           await db.planSessions.bulkAdd(sessions)
           await db.planItems.bulkAdd(items)
@@ -461,9 +477,19 @@ export const useIntakeStore = defineStore('intake', () => {
           let previousActiveMealPlan: MealPlan | null = null
           await db.transaction('rw', [db.mealPlans, db.mealPlanEntries, db.groceryLists, db.groceryItems], async () => {
             // Same archive-before-add reasoning as the workout plan above,
-            // including the same "push the archived one too" fix.
-            previousActiveMealPlan = (await db.mealPlans.where('status').equals('active').first()) ?? null
-            await db.mealPlans.where('status').equals('active').modify({ status: 'archived', updatedAt: mealArchivedAt })
+            // including the same "push the archived one too" fix, and the
+            // same userId-scoping fix (see that block's comment).
+            previousActiveMealPlan =
+              (await db.mealPlans
+                .where('userId')
+                .equals(userId)
+                .and((p) => p.status === 'active')
+                .first()) ?? null
+            await db.mealPlans
+              .where('userId')
+              .equals(userId)
+              .and((p) => p.status === 'active')
+              .modify({ status: 'archived', updatedAt: mealArchivedAt })
             await db.mealPlans.add(materializedMealPlan)
             await db.mealPlanEntries.bulkAdd(materializedMealEntries)
             await db.groceryLists.add(materializedGroceryList)
@@ -569,68 +595,3 @@ export const useIntakeStore = defineStore('intake', () => {
     FAT_LOSS_RATE_OPTIONS_KG_PER_WEEK,
   }
 })
-
-const INTAKE_SNAPSHOT_KEY = 'groundwork:intake-snapshot'
-
-/**
- * A narrow safety net for exactly one risk: IntakeView's sign-up gate (the
- * last step, signed out) can send someone to a real page reload they don't
- * control — this Supabase project requires email confirmation by default,
- * so a fresh sign-up navigates to the user's inbox, and the confirmation
- * link's redirect is a real page load, not an in-SPA transition. Without
- * this, that reload wipes the in-memory Pinia state holding everything
- * they just answered. Deliberately narrow, not a general persistence
- * layer: intake has never survived a reload anywhere else in the flow (an
- * accepted, unchanged, pre-existing characteristic), and this only exists
- * to cover the one NEW reload risk this gate introduces — see the two
- * call sites (IntakeView.vue's watchers) for exactly when it's written
- * and cleared.
- */
-export function saveIntakeSnapshot(answers: IntakeAnswers, step: number): void {
-  try {
-    localStorage.setItem(INTAKE_SNAPSHOT_KEY, JSON.stringify({ answers, step }))
-  } catch {
-    // Best-effort — a full or blocked localStorage just means the
-    // fallback (redo the questionnaire after confirming) applies, same as
-    // if this safety net didn't exist at all.
-  }
-}
-
-export function clearIntakeSnapshot(): void {
-  try {
-    localStorage.removeItem(INTAKE_SNAPSHOT_KEY)
-  } catch {
-    // Nothing to do — see saveIntakeSnapshot's comment.
-  }
-}
-
-/**
- * Called once from main.ts, after a real session resolves at boot (the
- * confirmation link's redirect lands here). Restores a snapshot saved by
- * saveIntakeSnapshot above, if one is waiting, and always clears it
- * immediately after reading — restore is one-shot, not a standing cache.
- * Returns true when it actually restored something, so main.ts knows to
- * navigate to /intake (the confirmation redirect lands on the project's
- * configured Site URL, not necessarily back on the intake route itself).
- */
-export function restoreIntakeSnapshotIfPresent(): boolean {
-  let raw: string | null
-  try {
-    raw = localStorage.getItem(INTAKE_SNAPSHOT_KEY)
-  } catch {
-    return false
-  }
-  if (!raw) return false
-  clearIntakeSnapshot()
-
-  try {
-    const { answers, step } = JSON.parse(raw) as { answers: IntakeAnswers; step: number }
-    const store = useIntakeStore()
-    Object.assign(store.answers, answers)
-    store.step = step
-    return true
-  } catch (err) {
-    console.error('[intake] Failed to restore a saved intake snapshot:', err)
-    return false
-  }
-}

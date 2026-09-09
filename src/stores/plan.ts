@@ -229,7 +229,16 @@ export const usePlanStore = defineStore('plan', () => {
   async function loadActivePlan(userId: string) {
     loading.value = true
     if (userId !== LOCAL_DEV_USER_ID) await pullWorkoutData(userId)
-    const active = await db.workoutPlans.where('status').equals('active').first()
+    // Scoped to userId, not just status — unscoped, this returned
+    // WHATEVER plan happened to be active regardless of owner, so a
+    // device that had ever cached a real account's plan kept showing it
+    // even signed out, or signed in as someone else (2026-09-09, found
+    // live: Kyle signed out and still saw his own already-generated plan).
+    const active = await db.workoutPlans
+      .where('userId')
+      .equals(userId)
+      .and((p) => p.status === 'active')
+      .first()
     plan.value = active ?? null
 
     if (active) {

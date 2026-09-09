@@ -225,7 +225,13 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
 
     if (userId !== LOCAL_DEV_USER_ID) await pullMealData(userId)
 
-    const active = await db.mealPlans.where('status').equals('active').first()
+    // Scoped to userId, not just status — see plan.ts's loadActivePlan
+    // for the full reasoning (same bug, same fix, found the same day).
+    const active = await db.mealPlans
+      .where('userId')
+      .equals(userId)
+      .and((p) => p.status === 'active')
+      .first()
     plan.value = active ?? null
 
     if (active) {
@@ -344,9 +350,19 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
         // so the old plan stayed 'active' remotely forever) has a row to
         // push; a real fresh generate/advanceToNextWeek has one, a
         // regenerate/swap doesn't (existingPlanId is set, this branch
-        // never runs, nothing to archive).
-        previousActivePlan = (await db.mealPlans.where('status').equals('active').first()) ?? null
-        await db.mealPlans.where('status').equals('active').modify({ status: 'archived', updatedAt: archivedAt })
+        // never runs, nothing to archive). Scoped to userId, not just
+        // status, same fix and reasoning as plan.ts's loadActivePlan.
+        previousActivePlan =
+          (await db.mealPlans
+            .where('userId')
+            .equals(userId)
+            .and((p) => p.status === 'active')
+            .first()) ?? null
+        await db.mealPlans
+          .where('userId')
+          .equals(userId)
+          .and((p) => p.status === 'active')
+          .modify({ status: 'archived', updatedAt: archivedAt })
         await db.mealPlans.add(materializedPlan)
       }
       await db.mealPlanEntries.bulkAdd(materializedEntries)
