@@ -2,9 +2,10 @@
 -- Adds the labeled-step "how to do it" text shown on the exercise detail
 -- page (src/views/ExerciseView.vue) alongside the one-line `cues`. The
 -- update block below is a byte-identical copy of the "how-to instructions"
--- block in supabase/seed/001_movement_library.sql — kept in sync by hand,
--- like the rest of the movement library (the seed isn't applied to the
--- live DB; db reset would wipe real user data). See
+-- block in supabase/seed/001_movement_library.sql at the time this
+-- migration was written (the seed isn't applied to the live DB; db reset
+-- would wipe real user data). Once this has run, it's a historical record:
+-- a later how_to change ships as a new migration, not an edit here. See
 -- docs/superpowers/specs/2026-09-10-exercise-how-to-design.md.
 --
 -- Content table, no RLS/trigger change: `exercises` is already

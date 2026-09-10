@@ -307,11 +307,15 @@ insert into exercise_contraindications (exercise_id, region_id, severity) values
 -- src/lib/exerciseHowTo.ts + src/views/ExerciseView.vue), shown alongside
 -- the one-line `cues`. Newline-separated "Label: detail" lines, the last
 -- always a cautionary "Common mistake:" line (parseMovementLibrarySeed's
--- assertSeedShape enforces both). NO semicolons and NO double-hyphens in
--- the text — scripts/verify-sql.mjs's statement splitter is not
--- quote-aware. Migration 0011_exercise_how_to.sql carries a byte-identical
--- copy of every statement below for the live DB. Ordered by exercise id
--- (the seed's insert order): reps rungs, then holds, then distance.
+-- assertSeedShape enforces both). No semicolons and no "--" in the text:
+-- conservative hygiene — the parser and verify-sql.mjs both handle the
+-- update block fine now, but these characters broke the positional-column
+-- design this replaced, and verify-movement-graph.mjs still strips "--"
+-- naively. Migration 0011_exercise_how_to.sql carries a byte-identical
+-- copy of every statement below for the live DB; once 0011 has been
+-- applied, a later how_to change ships as a NEW migration, not an edit
+-- here + 0011. Ordered by exercise id (the seed's insert order): reps
+-- rungs, then holds, then distance.
 update exercises set how_to =
 'Setup: Stand a bit more than arm''s length from a wall and put your hands flat on it at shoulder height, a little wider than your shoulders.
 Movement: Keep a straight line from head to heels and bend your elbows to bring your chest toward the wall, then push back to the start.

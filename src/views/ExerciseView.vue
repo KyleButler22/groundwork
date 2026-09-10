@@ -10,11 +10,12 @@ import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { usePlanStore } from '@/stores/plan'
 import { useSessionStore } from '@/stores/session'
 
-// How to do one exercise: pattern + a generic movement icon, the real
-// per-exercise coaching cue authored with the movement library, its
-// target reps/hold/distance, and any equipment it needs. Reached by
-// tapping an exercise in WorkoutsView or Dashboard's today's-session list
-// — mirrors RecipeView.vue's shape exactly (same "reads store, never
+// How to do one exercise: pattern + a generic movement icon, its target
+// reps/hold/distance, the labeled-step `how_to` instructions (parsed by
+// exerciseHowTo.ts, cautionary line tinted), the one-line `cues` as a
+// secondary "Quick cue", and any equipment it needs. Reached by tapping
+// an exercise in WorkoutsView or Dashboard's today's-session list —
+// mirrors RecipeView.vue's shape exactly (same "reads store, never
 // touches Dexie directly" rule). Also a valid standalone deep link.
 const route = useRoute()
 const router = useRouter()
