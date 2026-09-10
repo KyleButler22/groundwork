@@ -22,6 +22,7 @@ function exercise(overrides: Partial<Exercise> & Pick<Exercise, 'id' | 'patternI
     isUnilateral: false,
     demoUrl: null,
     cues: null,
+    howTo: null,
     isActive: true,
     ...overrides,
   }

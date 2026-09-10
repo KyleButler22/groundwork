@@ -54,6 +54,7 @@ function ex(partial: Partial<Exercise> & Pick<Exercise, 'id' | 'slug' | 'name' |
     isUnilateral: false,
     demoUrl: null,
     cues: null,
+    howTo: null,
     isActive: true,
     ...partial,
   }

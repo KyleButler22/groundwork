@@ -301,3 +301,50 @@ insert into exercise_contraindications (exercise_id, region_id, severity) values
   ((select id from exercises where slug = 'squat_pistol'), (select id from body_regions where slug = 'knee'), 'caution'),
   ((select id from exercises where slug = 'squat_pistol_weighted'), (select id from body_regions where slug = 'knee'), 'caution'),
   ((select id from exercises where slug = 'squat_bulgarian'), (select id from body_regions where slug = 'knee'), 'caution');
+
+-- ── how-to instructions ──────────────────────────────────────────────────
+-- Labeled-step "how to do it" text for the exercise detail page (see
+-- src/lib/exerciseHowTo.ts + src/views/ExerciseView.vue), shown alongside
+-- the one-line `cues`. Newline-separated "Label: detail" lines, the last
+-- always a cautionary one. NO semicolons and NO double-hyphens in the
+-- text (verify-sql.mjs's statement/comment stripping is not quote-aware).
+-- This block is mirrored verbatim, minus nothing, in
+-- supabase/migrations/0011_exercise_how_to.sql (which adds the column
+-- first). Authored incrementally: 6 here now, the rest to follow.
+update exercises set how_to =
+'Setup: Stand a bit more than arm''s length from a wall and put your hands flat on it at shoulder height, a little wider than your shoulders.
+Movement: Keep a straight line from head to heels and bend your elbows to bring your chest toward the wall, then push back to the start.
+Common mistake: Letting your hips sag toward the wall or your head poke forward instead of moving as one plank.'
+where slug = 'pushup_wall';
+
+update exercises set how_to =
+'Setup: Hang from a bar with your hands a little wider than your shoulders, palms facing away, arms fully straight.
+Movement: Pull your shoulder blades down, then drive your elbows toward your ribs until your chin clears the bar. Lower all the way back to a dead hang under control.
+Common mistake: Kicking or swinging to get up, or stopping short of straight arms at the bottom.'
+where slug = 'pullup_full';
+
+update exercises set how_to =
+'Setup: Stand on one foot with the other leg held straight out in front of you and your arms reached forward as a counterweight.
+Movement: Push your hips back and bend the standing knee to lower all the way down, keeping the free leg off the floor, then stand straight back up.
+Common mistake: The raised heel dropping to the floor for balance, or the standing knee caving inward as you sink.'
+where slug = 'squat_pistol';
+
+update exercises set how_to =
+'Setup: Rest on your forearms with your elbows under your shoulders and your legs straight out behind you, up on your toes.
+Hold: Squeeze your glutes and brace your stomach so your body is one straight line from head to heels. Breathe normally.
+Common mistake: Hips creeping up into a pike, or sagging toward the floor, instead of holding the line.'
+where slug = 'plank_full';
+
+update exercises set how_to =
+'Setup: Get on your hands and knees facing away from the wall, feet against the baseboard, hands about a foot from the wall.
+Getting up: Walk your feet up the wall while stepping your hands back toward it, until your hips stack over your shoulders and your chest is near the wall.
+Hold: Push hard through your shoulders, squeeze your legs together, and look at the floor between your hands.
+Common mistake: Keeping your hands too far from the wall, which bends your body into a banana instead of a straight line.'
+where slug = 'handstand_wall_back';
+
+update exercises set how_to =
+'Setup: Kneel tall on something padded with your feet anchored under a heavy object or held down by a partner.
+Lower: Keep a straight line from knees to head and lower your torso toward the floor as slowly as you can, resisting the whole way with your hamstrings.
+At the bottom: Let yourself drop into a push-up position to catch the fall, then push off the floor and pull yourself back to the top.
+Common mistake: Folding at the hips instead of lowering as one rigid line from knees to head.'
+where slug = 'nordic_curl_negative';

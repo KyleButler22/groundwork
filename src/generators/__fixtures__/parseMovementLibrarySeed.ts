@@ -141,9 +141,26 @@ export function parseMovementLibrarySeed(rawSql: string): MovementLibrarySeedDat
         isUnilateral: unilateral === 'true',
         demoUrl: null,
         cues,
+        howTo: null,
         isActive: true,
       })
       exerciseIdBySlug.set(slug, id)
+    }
+  }
+
+  // how_to text is authored incrementally as `update exercises set how_to
+  // = '…' where slug = '…'` statements after the inserts (see the
+  // 2026-09-10 spec), not as a positional insert column — the insert
+  // rowRe above is fragile and the migration needs this exact shape
+  // anyway. Overlay it onto the exercises parsed above, keyed by slug.
+  {
+    const re = /update exercises set how_to\s*=\s*'((?:[^']|'')*)'\s*where slug = '([\w-]+)'/g
+    let um: RegExpExecArray | null
+    while ((um = re.exec(sql))) {
+      const [, howToRaw, howToSlug] = um
+      const target = exercises.find((e) => e.slug === howToSlug)
+      if (!target) throw new Error(`parseMovementLibrarySeed: how_to update references unknown exercise "${howToSlug}"`)
+      target.howTo = howToRaw.replace(/''/g, "'")
     }
   }
 

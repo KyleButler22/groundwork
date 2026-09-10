@@ -71,6 +71,17 @@ describe('loadRealSeed sanity', () => {
     const wrist = seed.bodyRegions.find((r) => r.slug === 'wrist')!
     expect(wrist.name).toBe('Wrist')
   })
+
+  it('overlays how_to instructions from the update statements, leaving unauthored exercises null', () => {
+    const wallPushup = seed.exercises.find((e) => e.slug === 'pushup_wall')!
+    expect(wallPushup.howTo).toContain('Setup:')
+    expect(wallPushup.howTo).toContain('Common mistake:')
+    expect(wallPushup.howTo).toContain('\n') // multi-line value round-tripped intact
+
+    // The other 54 are authored in a later rollout step — until then they
+    // parse as null (not "", not undefined, not a crash).
+    expect(seed.exercises.find((e) => e.slug === 'pushup_incline')!.howTo).toBeNull()
+  })
 })
 
 describe('generatePlan — against the real seed content', () => {

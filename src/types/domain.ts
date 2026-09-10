@@ -97,6 +97,7 @@ export interface Exercise {
   isUnilateral: boolean
   demoUrl: string | null
   cues: string | null
+  howTo: string | null
   isActive: boolean
 }
 
