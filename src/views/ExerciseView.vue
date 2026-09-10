@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 import Skeleton from '@/components/shared/Skeleton.vue'
 import PatternIcon from '@/components/workout/PatternIcon.vue'
+import { parseHowTo } from '@/lib/exerciseHowTo'
 import { LOCAL_DEV_USER_ID } from '@/lib/localUser'
 import { usePlanStore } from '@/stores/plan'
 import { useSessionStore } from '@/stores/session'
@@ -31,6 +32,7 @@ const exerciseId = computed(() => {
   return Number(s)
 })
 const exercise = computed(() => store.exercise(exerciseId.value))
+const howToLines = computed(() => parseHowTo(exercise.value?.howTo))
 
 const targetLabel = computed(() => {
   const e = exercise.value
@@ -94,8 +96,27 @@ const equipmentGroups = computed(() => {
       <p v-if="targetLabel" class="mt-4 font-mono text-sm tabular-nums text-ink">{{ targetLabel }}</p>
 
       <h2 class="mt-6 text-sm font-semibold uppercase tracking-wide text-muted">How to do it</h2>
-      <p v-if="exercise.cues" class="mt-2 text-sm leading-relaxed text-ink">{{ exercise.cues }}</p>
-      <p v-else class="mt-2 text-sm text-muted">No cues recorded for this exercise.</p>
+      <ul v-if="howToLines.length" class="mt-2 space-y-2">
+        <li
+          v-for="(line, i) in howToLines"
+          :key="i"
+          class="text-sm leading-relaxed text-ink"
+          :class="{ 'rounded-lg bg-warn-wash px-3 py-2': line.isWarning }"
+        >
+          <span
+            v-if="line.label"
+            class="font-semibold"
+            :class="line.isWarning ? 'text-warn' : 'text-ink'"
+          >{{ line.label }}: </span>{{ line.detail }}
+        </li>
+      </ul>
+      <p v-else-if="exercise.cues" class="mt-2 text-sm leading-relaxed text-ink">{{ exercise.cues }}</p>
+      <p v-else class="mt-2 text-sm text-muted">No instructions recorded yet.</p>
+
+      <template v-if="howToLines.length && exercise.cues">
+        <h2 class="mt-6 text-sm font-semibold uppercase tracking-wide text-muted">Quick cue</h2>
+        <p class="mt-2 text-sm text-muted">{{ exercise.cues }}</p>
+      </template>
 
       <template v-if="equipmentGroups.length">
         <h2 class="mt-6 text-sm font-semibold uppercase tracking-wide text-muted">Equipment needed</h2>
