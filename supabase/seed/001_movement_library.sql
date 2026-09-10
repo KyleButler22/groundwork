@@ -307,10 +307,10 @@ insert into exercise_contraindications (exercise_id, region_id, severity) values
 -- src/lib/exerciseHowTo.ts + src/views/ExerciseView.vue), shown alongside
 -- the one-line `cues`. Newline-separated "Label: detail" lines, the last
 -- always a cautionary one. NO semicolons and NO double-hyphens in the
--- text (verify-sql.mjs's statement/comment stripping is not quote-aware).
--- This block is mirrored verbatim, minus nothing, in
--- supabase/migrations/0011_exercise_how_to.sql (which adds the column
--- first). Authored incrementally: 6 here now, the rest to follow.
+-- text (scripts/verify-sql.mjs's statement splitter is not quote-aware).
+-- Migration 0011_exercise_how_to.sql (added in a later task) adds the
+-- column and must carry a byte-identical copy of these update statements
+-- for the live DB. Authored incrementally: 6 here now, the other 54 to follow.
 update exercises set how_to =
 'Setup: Stand a bit more than arm''s length from a wall and put your hands flat on it at shoulder height, a little wider than your shoulders.
 Movement: Keep a straight line from head to heels and bend your elbows to bring your chest toward the wall, then push back to the start.
