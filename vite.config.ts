@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 // Imported from 'vitest/config', not 'vite' — that's what merges the `test`
 // key's types into UserConfig. Vitest re-exports Vite's own defineConfig
 // underneath, so this isn't a second, different config system.
-import { defineConfig } from 'vitest/config'
+import { configDefaults, defineConfig } from 'vitest/config'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -50,6 +50,12 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    // Vitest's default excludes cover node_modules/dist/.git but not
+    // .claude/ — a feature worktree checked out under .claude/worktrees/
+    // (this project's isolation convention) is a full second copy of src/,
+    // so without this every spec gets discovered twice and BottomNav.spec
+    // fails spuriously on the duplicate. Keep the defaults, add .claude.
+    exclude: [...configDefaults.exclude, '.claude/**'],
     coverage: {
       provider: 'v8',
       include: ['src/generators/**'],
