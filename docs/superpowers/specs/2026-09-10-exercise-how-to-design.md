@@ -24,10 +24,11 @@ State today, confirmed while scoping:
   (`pullRealContent` → `pullContentTable('exercises')` → generic `fromRow`). The live DB is
   only mutated by migrations now — `supabase db reset` is destructive since there is a real
   user account.
-- The seed parser (`parseMovementLibrarySeed.ts`) uses hand-rolled positional regexes, and its
-  per-statement splitter (`/insert into exercises[\s\S]*?;/g`) is **not** quote-aware — a `;`
-  inside an authored string truncates the insert block and silently drops exercise rows at
-  runtime for signed-out users.
+- The seed parser (`parseMovementLibrarySeed.ts`) uses hand-rolled positional regexes, and
+  `verify-sql.mjs`'s per-statement splitter (`… values\s*([\s\S]*?);`) is **not** quote-aware
+  — a `;` inside an authored string truncates a statement mid-parse. This, plus keeping the
+  positional insert `rowRe` untouched, is why the design avoids adding a `how_to` insert
+  column and avoids semicolons in the text (decision 5).
 
 ## Decisions (settled during brainstorming)
 
@@ -43,49 +44,64 @@ State today, confirmed while scoping:
    `--color-warn` tokens. Every exercise's `how_to` ends with one such line.
 4. **Sample-first rollout.** 6 representative exercises authored and shipped first for Kyle to
    calibrate voice / depth against, then the other 54, then a final skim.
-5. **No semicolons in authored `how_to` / `cues` text.** Hard rule — the seed parser's
-   statement splitter is not quote-aware, and a stray `;` silently drops exercise rows at
-   runtime for signed-out users. `assertSeedShape`'s "exactly 60" check is the backstop.
-   Colons, dashes, and periods cover everything this copy needs.
+5. **`how_to` content ships as `update` statements, not an insert column; no semicolons in
+   the text.** The positional insert `rowRe` the generator depends on stays untouched, and an
+   added insert column would force a `null` onto all 54 not-yet-authored rows. `update
+   exercises set how_to = '…' where slug = '…'` statements after the inserts avoid both and
+   are the exact shape the migration needs. Semicolons stay out of the text because
+   `verify-sql.mjs`'s statement splitter is not quote-aware; colons, dashes, and periods
+   cover everything this copy needs.
 
 ## Storage
 
 ### Column
 
-`how_to text` (nullable), added to `exercises` immediately after `cues`.
+`how_to text` (nullable), added to `exercises` by the `alter table` in migration `0011`.
+Conceptually it sits alongside `cues` — a fuller version of the same thing.
 
 ### Seed file — `supabase/seed/001_movement_library.sql`
 
-`how_to` becomes the final column on all three `exercises` insert statements (the `reps`
-block, the `time_seconds` block, the `distance_m` block). Each row gains a trailing `'…'`
-literal with newlines inside it:
+`how_to` content is added as `update` statements appended after the three `exercises` insert
+statements — **the positional insert rows are left completely untouched.** (Refined during
+planning: the insert `rowRe` in `parseMovementLibrarySeed.ts` is a fragile positional regex
+the whole generator depends on, and adding a 10th column would force a `null` onto all 54
+not-yet-authored rows. `update` statements avoid both — and they are the exact shape the
+migration needs anyway, so the two files' `how_to` blocks stay copy-paste identical.)
 
 ```sql
-  ('nordic_curl_negative', 'Nordic curl negative', (select id from movement_patterns where slug = 'hinge'), 5.0, 'reps', 4, 8, false,
-   'Ankles anchored, lower as slowly as you can control, hands ready to catch you.',
-   'Setup: Kneel tall on something padded with your feet anchored under a heavy object or held by a partner.
-Movement: Keep your body in a straight line from knees to head and lower your torso toward the floor as slowly as you can, fighting it with your hamstrings.
-At the bottom: Let yourself drop into a push-up position, then push back and pull yourself to the top.
-Common mistake: Folding at the hips instead of holding one straight line from knees to head.'),
+-- ── how-to instructions ──────────────────────────────────────────────────
+-- Labeled-step "how to do it" text for the exercise detail page, shown
+-- alongside the one-line `cues`. Newline-separated "Label: detail" lines,
+-- last line always a cautionary one. No semicolons in the text (the
+-- statement splitters below and in verify-sql.mjs are not quote-aware).
+-- Mirrored verbatim in supabase/migrations/0011_exercise_how_to.sql.
+update exercises set how_to =
+'Setup: Kneel tall on something padded with your feet anchored under a heavy object or held down by a partner.
+Lower: Keep a straight line from knees to head and lower your torso toward the floor as slowly as you can, resisting the whole way with your hamstrings.
+At the bottom: Let yourself drop into a push-up position to catch the fall, then push off the floor and pull yourself back to the top.
+Common mistake: Folding at the hips instead of lowering as one rigid line from knees to head.'
+where slug = 'nordic_curl_negative';
+-- … one per exercise
 ```
-
-(The `cues` literal is shown on its own line here only for readability — its content and
-format are unchanged.)
 
 ### Migration — `supabase/migrations/0011_exercise_how_to.sql` (new)
 
 ```sql
 alter table exercises add column how_to text;
 
-update exercises set how_to = '…' where slug = 'pushup_wall';
--- … × 60
+update exercises set how_to =
+'Setup: …
+Common mistake: …'
+where slug = 'pushup_wall';
+-- … × 60, byte-identical to the seed file's update block
 ```
 
 Applied by the controller via
 `supabase db query --linked --file supabase/migrations/0011_exercise_how_to.sql` (the same
-path used for `0010`). Written in full in Task 2, applied in Task 3. The seed file and the
-migration carry identical `how_to` text per slug — kept in sync by hand, the way the seed and
-the live DB already are for everything else.
+path used for `0010`). Written in full in Task 4, applied in Task 5. The seed file's `update`
+block and the migration's `update` block are identical text (the migration only adds the
+`alter table` line above them) — kept in sync by hand, the way the seed and the live DB
+already are for everything else.
 
 ## Code
 
@@ -99,39 +115,40 @@ Add to `Exercise`, immediately after `cues: string | null`:
 
 ### `src/generators/__fixtures__/parseMovementLibrarySeed.ts`
 
-The exercise `rowRe` gains one trailing capture. Current tail:
-
-```
-…,\s*(true|false),\s*'((?:[^']|'')*)'\s*\)
-```
-
-becomes:
-
-```
-…,\s*(true|false),\s*'((?:[^']|'')*)',\s*'((?:[^']|'')*)'\s*\)
-```
-
-The row destructuring gains one binding:
+The positional insert `rowRe` is **not touched.** The pushed exercise object gains a default
+`howTo: null` (beside `demoUrl: null`). A new self-contained pass, after the insert rows are
+parsed, overlays the `how_to` text from the `update` statements:
 
 ```ts
-const [, slug, name, patternSlug, level, mt, rangeA, rangeB, unilateral, cuesRaw, howToRaw] = m
+// how_to lives in `update` statements after the inserts (authored
+// incrementally — see the 2026-09-10 spec), keyed by slug, not in the
+// positional insert rows.
+{
+  const re = /update exercises set how_to\s*=\s*'((?:[^']|'')*)'\s*where slug = '([\w-]+)'/g
+  let m: RegExpExecArray | null
+  while ((m = re.exec(sql))) {
+    const [, howToRaw, slug] = m
+    const id = exerciseIdBySlug.get(slug)
+    if (id === undefined) throw new Error(`parseMovementLibrarySeed: how_to update references unknown exercise "${slug}"`)
+    const target = exercises.find((e) => e.id === id)
+    if (target) target.howTo = howToRaw.replace(/''/g, "'")
+  }
+}
 ```
 
-and the pushed object sets `howTo: howToRaw.replace(/''/g, "'") || null` (empty string →
-`null`), replacing its current absence. `demoUrl: null` stays hardcoded (still not in the
-seed).
+(`sql` here is the comment-stripped text already used by the rest of the function.)
 
-`assertSeedShape` — **after Task 2 only**, add a check that every exercise has a `how_to` and
+`assertSeedShape` — **after Task 4 only**, add a check that every exercise has a `how_to` and
 that it carries a cautionary line (enforces decisions 3 and 5 mechanically):
 
 ```ts
 const badHowTo = data.exercises.filter(
-  (e) => !e.howTo || !/(^|\n)\s*(common mistake|avoid|watch out):/i.test(e.howTo),
+  (e) => !e.howTo || !/(^|\n)[ \t]*(common mistake|avoid|watch out):/i.test(e.howTo),
 )
 if (badHowTo.length) problems.push(`${badHowTo.length} exercise(s) with missing or malformed how_to: ${badHowTo.map((e) => e.slug).join(', ')}`)
 ```
 
-Not added in Task 1 (only 6 of 60 populated then).
+Not added earlier (only 6 of 60 populated until Task 4).
 
 ### `src/generators/__fixtures__/testLibrary.ts`
 
@@ -165,7 +182,8 @@ export interface HowToLine {
 export function parseHowTo(howTo: string | null | undefined): HowToLine[]
 ```
 
-- Split on `\n`, trim each, drop empties.
+- Split on `/\r?\n/` (the seed file is stored LF but checked out CRLF on Windows — no
+  `.gitattributes` override), trim each, drop empties.
 - First `:` splits `label` / `detail`; no colon → `{ label: '', detail: <whole line> }`.
 - `isWarning`: `/^(common mistake|avoid|watch out)\b/i.test(label)`.
 
@@ -195,36 +213,27 @@ needed".
 
 ## Rollout
 
-### Task 1 — plumbing + 6 samples
+See the implementation plan for the task-by-task breakdown. The shape:
 
-All of §Code **except** the `assertSeedShape` guard. `how_to` authored in the **seed file
-only** for: `pushup_wall`, `pullup_full`, `squat_pistol`, `plank_full`, `handstand_wall_back`,
-`nordic_curl_negative` (easy/hard, reps/hold, bilateral/unilateral, standard/eccentric/skill).
-No migration yet.
-
-Verify: `npm run typecheck`, `npm run test`, `npm run verify:sql`, then `npm run build && npm
-run preview` and read all 6 pages **signed out** (signed-in reads the live DB, which has no
-`how_to` column until Task 3 — a signed-in check here would show only the `cues` fallback and
-mislead). Screenshot the 6 for Kyle.
-
-**Checkpoint: Kyle reviews the 6.** Voice, length, whether the labels fit, whether "Common
-mistake" earns the tint.
-
-### Task 2 — the other 54 + migration
-
-Author `how_to` for the remaining 54 in the seed file, to the calibrated standard. Write
-`0011_exercise_how_to.sql` in full (the `alter table` + all 60 `update`s). Add the
-`assertSeedShape` guard.
-
-Verify: the same four commands. `assertSeedShape` now enforces 60/60 non-empty.
-
-**Checkpoint: Kyle skims all 60** (from the seed file or a preview build).
-
-### Task 3 — live DB
-
-Controller applies `0011` via `supabase db query --linked --file …`. Verify signed in against
-the real project: the exercise page shows `how_to` from the pull (not the fallback), and
-`select how_to from exercises where slug = 'pushup_wall'` returns the text.
+1. **`parseHowTo` helper + unit tests** (pure, TDD).
+2. **Schema plumbing + the 6 samples**: `domain.ts`, the `parseMovementLibrarySeed.ts`
+   `update`-overlay pass, `testLibrary.ts`, `docs/schema.md`, and `update` statements in the
+   seed file for `pushup_wall`, `pullup_full`, `squat_pistol`, `plank_full`,
+   `handstand_wall_back`, `nordic_curl_negative` (easy/hard, reps/hold, bilateral/unilateral,
+   standard/eccentric/skill). Verified via `npm run typecheck` / `test` / `verify:sql`.
+3. **`ExerciseView.vue` rendering** — verified `npm run build && npm run preview`, read the 6
+   pages **signed out** (a signed-in check here is misleading — the live DB has no `how_to`
+   until step 5). Screenshot the 6.
+   → **Checkpoint: Kyle reviews the 6** — voice, length, labels, whether "Common mistake"
+   earns the tint.
+4. **[Controller] the other 54 + migration**: author 54 `update`s in the seed to the
+   calibrated standard, create `0011_exercise_how_to.sql` (`alter table` + the identical 60
+   `update`s), add the `assertSeedShape` guard, flip the integration-spec assertions to
+   "all 60 present". `verify:sql` + `test` green.
+   → **Checkpoint: Kyle skims all 60.**
+5. **[Controller] live DB**: apply `0011` via `supabase db query --linked --file …`. Verify
+   signed in — the exercise page shows `how_to` from the pull (not the fallback), and
+   `select how_to from exercises where slug = 'pushup_wall'` returns the text.
 
 ## Authoring standard (for the 6, then the 54)
 
@@ -254,12 +263,14 @@ the real project: the exercise page shows `how_to` from the pull (not the fallba
 
 | What | How |
 |---|---|
-| `parseHowTo` | `src/lib/exerciseHowTo.spec.ts` — label/detail split, no-colon line, blank-line drop, `isWarning` matching (positive + negative), `null`/empty input |
-| Seed parser | extend `parseMovementLibrarySeed` coverage: a `howTo` value round-trips (including a multi-line one with colons); post-Task-2, `assertSeedShape` throws when a row's `how_to` is empty |
+| `parseHowTo` | `src/lib/exerciseHowTo.spec.ts` — label/detail split, no-colon line, blank-line drop, `isWarning` matching (positive + negative), `\r\n` tolerance, `null`/empty input |
+| Seed parser | assertions in `generatePlan.integration.spec.ts`'s `loadRealSeed sanity` block: `pushup_wall.howTo` contains `Setup:` and `Common mistake:` (a multi-line value with colons round-trips); an unauthored slug is `null`. Step 4 flips the latter to "all 60 present" once `assertSeedShape` guards it. |
 | Types | `npm run typecheck` |
-| Seed structure | `npm run verify:sql` (unchanged checks; a new trailing column does not shift existing cell indices) |
-| View | manual, `vite preview` — the 6 in Task 1, all 60 in Task 2 |
-| Live pull | manual, signed in, after Task 3 |
+| Seed structure | `npm run verify:sql` (`update` statements don't add parens or `select … where slug` lookups — neutral to its checks; paren balance still holds) |
+| View | manual, `vite preview` — the 6 at step 3, all 60 after step 4 |
+| Live pull | manual, signed in, after step 5 |
 
-No new integration test — `generatePlan.integration.spec.ts` already runs the real seed
-through the modified parser, so a regex slip that broke row parsing fails it immediately.
+No standalone parser spec — `generatePlan.integration.spec.ts` already runs the real seed
+through the parser (`assertSeedShape` enforces the 60-exercise / 8-pattern / 52-edge shape on
+every parse), so a regex slip that broke row parsing fails it immediately. The new `how_to`
+overlay pass is covered by the `loadRealSeed sanity` assertions above.
