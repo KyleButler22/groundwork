@@ -13,7 +13,7 @@
 -- the client; nothing here is user data. Adding a nullable column with no
 -- default is a metadata-only change (no table rewrite).
 
-alter table exercises add column how_to text;
+alter table exercises add column if not exists how_to text;
 
 update exercises set how_to =
 'Setup: Stand a bit more than arm''s length from a wall and put your hands flat on it at shoulder height, a little wider than your shoulders.
