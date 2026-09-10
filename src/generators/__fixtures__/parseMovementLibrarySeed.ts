@@ -234,6 +234,19 @@ function assertSeedShape(data: MovementLibrarySeedData): void {
   if (data.edges.length !== 52) problems.push(`expected 52 progression edges, got ${data.edges.length}`)
   if (data.equipment.length !== 6) problems.push(`expected 6 equipment rows, got ${data.equipment.length}`)
   if (data.bodyRegions.length !== 6) problems.push(`expected 6 body regions, got ${data.bodyRegions.length}`)
+
+  // Every exercise must carry how_to text ending with a cautionary line
+  // ("Common mistake:" / "Avoid:" / "Watch out:") — the exercise page
+  // relies on it and ExerciseView tints that line. A missing one usually
+  // means a forgotten `update` statement or a stray `;` truncating the
+  // block (see the seed's how-to header comment).
+  const badHowTo = data.exercises.filter(
+    (e) => !e.howTo || !/(^|\n)[ \t]*(common mistake|avoid|watch out):/i.test(e.howTo),
+  )
+  if (badHowTo.length > 0) {
+    problems.push(`${badHowTo.length} exercise(s) with missing or malformed how_to: ${badHowTo.map((e) => e.slug).join(', ')}`)
+  }
+
   if (problems.length > 0) {
     throw new Error(
       `parseMovementLibrarySeed: parsed shape does not match the known-good seed content (see scripts/verify-movement-graph.mjs) — ` +

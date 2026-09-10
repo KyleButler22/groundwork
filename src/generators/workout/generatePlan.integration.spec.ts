@@ -72,15 +72,16 @@ describe('loadRealSeed sanity', () => {
     expect(wrist.name).toBe('Wrist')
   })
 
-  it('overlays how_to instructions from the update statements, leaving unauthored exercises null', () => {
+  it('overlays how_to instructions onto every exercise, each ending with a cautionary line', () => {
+    for (const e of seed.exercises) {
+      expect(e.howTo, e.slug).toBeTruthy()
+      expect(e.howTo, e.slug).toMatch(/(^|\n)[ \t]*(common mistake|avoid|watch out):/i)
+    }
+    // a multi-line value with colons and an escaped apostrophe round-trips intact
     const wallPushup = seed.exercises.find((e) => e.slug === 'pushup_wall')!
     expect(wallPushup.howTo).toContain('Setup:')
-    expect(wallPushup.howTo).toContain('Common mistake:')
-    expect(wallPushup.howTo).toContain('\n') // multi-line value round-tripped intact
-
-    // The other 54 are authored in a later rollout step — until then they
-    // parse as null (not "", not undefined, not a crash).
-    expect(seed.exercises.find((e) => e.slug === 'pushup_incline')!.howTo).toBeNull()
+    expect(wallPushup.howTo).toContain("arm's length") // '' un-escaped
+    expect(wallPushup.howTo).toContain('\nCommon mistake:')
   })
 })
 
