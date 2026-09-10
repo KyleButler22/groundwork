@@ -472,10 +472,11 @@ Start the dev server (Browser pane): `preview_start` with a launch config runnin
 
 Complete intake (local dev user — no sign-in) to generate a workout + meal plan. A fresh
 plan only contains floor-level exercises, so navigate to the 6 sample pages directly. The
-dev parser assigns ids in seed-file order (reps block, then time, then distance); the 6 are:
-`pushup_wall` = `/exercise/1`, `pullup_full` = `/exercise/18`, `squat_pistol` = `/exercise/35`,
-`nordic_curl_negative` = `/exercise/41`, `plank_full` = `/exercise/51`,
-`handstand_wall_back` = `/exercise/56`. (If any shows "Exercise not found", the seed order
+route is `/exercises/:id` (plural). The dev parser assigns ids in seed-file order (reps
+block, then time, then distance); the 6 are:
+`pushup_wall` = `/exercises/1`, `pullup_full` = `/exercises/18`, `squat_pistol` = `/exercises/35`,
+`nordic_curl_negative` = `/exercises/41`, `plank_full` = `/exercises/51`,
+`handstand_wall_back` = `/exercises/56`. (If any shows "Exercise not found", the seed order
 shifted — read the id from `db.exercises` in the console.) For each confirm:
 - "How to do it" shows the labeled lines, each with a bold `Label:` lead-in.
 - The final "Common mistake" line sits in a tinted (`bg-warn-wash`) rounded block with a `text-warn` label.
