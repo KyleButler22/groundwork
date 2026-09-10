@@ -506,10 +506,11 @@ Stop here and report to Kyle: the 6 rendered pages (screenshots), and the author
 **This task is run by the controller, not a subagent** — it authors prose that depends on Kyle's calibration feedback from Task 3, the same way "apply a migration" is a controller step. Its inputs are fully specified: the 6 approved samples, the authoring standard in the spec, and Kyle's checkpoint notes.
 
 **Files:**
-- Modify: `supabase/seed/001_movement_library.sql` (extend the how-to `update` block from 6 to 60)
+- Modify: `supabase/seed/001_movement_library.sql` (extend the how-to `update` block from 6 to 60; tighten the block's header comment now that 0011 exists)
 - Create: `supabase/migrations/0011_exercise_how_to.sql` (`alter table` + the identical 60 `update`s)
 - Modify: `src/generators/__fixtures__/parseMovementLibrarySeed.ts` (`assertSeedShape` guard)
 - Modify: `src/generators/workout/generatePlan.integration.spec.ts` (flip the "unauthored is null" assertion to "all 60 present")
+- Modify: `docs/schema.md` (tighten the `how_to` sentence to present tense now that all 60 are authored and `0011` exists — see Step 7)
 
 - [ ] **Step 1: Author the remaining 54** `update` statements in `supabase/seed/001_movement_library.sql`, appended to the block from Task 2, one per exercise not already covered. Follow the spec's **Authoring standard** and match the voice Kyle approved. Every statement: `update exercises set how_to =\n'…'\nwhere slug = '…';`, 2–4 `Label: detail` lines, last line `Common mistake:` / `Avoid:` / `Watch out:`, no `;` or `--` in the text, `''` for apostrophes.
 
@@ -582,14 +583,21 @@ npm run build
 
 Then in the dev server: reset local content (`indexedDB.deleteDatabase('groundwork')` + reload, as in Task 3 Step 6), regenerate a plan, and re-check a sample of exercises across all 8 patterns — every one shows labeled steps, no `cues`-only fallback, no "No instructions recorded yet.". `assertSeedShape` will already have failed the build/tests if any of the 60 is missing or lacks a cautionary line.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Tighten the docs now that Task 4's end state is real**
+
+Task 2's commit `508a776` softened two spots to not assert Task 4's end state early. Now restore the precise wording:
+
+- `supabase/seed/001_movement_library.sql`, the `-- ── how-to instructions ──` header comment: change "added in a later task" / "the other 54 to follow" to reflect that 0011 exists and all 60 are authored.
+- `docs/schema.md`, the Movement library paragraph's `how_to` sentence: it currently reads "It ships as `update` statements in `001_movement_library.sql` (and, for the live DB, migration `0011`)." — fine as-is, but you may restore "(authored for all 60)" after "labeled-step version" now that it's true.
+
+- [ ] **Step 7: Commit**
 
 ```bash
-git add supabase/seed/001_movement_library.sql supabase/migrations/0011_exercise_how_to.sql src/generators/__fixtures__/parseMovementLibrarySeed.ts src/generators/workout/generatePlan.integration.spec.ts
+git add supabase/seed/001_movement_library.sql supabase/migrations/0011_exercise_how_to.sql src/generators/__fixtures__/parseMovementLibrarySeed.ts src/generators/workout/generatePlan.integration.spec.ts docs/schema.md
 git commit -m "Author how_to for all 60 exercises + 0011 migration"
 ```
 
-- [ ] **Step 7: CHECKPOINT — Kyle skims all 60**
+- [ ] **Step 8: CHECKPOINT — Kyle skims all 60**
 
 Give Kyle the full list (from the seed file). Apply any wording fixes he wants as follow-up commits before the merge.
 
