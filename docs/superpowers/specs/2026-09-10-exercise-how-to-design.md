@@ -125,18 +125,18 @@ parsed, overlays the `how_to` text from the `update` statements:
 // positional insert rows.
 {
   const re = /update exercises set how_to\s*=\s*'((?:[^']|'')*)'\s*where slug = '([\w-]+)'/g
-  let m: RegExpExecArray | null
-  while ((m = re.exec(sql))) {
-    const [, howToRaw, slug] = m
-    const id = exerciseIdBySlug.get(slug)
-    if (id === undefined) throw new Error(`parseMovementLibrarySeed: how_to update references unknown exercise "${slug}"`)
-    const target = exercises.find((e) => e.id === id)
-    if (target) target.howTo = howToRaw.replace(/''/g, "'")
+  let um: RegExpExecArray | null
+  while ((um = re.exec(sql))) {
+    const [, howToRaw, howToSlug] = um
+    const target = exercises.find((e) => e.slug === howToSlug)
+    if (!target) throw new Error(`parseMovementLibrarySeed: how_to update references unknown exercise "${howToSlug}"`)
+    target.howTo = howToRaw.replace(/''/g, "'")
   }
 }
 ```
 
-(`sql` here is the comment-stripped text already used by the rest of the function.)
+(`sql` here is the comment-stripped text already used by the rest of the function; the exact
+placement and full code are in the plan.)
 
 `assertSeedShape` — **after Task 4 only**, add a check that every exercise has a `how_to` and
 that it carries a cautionary line (enforces decisions 3 and 5 mechanically):
@@ -221,9 +221,10 @@ See the implementation plan for the task-by-task breakdown. The shape:
    seed file for `pushup_wall`, `pullup_full`, `squat_pistol`, `plank_full`,
    `handstand_wall_back`, `nordic_curl_negative` (easy/hard, reps/hold, bilateral/unilateral,
    standard/eccentric/skill). Verified via `npm run typecheck` / `test` / `verify:sql`.
-3. **`ExerciseView.vue` rendering** — verified `npm run build && npm run preview`, read the 6
-   pages **signed out** (a signed-in check here is misleading — the live DB has no `how_to`
-   until step 5). Screenshot the 6.
+3. **`ExerciseView.vue` rendering** — verified in `npm run dev` (the exercise page needs an
+   active plan to resolve `store.exercise(id)`, and only dev has no intake auth gate; the
+   `how_to` parse is build-mode-independent so dev is representative). Reset local IndexedDB
+   first so the new seed re-runs. Screenshot the 6.
    → **Checkpoint: Kyle reviews the 6** — voice, length, labels, whether "Common mistake"
    earns the tint.
 4. **[Controller] the other 54 + migration**: author 54 `update`s in the seed to the
@@ -246,7 +247,10 @@ See the implementation plan for the task-by-task breakdown. The shape:
   "pull your shoulder blades down and together").
 - Assume the reader has never done it and cannot see a photo yet: describe the start position
   concretely (where the hands are, what is on the floor, which way you face).
-- No semicolons. Apostrophes written `''` in the SQL.
+- No semicolons, and no `--` (double hyphen) — both confuse the SQL comment/statement
+  stripping. A single hyphen (`push-up`) and an em-dash (`—`) are both fine and already appear
+  in `cues`.
+- Apostrophes written `''` in the SQL.
 - Do not repeat the `cues` sentence verbatim as a line — `how_to` should stand on its own.
 
 ## Out of scope
@@ -267,8 +271,8 @@ See the implementation plan for the task-by-task breakdown. The shape:
 | Seed parser | assertions in `generatePlan.integration.spec.ts`'s `loadRealSeed sanity` block: `pushup_wall.howTo` contains `Setup:` and `Common mistake:` (a multi-line value with colons round-trips); an unauthored slug is `null`. Step 4 flips the latter to "all 60 present" once `assertSeedShape` guards it. |
 | Types | `npm run typecheck` |
 | Seed structure | `npm run verify:sql` (`update` statements don't add parens or `select … where slug` lookups — neutral to its checks; paren balance still holds) |
-| View | manual, `vite preview` — the 6 at step 3, all 60 after step 4 |
-| Live pull | manual, signed in, after step 5 |
+| View | manual, `npm run dev` (reset IndexedDB first) — the 6 at step 3, all 60 after step 4 |
+| Live pull | manual, signed in against the real project, after step 5 |
 
 No standalone parser spec — `generatePlan.integration.spec.ts` already runs the real seed
 through the parser (`assertSeedShape` enforces the 60-exercise / 8-pattern / 52-edge shape on
